@@ -1,7 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginBody;
@@ -50,13 +50,13 @@ public class SysLoginController {
      */
     @ApiOperation("登录方法")
     @PostMapping("/login")
-    public AjaxResult<Map<String, Object>> login(@RequestBody LoginBody loginBody) {
+    public R<Map<String, Object>> login(@RequestBody LoginBody loginBody) {
         Map<String, Object> ajax = new HashMap<>();
         // 生成令牌
         String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
                 loginBody.getUuid());
         ajax.put(Constants.TOKEN, token);
-        return AjaxResult.success(ajax);
+        return R.success(ajax);
     }
 
     /**
@@ -66,7 +66,7 @@ public class SysLoginController {
      */
     @ApiOperation("获取用户信息")
     @GetMapping("getInfo")
-    public AjaxResult<Map<String, Object>> getInfo() {
+    public R<Map<String, Object>> getInfo() {
         SysUser user = userService.selectUserById(SecurityUtils.getUserId());
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);
@@ -76,7 +76,7 @@ public class SysLoginController {
         ajax.put("user", user);
         ajax.put("roles", roles);
         ajax.put("permissions", permissions);
-        return AjaxResult.success(ajax);
+        return R.success(ajax);
     }
 
     /**
@@ -86,9 +86,9 @@ public class SysLoginController {
      */
     @ApiOperation("获取路由信息")
     @GetMapping("getRouters")
-    public AjaxResult<List<RouterVo>> getRouters() {
+    public R<List<RouterVo>> getRouters() {
         Long userId = SecurityUtils.getUserId();
         List<SysMenu> menus = menuService.selectMenuTreeByUserId(userId);
-        return AjaxResult.success(menuService.buildMenus(menus));
+        return R.success(menuService.buildMenus(menus));
     }
 }

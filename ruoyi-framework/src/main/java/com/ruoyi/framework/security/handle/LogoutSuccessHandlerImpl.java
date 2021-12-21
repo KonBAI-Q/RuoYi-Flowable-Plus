@@ -2,7 +2,7 @@ package com.ruoyi.framework.security.handle;
 
 import cn.hutool.http.HttpStatus;
 import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.service.LogininforService;
 import com.ruoyi.common.core.service.TokenService;
@@ -47,7 +47,7 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
 			// 记录用户退出日志
 			asyncService.recordLogininfor(userName, Constants.LOGOUT, "退出成功", request);
 		}
-		ServletUtils.renderString(response, JsonUtils.toJsonString(AjaxResult.error(HttpStatus.HTTP_OK, "退出成功")));
+		ServletUtils.renderString(response, JsonUtils.toJsonString(R.error(HttpStatus.HTTP_OK, "退出成功")));
 	}
 
 }

@@ -2,7 +2,7 @@ package com.ruoyi.web.controller.monitor;
 
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -53,7 +53,7 @@ public class SysOperlogController extends BaseController {
     @Log(title = "操作日志", businessType = BusinessType.DELETE)
     @PreAuthorize("@ss.hasPermi('monitor:operlog:remove')")
     @DeleteMapping("/{operIds}")
-    public AjaxResult<Void> remove(@PathVariable Long[] operIds) {
+    public R<Void> remove(@PathVariable Long[] operIds) {
         return toAjax(operLogService.deleteOperLogByIds(operIds));
     }
 
@@ -61,8 +61,8 @@ public class SysOperlogController extends BaseController {
     @Log(title = "操作日志", businessType = BusinessType.CLEAN)
     @PreAuthorize("@ss.hasPermi('monitor:operlog:remove')")
     @DeleteMapping("/clean")
-    public AjaxResult<Void> clean() {
+    public R<Void> clean() {
         operLogService.cleanOperLog();
-        return AjaxResult.success();
+        return R.success();
     }
 }

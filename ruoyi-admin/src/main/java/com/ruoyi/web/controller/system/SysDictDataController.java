@@ -2,7 +2,7 @@ package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
@@ -60,8 +60,8 @@ public class SysDictDataController extends BaseController {
     @ApiOperation("查询字典数据详细")
     @PreAuthorize("@ss.hasPermi('system:dict:query')")
     @GetMapping(value = "/{dictCode}")
-    public AjaxResult<SysDictData> getInfo(@ApiParam("字典code") @PathVariable Long dictCode) {
-        return AjaxResult.success(dictDataService.selectDictDataById(dictCode));
+    public R<SysDictData> getInfo(@ApiParam("字典code") @PathVariable Long dictCode) {
+        return R.success(dictDataService.selectDictDataById(dictCode));
     }
 
     /**
@@ -69,12 +69,12 @@ public class SysDictDataController extends BaseController {
      */
     @ApiOperation("根据字典类型查询字典数据信息")
     @GetMapping(value = "/type/{dictType}")
-    public AjaxResult<List<SysDictData>> dictType(@ApiParam("字典类型") @PathVariable String dictType) {
+    public R<List<SysDictData>> dictType(@ApiParam("字典类型") @PathVariable String dictType) {
         List<SysDictData> data = dictTypeService.selectDictDataByType(dictType);
         if (StringUtils.isNull(data)) {
             data = new ArrayList<>();
         }
-        return AjaxResult.success(data);
+        return R.success(data);
     }
 
     /**
@@ -84,7 +84,7 @@ public class SysDictDataController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:dict:add')")
     @Log(title = "字典数据", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult<Void> add(@Validated @RequestBody SysDictData dict) {
+    public R<Void> add(@Validated @RequestBody SysDictData dict) {
         return toAjax(dictDataService.insertDictData(dict));
     }
 
@@ -95,7 +95,7 @@ public class SysDictDataController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:dict:edit')")
     @Log(title = "字典数据", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult<Void> edit(@Validated @RequestBody SysDictData dict) {
+    public R<Void> edit(@Validated @RequestBody SysDictData dict) {
         return toAjax(dictDataService.updateDictData(dict));
     }
 
@@ -106,7 +106,7 @@ public class SysDictDataController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictCodes}")
-    public AjaxResult<Void> remove(@ApiParam("字典code串") @PathVariable Long[] dictCodes) {
+    public R<Void> remove(@ApiParam("字典code串") @PathVariable Long[] dictCodes) {
         dictDataService.deleteDictDataByIds(dictCodes);
         return success();
     }
