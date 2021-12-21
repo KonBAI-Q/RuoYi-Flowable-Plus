@@ -1,0 +1,62 @@
+package com.ruoyi.framework.config;
+
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.CircleCaptcha;
+import cn.hutool.captcha.LineCaptcha;
+import cn.hutool.captcha.ShearCaptcha;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+
+import java.awt.*;
+
+/**
+ * 验证码配置
+ *
+ * @author Lion Li
+ */
+@Configuration
+public class CaptchaConfig {
+
+    private final int width = 160;
+    private final int height = 60;
+    private final Color background = Color.PINK;
+    private final Font font = new Font("Arial", Font.BOLD, 48);
+
+    /**
+     * 圆圈干扰验证码
+     */
+    @Lazy
+    @Bean
+    public CircleCaptcha circleCaptcha() {
+        CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(width, height);
+        captcha.setBackground(background);
+        captcha.setFont(font);
+        return captcha;
+    }
+
+    /**
+     * 线段干扰的验证码
+     */
+    @Lazy
+    @Bean
+    public LineCaptcha lineCaptcha() {
+        LineCaptcha captcha = CaptchaUtil.createLineCaptcha(width, height);
+        captcha.setBackground(background);
+        captcha.setFont(font);
+        return captcha;
+    }
+
+    /**
+     * 扭曲干扰验证码
+     */
+    @Lazy
+    @Bean
+    public ShearCaptcha shearCaptcha() {
+        ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(width, height);
+        captcha.setBackground(background);
+        captcha.setFont(font);
+        return captcha;
+    }
+
+}
