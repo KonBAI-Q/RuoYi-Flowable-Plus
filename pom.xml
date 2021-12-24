@@ -5,15 +5,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ruoyi</groupId>
-    <artifactId>ruoyi-vue-plus</artifactId>
+    <artifactId>ruoyi-flowable-plus</artifactId>
     <version>3.4.0</version>
 
-    <name>RuoYi-Vue-Plus</name>
+    <name>RuoYi-Flowable-Plus</name>
     <url>https://gitee.com/JavaLionLi/RuoYi-Vue-Plus</url>
-    <description>RuoYi-Vue-Plus后台管理系统</description>
+    <description>RuoYi-Flowable-Plus后台管理系统</description>
 
     <properties>
-        <ruoyi-vue-plus.version>3.4.0</ruoyi-vue-plus.version>
+        <ruoyi-flowable-plus.version>3.4.0</ruoyi-flowable-plus.version>
         <spring-boot.version>2.5.7</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -234,28 +234,28 @@
             <dependency>
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-job</artifactId>
-                <version>${ruoyi-vue-plus.version}</version>
+                <version>${ruoyi-flowable-plus.version}</version>
             </dependency>
 
             <!-- 代码生成-->
             <dependency>
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-generator</artifactId>
-                <version>${ruoyi-vue-plus.version}</version>
+                <version>${ruoyi-flowable-plus.version}</version>
             </dependency>
 
             <!-- 核心模块-->
             <dependency>
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-framework</artifactId>
-                <version>${ruoyi-vue-plus.version}</version>
+                <version>${ruoyi-flowable-plus.version}</version>
             </dependency>
 
             <!-- 系统模块-->
             <dependency>
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-system</artifactId>
-                <version>${ruoyi-vue-plus.version}</version>
+                <version>${ruoyi-flowable-plus.version}</version>
             </dependency>
 
             <!-- 通用工具-->
@@ -269,14 +269,14 @@
             <dependency>
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-oss</artifactId>
-                <version>${ruoyi-vue-plus.version}</version>
+                <version>${ruoyi-flowable-plus.version}</version>
             </dependency>
 
             <!-- demo模块 -->
             <dependency>
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-demo</artifactId>
-                <version>${ruoyi-vue-plus.version}</version>
+                <version>${ruoyi-flowable-plus.version}</version>
             </dependency>
 
         </dependencies>
