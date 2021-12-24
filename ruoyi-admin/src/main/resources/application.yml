@@ -295,3 +295,6 @@ management:
   endpoint:
     logfile:
       external-file: ./logs/sys-console.log
+
+flowable:
+  database-schema-update: true

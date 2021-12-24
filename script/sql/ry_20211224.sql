@@ -161,6 +161,9 @@ insert into sys_menu values('1', '系统管理', '0', '1', 'system',           n
 insert into sys_menu values('2', '系统监控', '0', '2', 'monitor',          null, '', 1, 0, 'M', '0', '0', '', 'monitor',  'admin', sysdate(), '', null, '系统监控目录');
 insert into sys_menu values('3', '系统工具', '0', '3', 'tool',             null, '', 1, 0, 'M', '0', '0', '', 'tool',     'admin', sysdate(), '', null, '系统工具目录');
 insert into sys_menu values('4', 'PLUS官网', '0', '4', 'https://gitee.com/JavaLionLi/RuoYi-Vue-Plus', null, '', 0, 0, 'M', '0', '0', '', 'guide',    'admin', sysdate(), '', null, 'RuoYi-Vue-Plus官网地址');
+insert into sys_menu values('5', '流程管理', '0', '4', 'flowable', NULL, NULL, 1, 0, 'M', '0', '0', NULL, 'skill', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('6', '任务管理', '0', '5', 'task', NULL, NULL, 1, 0, 'M', '0', '0', NULL, 'job', 'admin', sysdate(), 'admin', null, '');
+
 -- 二级菜单
 insert into sys_menu values('100',  '用户管理', '1',   '1', 'user',       'system/user/index',        '', 1, 0, 'C', '0', '0', 'system:user:list',        'user',          'admin', sysdate(), '', null, '用户管理菜单');
 insert into sys_menu values('101',  '角色管理', '1',   '2', 'role',       'system/role/index',        '', 1, 0, 'C', '0', '0', 'system:role:list',        'peoples',       'admin', sysdate(), '', null, '角色管理菜单');
@@ -183,6 +186,12 @@ insert into sys_menu values('117',  'Admin监控', '2',  '5', 'Admin',      'mon
 insert into sys_menu values('118',  '文件管理', '1', '10', 'oss', 'system/oss/index', '', 1, 0, 'C', '0', '0', 'system:oss:list', 'upload', 'admin', sysdate(), '', null, '文件管理菜单');
 -- xxl-job-admin控制台
 insert into sys_menu values('120',  '任务调度中心', '2',  '5', 'XxlJob',      'monitor/xxljob/index',      '', 1, 0, 'C', '0', '0', 'monitor:xxljob:list',      'job',     'admin', sysdate(), '', null, 'Xxl-Job控制台菜单');
+-- 流程配置
+insert into sys_menu values('121',  '流程定义', '5',   '1', 'definition', 'flowable/definition/index', '', 1, 0, 'C', '0', '0', NULL, 'example', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('122',  '表单配置', '5',   '2', 'form',       'flowable/task/form/index',  '', 1, 0, 'C', '0', '0', NULL, 'form', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('123',  '我的流程', '6',   '1', 'process',    'flowable/task/process/index','', 1, 0, 'C', '0', '0', NULL, 'guide', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('124',  '待办任务', '6',   '2', 'todo',       'flowable/task/todo/index',   '', 1, 0, 'C', '0', '0', NULL, 'cascader', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('125',  '已办任务', '6',   '3', 'finished',   'flowable/task/finished/index', '', 1, 0, 'C', '0', '0', NULL, 'checkbox', 'admin', sysdate(), 'admin', null, '');
 
 -- 三级菜单
 insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          'admin', sysdate(), '', null, '操作日志菜单');
@@ -684,3 +693,32 @@ insert into sys_oss_config values (1, 'minio',  'ruoyi',            'ruoyi123', 
 insert into sys_oss_config values (2, 'qiniu',  'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'http://XXX.XXXX.com',                  'N', 'z0',          '1', '', 'admin', sysdate(), 'admin', sysdate(), NULL);
 insert into sys_oss_config values (3, 'aliyun', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'http://oss-cn-beijing.aliyuncs.com',   'N', '',            '1', '', 'admin', sysdate(), 'admin', sysdate(), NULL);
 insert into sys_oss_config values (4, 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1250000000',  '', 'http://cos.ap-beijing.myqcloud.com',   'N', 'ap-beijing',  '1', '', 'admin', sysdate(), 'admin', sysdate(), NULL);
+
+-- ----------------------------
+-- Table structure for sys_deploy_form
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_deploy_form`;
+CREATE TABLE `sys_deploy_form` (
+    `id`        bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `form_id`   bigint NULL DEFAULT NULL COMMENT '表单主键',
+    `deploy_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '流程实例主键',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程实例关联表单' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Table structure for sys_form
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_form`;
+CREATE TABLE `sys_form` (
+    `form_id`      bigint NOT NULL AUTO_INCREMENT COMMENT '表单主键',
+    `form_name`    varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '表单名称',
+    `form_content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单内容',
+    `create_time`  datetime NULL DEFAULT NULL COMMENT '创建时间',
+    `update_time`  datetime NULL DEFAULT NULL COMMENT '更新时间',
+    `create_by`    bigint NULL DEFAULT NULL COMMENT '创建人员',
+    `update_by`    bigint NULL DEFAULT NULL COMMENT '更新人员',
+    `remark`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`form_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程表单' ROW_FORMAT = DYNAMIC;
+
+SET FOREIGN_KEY_CHECKS = 1;

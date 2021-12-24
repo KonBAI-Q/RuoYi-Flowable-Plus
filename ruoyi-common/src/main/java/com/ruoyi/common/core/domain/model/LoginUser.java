@@ -74,6 +74,11 @@ public class LoginUser implements UserDetails {
     private Set<String> permissions;
 
     /**
+     * 昵称
+     */
+    private String nickName;
+
+    /**
      * 用户名
      */
     private String username;
