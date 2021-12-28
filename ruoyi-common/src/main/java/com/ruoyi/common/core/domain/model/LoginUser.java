@@ -94,9 +94,10 @@ public class LoginUser implements UserDetails {
         this.permissions = permissions;
     }
 
-    public LoginUser(Long userId, Long deptId, String username, String password, Set<String> permissions) {
+    public LoginUser(Long userId, Long deptId, String nickName, String username, String password, Set<String> permissions) {
         this.userId = userId;
         this.deptId = deptId;
+        this.nickName = nickName;
         this.username = username;
         this.password = password;
         this.permissions = permissions;
