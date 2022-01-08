@@ -1,6 +1,7 @@
 package com.ruoyi.flowable.service.impl;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
@@ -15,6 +16,7 @@ import com.ruoyi.flowable.domain.dto.FlowNextDto;
 import com.ruoyi.flowable.domain.dto.FlowTaskDto;
 import com.ruoyi.flowable.domain.dto.FlowViewerDto;
 import com.ruoyi.flowable.domain.vo.FlowTaskVo;
+import com.ruoyi.flowable.domain.vo.FlowViewerVo;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
 import com.ruoyi.flowable.flow.FindNextNodeUtil;
@@ -34,6 +36,7 @@ import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.history.HistoricActivityInstance;
+import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.ProcessDefinition;
@@ -51,11 +54,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author XuanXuan
@@ -95,7 +100,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.NORMAL.getType(), taskVo.getComment());
             Long userId = SecurityUtils.getUserId();
             taskService.setAssignee(taskVo.getTaskId(), userId.toString());
-            taskService.complete(taskVo.getTaskId(), taskVo.getValues());
+            if (ObjectUtil.isNotEmpty(taskVo.getValues())) {
+                taskService.complete(taskVo.getTaskId(), taskVo.getValues());
+            } else {
+                taskService.complete(taskVo.getTaskId());
+            }
         }
         return R.success();
     }
@@ -814,22 +823,19 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      */
     @Override
     public R getFlowViewer(String procInsId) {
-        List<FlowViewerDto> flowViewerList = new ArrayList<>();
-        FlowViewerDto flowViewerDto;
-        // 获得活动的节点
-        List<HistoricActivityInstance> hisActIns = historyService.createHistoricActivityInstanceQuery()
-                .processInstanceId(procInsId)
-                .orderByHistoricActivityInstanceStartTime()
-                .asc().list();
-        for (HistoricActivityInstance activityInstance : hisActIns) {
-            if (!"sequenceFlow".equals(activityInstance.getActivityType())) {
-                flowViewerDto = new FlowViewerDto();
-                flowViewerDto.setKey(activityInstance.getActivityId());
-                flowViewerDto.setCompleted(!Objects.isNull(activityInstance.getEndTime()));
-                flowViewerList.add(flowViewerDto);
-            }
-        }
-        return R.success(flowViewerList);
+        // 构建查询条件
+        HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery()
+            .processInstanceId(procInsId);
+        // 获取流程实例已完成的节点
+        List<String> finishedTaskList = query.finished().list()
+            .stream().distinct().map(HistoricActivityInstance::getActivityId)
+            .collect(Collectors.toList());
+        // 获取流程实例正在待办的节点
+        List<String> unfinishedTaskList = query.unfinished().list()
+            .stream().distinct().map(HistoricActivityInstance::getActivityId)
+            .collect(Collectors.toList());
+        // 构建视图类
+        return R.success(new FlowViewerVo(finishedTaskList, unfinishedTaskList));
     }
 
     /**

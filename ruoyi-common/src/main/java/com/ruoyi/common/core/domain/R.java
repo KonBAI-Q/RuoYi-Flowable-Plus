@@ -41,7 +41,7 @@ public class R<T> {
 	private T data;
 
 	/**
-	 * 初始化一个新创建的 AjaxResult 对象
+	 * 初始化一个新创建的 R 对象
 	 *
 	 * @param code 状态码
 	 * @param msg  返回内容

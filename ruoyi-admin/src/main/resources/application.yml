@@ -11,7 +11,7 @@ ruoyi:
   # 获取ip地址开关
   addressEnabled: true
   # 缓存懒加载
-  cacheLazy: true
+  cacheLazy: false
 
 captcha:
   # 页面 <参数设置> 可开启关闭 验证码校验
@@ -120,11 +120,11 @@ security:
     - /*/api-docs
     # druid 监控配置
     - /druid/**
+  # 用户放行
+  permit-all:
     # actuator 监控配置
     - /actuator
     - /actuator/**
-  # 用户放行
-  permit-all:
 
 # 重复提交
 repeat-submit:

@@ -1,5 +1,6 @@
 package com.ruoyi.flowable.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -21,6 +22,8 @@ import org.flowable.image.impl.DefaultProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -153,6 +156,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public R startProcessInstanceById(String procDefId, Map<String, Object> variables) {
         try {
             ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(procDefId)
@@ -163,14 +167,19 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
 //           variables.put("skip", true);
 //           variables.put(ProcessConstants.FLOWABLE_SKIP_EXPRESSION_ENABLED, true);
             // 设置流程发起人Id到流程中
-            identityService.setAuthenticatedUserId(SecurityUtils.getUserId().toString());
-            variables.put(ProcessConstants.PROCESS_INITIATOR, "");
+            String UserIdStr = SecurityUtils.getUserId().toString();
+            identityService.setAuthenticatedUserId(UserIdStr);
+            variables.put(ProcessConstants.PROCESS_INITIATOR, UserIdStr);
             ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
             // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题？
             Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
             if (Objects.nonNull(task)) {
+                if (!StrUtil.equalsAny(task.getAssignee(), UserIdStr)) {
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return R.error("数据验证失败，该工作流第一个用户任务的指派人并非当前用户，不能执行该操作！");
+                }
                 taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), SecurityUtils.getNickName() + "发起流程申请");
-//                taskService.setAssignee(task.getId(), sysUser.getUserId().toString());
+                // taskService.setAssignee(task.getId(), UserIdStr);
                 taskService.complete(task.getId(), variables);
             }
             return R.success("流程启动成功");
