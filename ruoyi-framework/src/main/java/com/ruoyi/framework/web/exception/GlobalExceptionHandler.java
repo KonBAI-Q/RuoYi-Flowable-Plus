@@ -1,5 +1,8 @@
 package com.ruoyi.framework.web.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
+import cn.dev33.satoken.exception.NotRoleException;
 import cn.hutool.http.HttpStatus;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.exception.DemoModeException;
@@ -7,7 +10,6 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,11 +33,31 @@ public class GlobalExceptionHandler {
     /**
      * 权限校验异常
      */
-    @ExceptionHandler(AccessDeniedException.class)
-    public R<Void> handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
+    @ExceptionHandler(NotPermissionException.class)
+    public R<Void> handleAccessDeniedException(NotPermissionException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',权限校验失败'{}'", requestURI, e.getMessage());
         return R.error(HttpStatus.HTTP_FORBIDDEN, "没有权限，请联系管理员授权");
+    }
+
+    /**
+     * 角色校验异常
+     */
+    @ExceptionHandler(NotRoleException.class)
+    public R<Void> handleAccessDeniedException(NotRoleException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',角色校验失败'{}'", requestURI, e.getMessage());
+        return R.error(HttpStatus.HTTP_FORBIDDEN, "没有角色，请联系管理员授权");
+    }
+
+    /**
+     * 认证失败
+     */
+    @ExceptionHandler(NotLoginException.class)
+    public R<Void> handleAccessDeniedException(NotLoginException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',认证失败'{}',无法访问系统资源", requestURI, e.getMessage());
+        return R.error(HttpStatus.HTTP_UNAUTHORIZED, StringUtils.format("请求地址'{}',认证失败'{}',无法访问系统资源", requestURI));
     }
 
     /**

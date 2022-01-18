@@ -20,25 +20,25 @@ import lombok.experimental.Accessors;
 @ApiModel("请求响应对象")
 public class R<T> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * 状态码
-	 */
-	@ApiModelProperty("消息状态码")
-	private int code;
+    /**
+     * 状态码
+     */
+    @ApiModelProperty("消息状态码")
+    private int code;
 
-	/**
-	 * 返回内容
-	 */
-	@ApiModelProperty("消息内容")
-	private String msg;
+    /**
+     * 返回内容
+     */
+    @ApiModelProperty("消息内容")
+    private String msg;
 
-	/**
-	 * 数据对象
-	 */
-	@ApiModelProperty("数据对象")
-	private T data;
+    /**
+     * 数据对象
+     */
+    @ApiModelProperty("数据对象")
+    private T data;
 
 	/**
 	 * 初始化一个新创建的 R 对象

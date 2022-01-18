@@ -3,6 +3,7 @@ package com.ruoyi.common.utils;
 import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.entity.SysDictData;
+import com.ruoyi.common.utils.redis.RedisUtils;
 
 import java.util.Collection;
 import java.util.List;

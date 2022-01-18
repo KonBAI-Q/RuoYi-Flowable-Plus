@@ -1,10 +1,9 @@
 import request from '@/utils/request'
-import da from "element-ui/src/locale/lang/da";
 
 // 查询待办任务列表
 export function todoList(query) {
   return request({
-    url: '/flowable/task/todoList',
+    url: '/workflow/task/todoList',
     method: 'get',
     params: query
   })
@@ -13,7 +12,7 @@ export function todoList(query) {
 // 完成任务
 export function complete(data) {
   return request({
-    url: '/flowable/task/complete',
+    url: '/workflow/task/complete',
     method: 'post',
     data: data
   })
@@ -22,7 +21,7 @@ export function complete(data) {
 // 委派任务
 export function delegate(data) {
   return request({
-    url: '/flowable/task/delegate',
+    url: '/workflow/task/delegate',
     method: 'post',
     data: data
   })
@@ -31,7 +30,7 @@ export function delegate(data) {
 // 退回任务
 export function returnTask(data) {
   return request({
-    url: '/flowable/task/return',
+    url: '/workflow/task/return',
     method: 'post',
     data: data
   })
@@ -40,7 +39,7 @@ export function returnTask(data) {
 // 驳回任务
 export function rejectTask(data) {
   return request({
-    url: '/flowable/task/reject',
+    url: '/workflow/task/reject',
     method: 'post',
     data: data
   })
@@ -49,7 +48,7 @@ export function rejectTask(data) {
 // 可退回任务列表
 export function returnList(data) {
   return request({
-    url: '/flowable/task/returnList',
+    url: '/workflow/task/returnList',
     method: 'post',
     data: data
   })
@@ -58,7 +57,7 @@ export function returnList(data) {
 // 下一节点
 export function getNextFlowNode(data) {
   return request({
-    url: '/flowable/task/nextFlowNode',
+    url: '/workflow/task/nextFlowNode',
     method: 'post',
     data: data
   })
@@ -67,7 +66,7 @@ export function getNextFlowNode(data) {
 // 部署流程实例
 export function deployStart(deployId) {
   return request({
-    url: '/flowable/process/startFlow/' + deployId,
+    url: '/workflow/process/startFlow/' + deployId,
     method: 'get',
   })
 }

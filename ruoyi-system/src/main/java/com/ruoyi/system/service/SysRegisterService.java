@@ -7,8 +7,12 @@ import com.ruoyi.common.core.domain.model.RegisterBody;
 import com.ruoyi.common.core.service.LogininforService;
 import com.ruoyi.common.exception.user.CaptchaException;
 import com.ruoyi.common.exception.user.CaptchaExpireException;
-import com.ruoyi.common.utils.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ruoyi.common.utils.MessageUtils;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.redis.RedisUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,17 +20,13 @@ import org.springframework.stereotype.Service;
  *
  * @author Lion Li
  */
+@RequiredArgsConstructor
 @Service
 public class SysRegisterService {
 
-    @Autowired
-    private ISysUserService userService;
-
-    @Autowired
-    private ISysConfigService configService;
-
-    @Autowired
-    private LogininforService asyncService;
+    private final ISysUserService userService;
+    private final ISysConfigService configService;
+    private final LogininforService asyncService;
 
     /**
      * 注册

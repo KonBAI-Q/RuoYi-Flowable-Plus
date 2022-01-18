@@ -27,7 +27,7 @@
         from sys_form
     </sql>
 
-    <select id="selectSysFormPage" parameterType="SysForm" resultMap="SysFormResult">
+    <select id="selectSysFormPage" resultMap="SysFormResult">
         <include refid="selectSysFormVo"/>
         <where>
             <if test="from.formName != null and from.formName != ''">
@@ -39,7 +39,7 @@
         </where>
     </select>
 
-    <select id="selectSysFormList" parameterType="SysForm" resultMap="SysFormResult">
+    <select id="selectSysFormList" resultMap="SysFormResult">
         <include refid="selectSysFormVo"/>
         <where>
             <if test="formName != null  and formName != ''">and form_name like concat('%', #{formName}, '%')</if>
@@ -52,7 +52,7 @@
         where form_id = #{formId}
     </select>
 
-    <insert id="insertSysForm" parameterType="SysForm" useGeneratedKeys="true" keyProperty="formId">
+    <insert id="insertSysForm" useGeneratedKeys="true" keyProperty="formId">
         insert into sys_form
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="formName != null">form_name,</if>
@@ -74,7 +74,7 @@
         </trim>
     </insert>
 
-    <update id="updateSysForm" parameterType="SysForm">
+    <update id="updateSysForm">
         update sys_form
         <trim prefix="SET" suffixOverrides=",">
             <if test="formName != null">form_name = #{formName},</if>

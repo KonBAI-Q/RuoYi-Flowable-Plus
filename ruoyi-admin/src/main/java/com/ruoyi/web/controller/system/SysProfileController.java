@@ -5,11 +5,12 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.core.service.TokenService;
+import com.ruoyi.common.core.service.UserService;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.LoginUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.SysOss;
 import com.ruoyi.system.service.ISysOssService;
 import com.ruoyi.system.service.ISysUserService;
@@ -40,7 +41,6 @@ import java.util.Map;
 public class SysProfileController extends BaseController {
 
     private final ISysUserService userService;
-    private final TokenService tokenService;
     private final ISysOssService iSysOssService;
 
     /**
@@ -49,12 +49,11 @@ public class SysProfileController extends BaseController {
     @ApiOperation("个人信息")
     @GetMapping
     public R<Map<String, Object>> profile() {
-        LoginUser loginUser = getLoginUser();
-        SysUser user = userService.selectUserById(loginUser.getUserId());
+        SysUser user = userService.selectUserById(getUserId());
         Map<String, Object> ajax = new HashMap<>();
         ajax.put("user", user);
-        ajax.put("roleGroup", userService.selectUserRoleGroup(loginUser.getUsername()));
-        ajax.put("postGroup", userService.selectUserPostGroup(loginUser.getUsername()));
+        ajax.put("roleGroup", userService.selectUserRoleGroup(user.getUserName()));
+        ajax.put("postGroup", userService.selectUserPostGroup(user.getUserName()));
         return R.success(ajax);
     }
 
@@ -73,9 +72,7 @@ public class SysProfileController extends BaseController {
                 && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user))) {
             return R.error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
-        LoginUser loginUser = getLoginUser();
-        SysUser sysUser = userService.selectUserById(loginUser.getUserId());
-        user.setUserId(sysUser.getUserId());
+        user.setUserId(getUserId());
         user.setUserName(null);
         user.setPassword(null);
         if (userService.updateUserProfile(user) > 0) {
@@ -95,7 +92,7 @@ public class SysProfileController extends BaseController {
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
     public R<Void> updatePwd(String oldPassword, String newPassword) {
-        SysUser user = userService.selectUserById(SecurityUtils.getUserId());
+        SysUser user = SpringUtils.getBean(UserService.class).selectUserById(LoginUtils.getUserId());
         String userName = user.getUserName();
         String password = user.getPassword();
         if (!SecurityUtils.matchesPassword(oldPassword, password)) {
@@ -120,12 +117,11 @@ public class SysProfileController extends BaseController {
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping("/avatar")
     public R<Map<String, Object>> avatar(@RequestPart("avatarfile") MultipartFile file) {
-        Map<String, Object> ajax = new HashMap<>();
+        Map<String,Object> ajax = new HashMap<>();
         if (!file.isEmpty()) {
-            LoginUser loginUser = getLoginUser();
             SysOss oss = iSysOssService.upload(file);
             String avatar = oss.getUrl();
-            if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {
+            if (userService.updateUserAvatar(getUsername(), avatar)) {
                 ajax.put("imgUrl", avatar);
                 return R.success(ajax);
             }

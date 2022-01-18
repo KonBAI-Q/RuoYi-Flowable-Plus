@@ -277,6 +277,11 @@
           "type": "String"
         },
         {
+          "name": "processCategory",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
           "name": "versionTag",
           "isAttr": true,
           "type": "String"

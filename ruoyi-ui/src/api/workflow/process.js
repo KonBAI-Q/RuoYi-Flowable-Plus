@@ -1,10 +1,9 @@
 import request from '@/utils/request'
-import da from "element-ui/src/locale/lang/da";
 
 // 我的发起的流程
 export function myProcessList(query) {
   return request({
-    url: '/flowable/task/myProcess',
+    url: '/workflow/task/myProcess',
     method: 'get',
     params: query
   })
@@ -13,7 +12,7 @@ export function myProcessList(query) {
 // 完成任务
 export function complete(data) {
   return request({
-    url: '/flowable/task/complete',
+    url: '/workflow/task/complete',
     method: 'post',
     data: data
   })
@@ -22,7 +21,7 @@ export function complete(data) {
 // 取消申请
 export function stopProcess(data) {
   return request({
-    url: '/flowable/task/stopProcess',
+    url: '/workflow/task/stopProcess',
     method: 'post',
     data: data
   })
@@ -31,7 +30,7 @@ export function stopProcess(data) {
 // 驳回任务
 export function rejectTask(data) {
   return request({
-    url: '/flowable/task/reject',
+    url: '/workflow/task/reject',
     method: 'post',
     data: data
   })
@@ -40,7 +39,7 @@ export function rejectTask(data) {
 // 可退回任务列表
 export function returnList(data) {
   return request({
-    url: '/flowable/task/returnList',
+    url: '/workflow/task/returnList',
     method: 'post',
     data: data
   })
@@ -49,7 +48,7 @@ export function returnList(data) {
 // 部署流程实例
 export function deployStart(deployId) {
   return request({
-    url: '/flowable/process/startFlow/' + deployId,
+    url: '/workflow/process/startFlow/' + deployId,
     method: 'get',
   })
 }

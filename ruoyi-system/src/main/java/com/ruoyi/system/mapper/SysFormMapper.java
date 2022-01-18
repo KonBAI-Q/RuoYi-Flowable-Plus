@@ -1,7 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ruoyi.common.core.mybatisplus.core.BaseMapperPlus;
+import com.ruoyi.common.core.mapper.BaseMapperPlus;
 import com.ruoyi.system.domain.SysForm;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * @author XuanXuan Xuan
  * @date 2021-03-30
  */
-public interface SysFormMapper extends BaseMapperPlus<SysForm> {
+public interface SysFormMapper extends BaseMapperPlus<SysFormMapper, SysForm, SysForm> {
     /**
      * 查询流程表单
      *

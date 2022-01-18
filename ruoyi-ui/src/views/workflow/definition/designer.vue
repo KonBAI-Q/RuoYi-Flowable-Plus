@@ -63,7 +63,7 @@ export default {
       const process = modeler.get('elementRegistry').find(el => el.type === 'bpmn:Process');
       saveXml({
         name: process.businessObject.name,
-        category: this.formFlowEntryData.categoryId,
+        category: process.businessObject.processCategory,
         xml: this.formFlowEntryData.bpmnXml
       }).then(res => {
         this.$message(res.msg)

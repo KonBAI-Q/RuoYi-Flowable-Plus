@@ -9,7 +9,7 @@
     <version>3.5.0</version>
 
     <name>RuoYi-Flowable-Plus</name>
-    <url>https://gitee.com/JavaLionLi/RuoYi-Vue-Plus</url>
+    <url>https://gitee.com/KonBAI-Q/ruoyi-flowable-plus</url>
     <description>RuoYi-Flowable-Plus后台管理系统</description>
 
     <properties>
@@ -26,11 +26,12 @@
         <easyexcel.version>2.2.11</easyexcel.version>
         <cglib.version>3.3.0</cglib.version>
         <velocity.version>2.3</velocity.version>
-        <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
+        <satoken.version>1.28.0</satoken.version>
+        <mybatis-plus.version>3.5.0</mybatis-plus.version>
         <p6spy.version>3.9.1</p6spy.version>
         <hutool.version>5.7.18</hutool.version>
         <okhttp.version>4.9.2</okhttp.version>
-        <spring-boot-admin.version>2.5.5</spring-boot-admin.version>
+        <spring-boot-admin.version>2.6.0</spring-boot-admin.version>
         <redisson.version>3.16.7</redisson.version>
         <lock4j.version>2.2.1</lock4j.version>
         <dynamic-ds.version>3.5.0</dynamic-ds.version>
@@ -64,6 +65,15 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- hutool 的依赖配置-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-bom</artifactId>
+                <version>${hutool.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -129,6 +139,19 @@
                 <version>${velocity.version}</version>
             </dependency>
 
+            <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-spring-boot-starter</artifactId>
+                <version>${satoken.version}</version>
+            </dependency>
+            <!-- Sa-Token 整合 jwt -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-jwt</artifactId>
+                <version>${satoken.version}</version>
+            </dependency>
+
             <!-- jdk11 缺失依赖 jaxb-->
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
@@ -158,36 +181,6 @@
                 <groupId>p6spy</groupId>
                 <artifactId>p6spy</artifactId>
                 <version>${p6spy.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-core</artifactId>
-                <version>${hutool.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-http</artifactId>
-                <version>${hutool.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-captcha</artifactId>
-                <version>${hutool.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-extra</artifactId>
-                <version>${hutool.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-jwt</artifactId>
-                <version>${hutool.version}</version>
             </dependency>
 
             <dependency>
@@ -319,15 +312,15 @@
 
     <modules>
         <module>ruoyi-admin</module>
-        <module>ruoyi-framework</module>
-        <module>ruoyi-system</module>
-        <module>ruoyi-job</module>
-        <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
         <module>ruoyi-demo</module>
         <module>ruoyi-extend</module>
-        <module>ruoyi-oss</module>
         <module>ruoyi-flowable</module>
+        <module>ruoyi-framework</module>
+        <module>ruoyi-generator</module>
+        <module>ruoyi-job</module>
+        <module>ruoyi-oss</module>
+        <module>ruoyi-system</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -346,8 +339,17 @@
         </plugins>
         <resources>
             <resource>
-                <!--打包该目录下的 application.yml -->
                 <directory>src/main/resources</directory>
+                <!-- 关闭过滤 -->
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!-- 引入所有 匹配文件进行过滤 -->
+                <includes>
+                    <include>application*</include>
+                    <include>bootstrap*</include>
+                </includes>
                 <!-- 启用过滤 即该资源中的变量将会被过滤器中的值替换 -->
                 <filtering>true</filtering>
             </resource>

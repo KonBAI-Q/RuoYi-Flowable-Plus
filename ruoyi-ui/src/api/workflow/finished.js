@@ -1,10 +1,9 @@
 import request from '@/utils/request'
-import da from "element-ui/src/locale/lang/da";
 
 // 查询已办任务列表
 export function finishedList(query) {
   return request({
-    url: '/flowable/task/finishedList',
+    url: '/workflow/task/finishedList',
     method: 'get',
     params: query
   })
@@ -13,7 +12,7 @@ export function finishedList(query) {
 // 任务流转记录
 export function flowRecord(query) {
   return request({
-    url: '/flowable/task/flowRecord',
+    url: '/workflow/task/flowRecord',
     method: 'get',
     params: query
   })
@@ -22,7 +21,7 @@ export function flowRecord(query) {
 // 撤回任务
 export function revokeProcess(data) {
   return request({
-    url: '/flowable/task/revokeProcess',
+    url: '/workflow/task/revokeProcess',
     method: 'post',
     data: data
   })
@@ -31,7 +30,7 @@ export function revokeProcess(data) {
 // 部署流程实例
 export function deployStart(deployId) {
   return request({
-    url: '/flowable/process/startFlow/' + deployId,
+    url: '/workflow/process/startFlow/' + deployId,
     method: 'get',
   })
 }

@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      title: 'RuoYi-Vue-Plus',
+      title: 'RuoYi-Flowable-Plus',
       logo: logoImg
     }
   }
