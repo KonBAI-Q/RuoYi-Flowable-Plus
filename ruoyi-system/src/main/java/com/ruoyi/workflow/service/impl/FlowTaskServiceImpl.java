@@ -2,29 +2,29 @@ package com.ruoyi.workflow.service.impl;
 
 
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.LoginUtils;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.enums.FlowComment;
+import com.ruoyi.flowable.factory.FlowServiceFactory;
+import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
+import com.ruoyi.flowable.flow.FindNextNodeUtil;
+import com.ruoyi.flowable.flow.FlowableUtils;
+import com.ruoyi.system.domain.SysForm;
+import com.ruoyi.system.service.ISysRoleService;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.dto.FlowCommentDto;
 import com.ruoyi.workflow.domain.dto.FlowNextDto;
 import com.ruoyi.workflow.domain.dto.FlowTaskDto;
 import com.ruoyi.workflow.domain.vo.FlowTaskVo;
 import com.ruoyi.workflow.domain.vo.FlowViewerVo;
-import com.ruoyi.flowable.factory.FlowServiceFactory;
-import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
-import com.ruoyi.flowable.flow.FindNextNodeUtil;
-import com.ruoyi.flowable.flow.FlowableUtils;
 import com.ruoyi.workflow.service.IFlowTaskService;
 import com.ruoyi.workflow.service.ISysDeployFormService;
-import com.ruoyi.system.domain.SysForm;
-import com.ruoyi.system.service.ISysRoleService;
-import com.ruoyi.system.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -682,7 +682,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      */
     @Override
     public R flowRecord(String procInsId, String deployId) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (StringUtils.isNotBlank(procInsId)) {
             List<HistoricActivityInstance> list = historyService
                     .createHistoricActivityInstanceQuery()
@@ -748,7 +748,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             if (Objects.isNull(sysForm)) {
                 return R.error("请先配置流程表单");
             }
-            map.put("formData", JSONObject.parseObject(sysForm.getFormContent()));
+            map.put("formData", JsonUtils.parseObject(sysForm.getFormContent(), Map.class));
         }
         return R.success(map);
     }
