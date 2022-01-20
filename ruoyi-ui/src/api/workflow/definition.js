@@ -9,6 +9,16 @@ export function listDefinition(query) {
   })
 }
 
+// 查询指定流程发布的版本列表
+export function publishList(query) {
+  return request({
+    url: '/workflow/definition/publishList',
+    method: 'get',
+    params: query
+  })
+}
+
+
 // 部署流程实例
 export function definitionStart(procDefId,data) {
   return request({
@@ -54,9 +64,9 @@ export function roleList(query) {
 }
 
 // 读取xml文件
-export function readXml(deployId) {
+export function readXml(definitionId) {
   return request({
-    url: '/workflow/definition/readXml/' + deployId,
+    url: '/workflow/definition/readXml/' + definitionId,
     method: 'get'
   })
 }
@@ -81,24 +91,6 @@ export function saveXml(data) {
   return request({
     url: '/workflow/definition/save',
     method: 'post',
-    data: data
-  })
-}
-
-// 新增流程定义
-export function addDeployment(data) {
-  return request({
-    url: '/system/deployment',
-    method: 'post',
-    data: data
-  })
-}
-
-// 修改流程定义
-export function updateDeployment(data) {
-  return request({
-    url: '/system/deployment',
-    method: 'put',
     data: data
   })
 }

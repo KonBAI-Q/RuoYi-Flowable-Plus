@@ -67,18 +67,17 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" fit :data="definitionList" border   @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" fit :data="definitionList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="流程编号" align="center" prop="deploymentId" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程标识" align="center" prop="key" :show-overflow-tooltip="true" />
-      <el-table-column label="流程分类" align="center" prop="category" />
+      <el-table-column label="流程标识" align="center" prop="processKey" :show-overflow-tooltip="true" />
       <el-table-column label="流程名称" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <el-button type="text" @click="handleReadImage(scope.row)">
-            <span>{{ scope.row.name }}</span>
+          <el-button type="text" @click="handleProcessView(scope.row)">
+            <span>{{ scope.row.processName }}</span>
           </el-button>
         </template>
       </el-table-column>
+      <el-table-column label="流程分类" align="center" prop="categoryCode" />
       <el-table-column label="业务表单" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button v-if="scope.row.formId" type="text" @click="handleForm(scope.row.formId)">
@@ -94,33 +93,44 @@
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
-          <el-tag type="success" v-if="scope.row.suspensionState === 1">激活</el-tag>
-          <el-tag type="warning" v-if="scope.row.suspensionState === 2">挂起</el-tag>
+          <el-tag type="success" v-if="!scope.row.suspended">激活</el-tag>
+          <el-tag type="warning" v-if="scope.row.suspended">挂起</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="部署时间" align="center" prop="deploymentTime" width="180"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-edit"
+            @click="handleLoadXml(scope.row)"
+          >编辑</el-button>
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-delete"
+            v-hasPermi="['system:deployment:remove']"
+            @click="handleDelete(scope.row)"
+          >删除</el-button>
           <el-dropdown>
             <span class="el-dropdown-link">
-              更多操作<i class="el-icon-arrow-down el-icon--right"></i>
+              <i class="el-icon-d-arrow-right el-icon--right"></i>更多
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item icon="el-icon-edit-outline" @click.native="handleLoadXml(scope.row)">
-                编辑
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-connection" @click.native="handleAddForm(scope.row)" v-if="scope.row.formId == null">
-                配置表单
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-video-pause" @click.native="handleUpdateSuspensionState(scope.row)" v-if="scope.row.suspensionState === 1">
-                挂起
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-video-play" @click.native="handleUpdateSuspensionState(scope.row)" v-if="scope.row.suspensionState === 2">
-                激活
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['system:deployment:remove']">
-                删除
-              </el-dropdown-item>
+              <el-dropdown-item
+                icon="el-icon-view"
+                @click.native="handleProcessView(scope.row)"
+              >流程图</el-dropdown-item>
+              <el-dropdown-item
+                icon="el-icon-connection"
+                @click.native="handleAddForm(scope.row)"
+                v-if="scope.row.formId == null"
+              >配置表单</el-dropdown-item>
+              <el-dropdown-item
+                icon="el-icon-price-tag"
+                @click.native="handlePublish(scope.row)"
+              >版本管理</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -128,26 +138,12 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改流程定义对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="看看" prop="name">
-          <el-input v-model="form.name" placeholder="请输入看看" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-
 
     <!-- bpmn20.xml导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
@@ -181,18 +177,76 @@
     </el-dialog>
 
     <!-- 流程图 -->
-    <el-dialog :title="processViewerData.title" :visible.sync="processViewerData.open" width="70%" append-to-body>
-       <process-viewer :xml="xmlData" :style="{height: '400px'}" />
+    <el-dialog :title="processView.title" :visible.sync="processView.open" width="70%" append-to-body>
+       <process-viewer :xml="processView.xmlData" :style="{height: '400px'}" />
     </el-dialog>
 
-    <!--表单配置详情-->
+    <!-- 版本管理 -->
+    <el-dialog title="版本管理" :visible.sync="publish.open" width="50%" append-to-body>
+      <el-table v-loading="publish.loading" :data="publish.dataList" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="流程标识" align="center" prop="processKey" :show-overflow-tooltip="true" />
+        <el-table-column label="流程名称" align="center" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <el-button type="text" @click="handleProcessView(scope.row)">
+              <span>{{ scope.row.processName }}</span>
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="流程版本" align="center">
+          <template slot-scope="scope">
+            <el-tag size="medium" >v{{ scope.row.version }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" align="center">
+          <template slot-scope="scope">
+            <el-tag type="success" v-if="!scope.row.suspended">激活</el-tag>
+            <el-tag type="warning" v-if="scope.row.suspended">挂起</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              icon="el-icon-video-pause"
+              v-if="!scope.row.suspended"
+              @click.native="handleUpdateSuspended(scope.row)"
+            >挂起</el-button>
+            <el-button
+              type="text"
+              size="mini"
+              icon="el-icon-video-play"
+              v-if="scope.row.suspended"
+              @click.native="handleUpdateSuspended(scope.row)"
+            >激活</el-button>
+            <el-button
+              type="text"
+              size="mini"
+              icon="el-icon-delete"
+              v-hasPermi="['system:deployment:remove']"
+              @click="handleDelete(scope.row)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="publishTotal > 0"
+        :total="publishTotal"
+        :page.sync="publishQueryParams.pageNum"
+        :limit.sync="publishQueryParams.pageSize"
+        @pagination="getPublishList"
+      />
+    </el-dialog>
+
+    <!-- 表单配置详情 -->
     <el-dialog :title="formTitle" :visible.sync="formConfOpen" width="50%" append-to-body>
       <div class="test-form">
         <parser :key="new Date().getTime()"  :form-conf="formConf" />
       </div>
     </el-dialog>
 
-    <!--挂载表单-->
+    <!-- 挂载表单 -->
     <el-dialog :title="formDeployTitle" :visible.sync="formDeployOpen" width="60%" append-to-body>
       <el-row :gutter="24">
         <el-col :span="10" :xs="24">
@@ -233,7 +287,7 @@
 </template>
 
 <script>
-import { listDefinition, updateState, delDeployment, addDeployment, updateDeployment, exportDeployment, definitionStart, readXml} from "@/api/workflow/definition";
+import { listDefinition, publishList, updateState, delDeployment, exportDeployment, definitionStart, readXml} from "@/api/workflow/definition";
 import { getToken } from "@/utils/auth";
 import { getForm, addDeployForm ,listForm } from "@/api/workflow/form";
 import Parser from '@/utils/generator/parser'
@@ -261,10 +315,17 @@ export default {
       total: 0,
       // 流程定义表格数据
       definitionList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
+      publish: {
+        open: false,
+        loading: false,
+        dataList: []
+      },
+      publishTotal: 0,
+      publishQueryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        processKey: ""
+      },
       formConfOpen: false,
       formTitle: "",
       formDeployOpen: false,
@@ -272,9 +333,10 @@ export default {
       formList: [],
       formTotal:0,
       formConf: {}, // 默认表单数据
-      processViewerData: {
+      processView: {
         title: '',
         open: false,
+        xmlData:"",
       },
       // bpmn.xml 导入
       upload: {
@@ -315,8 +377,6 @@ export default {
         deployId: null
       },
       currentRow: null,
-      // xml
-      xmlData:"",
       // 表单参数
       form: {},
       // 表单校验
@@ -332,15 +392,18 @@ export default {
     getList() {
       this.loading = true;
       listDefinition(this.queryParams).then(response => {
-        this.definitionList = response.data.records;
-        this.total = response.data.total;
+        this.definitionList = response.rows;
+        this.total = response.total;
         this.loading = false;
       });
     },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
+    getPublishList() {
+      this.publish.loading = true;
+      publishList(this.publishQueryParams).then(response => {
+        this.publish.dataList = response.rows;
+        this.publishTotal = response.total;
+        this.publish.loading = false;
+      })
     },
     // 表单重置
     reset() {
@@ -371,31 +434,20 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加流程定义";
     },
     /** 跳转到流程设计页面 */
     handleLoadXml(row){
       this.$router.push({
         path: '/definition/designer/index',
-        query: { deployId: row.deploymentId }
+        query: { definitionId: row.definitionId }
       })
     },
-    /** 流程图查看 */
-    handleReadImage(row) {
-      let deploymentId = row.deploymentId;
-      this.processViewerData.title = "流程图";
-       // 发送请求，获取xml
-      readXml(deploymentId).then(res => {
-        this.xmlData = res.data;
-        this.processViewerData.open = true;
-      })
+    handlePublish(row) {
+      this.publishQueryParams.processKey = row.processKey;
+      this.publish.open = true;
+      this.getPublishList();
     },
     /** 表单查看 */
     handleForm(formId){
@@ -409,6 +461,16 @@ export default {
     handleDefinitionStart(row){
       definitionStart(row.id).then(res =>{
         this.$modal.msgSuccess(res.msg);
+      })
+    },
+    /** 查看流程图 */
+    handleProcessView(row) {
+      let definitionId = row.definitionId;
+      this.processView.title = "流程图";
+      // 发送请求，获取xml
+      readXml(definitionId).then(res => {
+        this.processView.xmlData = res.data;
+        this.processView.open = true;
       })
     },
     /** 挂载表单弹框 */
@@ -453,18 +515,14 @@ export default {
       }
     },
     /** 挂起/激活流程 */
-    handleUpdateSuspensionState(row){
-      let state = 1;
-      if (row.suspensionState === 1) {
-          state = 2
-      }
+    handleUpdateSuspended(row) {
       const params = {
-        deployId: row.deploymentId,
-        state: state
+        definitionId: row.definitionId,
+        suspended: !row.suspended
       }
       updateState(params).then(res => {
         this.$modal.msgSuccess(res.msg)
-        this.getList();
+        this.getPublishList();
       });
     },
     /** 修改按钮操作 */
@@ -475,26 +533,6 @@ export default {
         this.form = response.data;
         this.open = true;
         this.title = "修改流程定义";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
       });
     },
     /** 删除按钮操作 */

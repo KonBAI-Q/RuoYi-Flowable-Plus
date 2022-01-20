@@ -1,6 +1,11 @@
 <template>
   <div>
-    <process-designer :key="`designer-${loadIndex}`" :flowEntryInfo="formFlowEntryData" @save="onSaveFlowEntry" />
+    <process-designer
+      v-loading="loading"
+      :key="`designer-${loadIndex}`"
+      :flowEntryInfo="formFlowEntryData"
+      @save="onSaveFlowEntry"
+    />
   </div>
 </template>
 
@@ -14,6 +19,7 @@ export default {
   data () {
     return {
       loadIndex: 0,
+      loading: false,
       formFlowEntryData: {
         entryId: undefined,
         processDefinitionName: undefined,
@@ -39,10 +45,10 @@ export default {
     }
   },
   created() {
-    const deployId = this.$route.query && this.$route.query.deployId;
+    const definitionId = this.$route.query && this.$route.query.definitionId;
     //  查询流程xml
-    if (deployId) {
-      this.getModelDetail(deployId);
+    if (definitionId) {
+      this.getModelDetail(definitionId);
     }
     this.getDicts("sys_process_category").then(res => {
       this.categorys = res.data;
@@ -50,11 +56,13 @@ export default {
   },
   methods: {
     /** xml 文件 */
-    getModelDetail(deployId) {
+    getModelDetail(definitionId) {
+      this.loading = true;
       // 发送请求，获取xml
-      readXml(deployId).then(res =>{
+      readXml(definitionId).then(res =>{
         this.formFlowEntryData.bpmnXml = res.data;
-        this.loadIndex = deployId;
+        this.loadIndex = definitionId;
+        this.loading = false;
       })
     },
     onSaveFlowEntry ({ saveData, modeler }) {

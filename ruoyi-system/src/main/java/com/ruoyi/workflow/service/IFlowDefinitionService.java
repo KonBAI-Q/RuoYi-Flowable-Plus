@@ -1,8 +1,8 @@
 package com.ruoyi.workflow.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.workflow.domain.dto.FlowProcDefDto;
+import com.ruoyi.common.core.domain.PageQuery;
+import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.workflow.domain.vo.FlowDefinitionVo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,11 +20,17 @@ public interface IFlowDefinitionService {
     /**
      * 流程定义列表
      *
-     * @param pageNum  当前页码
-     * @param pageSize 每页条数
+     * @param pageQuery 分页参数
      * @return 流程定义分页列表数据
      */
-    Page<FlowProcDefDto> list(Integer pageNum, Integer pageSize);
+    TableDataInfo<FlowDefinitionVo> list(PageQuery pageQuery);
+
+    /**
+     *
+     * @param processKey
+     * @return
+     */
+    TableDataInfo<FlowDefinitionVo> publishList(String processKey, PageQuery pageQuery);
 
     /**
      * 导入流程文件
@@ -37,10 +43,10 @@ public interface IFlowDefinitionService {
 
     /**
      * 读取xml
-     * @param deployId
+     * @param definitionId 流程定义ID
      * @return
      */
-    R readXml(String deployId) throws IOException;
+    String readXml(String definitionId) throws IOException;
 
     /**
      * 根据流程定义ID启动流程实例
@@ -50,16 +56,16 @@ public interface IFlowDefinitionService {
      * @return
      */
 
-    R startProcessInstanceById(String procDefId, Map<String, Object> variables);
+    void startProcessInstanceById(String procDefId, Map<String, Object> variables);
 
 
     /**
      * 激活或挂起流程定义
      *
-     * @param state    状态
-     * @param deployId 流程部署ID
+     * @param suspended    状态
+     * @param definitionId 流程定义ID
      */
-    void updateState(Integer state, String deployId);
+    void updateState(Boolean suspended, String definitionId);
 
 
     /**
@@ -72,8 +78,8 @@ public interface IFlowDefinitionService {
 
     /**
      * 读取图片文件
-     * @param deployId
+     * @param definitionId 流程定义ID
      * @return
      */
-    InputStream readImage(String deployId);
+    InputStream readImage(String definitionId);
 }
