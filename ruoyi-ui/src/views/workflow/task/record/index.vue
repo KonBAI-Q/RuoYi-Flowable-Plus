@@ -227,7 +227,7 @@ export default {
         instanceId: "", // 流程实例编号
         deployId: "",  // 流程定义编号
         taskId: "" ,// 流程任务编号
-        procDefId: "",  // 流程编号
+        definitionId: "",  // 流程编号
         vars: "",
         targetKey:""
       },
@@ -251,14 +251,13 @@ export default {
   },
   created() {
     this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
+    this.taskForm.definitionId = this.$route.query && this.$route.query.definitionId;
     this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
     this.taskForm.instanceId = this.$route.query && this.$route.query.procInsId;
-    // 初始化表单
-    this.taskForm.procDefId  = this.$route.query && this.$route.query.procDefId;
     // 回显流程记录
     this.getFlowViewer(this.taskForm.procInsId);
-    this.getModelDetail(this.taskForm.deployId);
+    this.getModelDetail(this.taskForm.definitionId);
     // 流程任务重获取变量表单
     if (this.taskForm.taskId){
       this.processVariables( this.taskForm.taskId)
@@ -307,11 +306,11 @@ export default {
       this.getList();
     },
     /** xml 文件 */
-    getModelDetail(deployId) {
+    getModelDetail(definitionId) {
       // 发送请求，获取xml
-      readXml(deployId).then(res => {
+      readXml(definitionId).then(res => {
         this.xmlData = res.data
-        this.loadIndex = deployId
+        this.loadIndex = definitionId
       })
     },
     getFlowViewer(procInsId) {
@@ -491,10 +490,10 @@ export default {
         const formData = data.formData;
         formData.disabled = true;
         formData.formBtns = false;
-        if (this.taskForm.procDefId) {
+        if (this.taskForm.definitionId) {
           variables.variables = formData;
            // 启动流程并将表单数据加入流程变量
-          definitionStart(this.taskForm.procDefId, JSON.stringify(variables)).then(res => {
+          definitionStart(this.taskForm.definitionId, JSON.stringify(variables)).then(res => {
             this.$modal.msgSuccess(res.msg);
             this.goBack();
           })

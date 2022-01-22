@@ -141,14 +141,17 @@ export default {
       });
     },
     // 跳转到处理页面
-    handleProcess(row){
-      this.$router.push({ path: '/task/record/index',
+    handleProcess(row) {
+      this.$router.push({
+        path: '/task/record/index',
         query: {
+          definitionId: row.procDefId,
           procInsId: row.procInsId,
           deployId: row.deployId,
           taskId: row.taskId,
           finished: true
-        }})
+        }
+      })
     },
     // 取消按钮
     cancel() {
