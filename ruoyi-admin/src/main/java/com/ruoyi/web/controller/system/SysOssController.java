@@ -9,7 +9,7 @@ import cn.hutool.http.HttpUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.validate.QueryGroup;
@@ -76,7 +76,7 @@ public class SysOssController extends BaseController {
     @Log(title = "OSS对象存储", businessType = BusinessType.INSERT)
     @RepeatSubmit
     @PostMapping("/upload")
-    public R<Map<String, String>> upload(@RequestPart("file") MultipartFile file) {
+    public AjaxResult<Map<String, String>> upload(@RequestPart("file") MultipartFile file) {
         if (ObjectUtil.isNull(file)) {
             throw new ServiceException("上传文件不能为空");
         }
@@ -84,7 +84,7 @@ public class SysOssController extends BaseController {
         Map<String, String> map = new HashMap<>(2);
         map.put("url", oss.getUrl());
         map.put("fileName", oss.getFileName());
-        return R.success(map);
+        return AjaxResult.success(map);
     }
 
     @ApiOperation("下载OSS对象存储")
@@ -118,7 +118,7 @@ public class SysOssController extends BaseController {
     @SaCheckPermission("system:oss:remove")
     @Log(title = "OSS对象存储", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ossIds}")
-    public R<Void> remove(@ApiParam("OSS对象ID串")
+    public AjaxResult<Void> remove(@ApiParam("OSS对象ID串")
                                    @NotEmpty(message = "主键不能为空")
                                    @PathVariable Long[] ossIds) {
         return toAjax(iSysOssService.deleteWithValidByIds(Arrays.asList(ossIds), true) ? 1 : 0);
@@ -131,7 +131,7 @@ public class SysOssController extends BaseController {
     @SaCheckPermission("system:oss:edit")
     @Log(title = "OSS对象存储", businessType = BusinessType.UPDATE)
     @PutMapping("/changePreviewListResource")
-    public R<Void> changePreviewListResource(@RequestBody String body) {
+    public AjaxResult<Void> changePreviewListResource(@RequestBody String body) {
         Map<String, Boolean> map = JsonUtils.parseMap(body);
         SysConfig config = iSysConfigService.getOne(new SysConfig().setConfigKey(OssConstant.PEREVIEW_LIST_RESOURCE_KEY));
         config.setConfigValue(map.get("previewListResource").toString());

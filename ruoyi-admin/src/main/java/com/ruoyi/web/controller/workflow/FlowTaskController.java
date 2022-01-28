@@ -1,6 +1,6 @@
 package com.ruoyi.web.controller.workflow;
 
-import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.workflow.domain.dto.FlowTaskDto;
 import com.ruoyi.workflow.domain.vo.FlowTaskVo;
 import com.ruoyi.workflow.service.IFlowTaskService;
@@ -35,33 +35,33 @@ public class FlowTaskController {
 
     @ApiOperation(value = "我发起的流程", response = FlowTaskDto.class)
     @GetMapping(value = "/myProcess")
-    public R myProcess(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
-                             @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
+    public AjaxResult myProcess(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
+                                @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
         return flowTaskService.myProcess(pageNum, pageSize);
     }
 
     @ApiOperation(value = "取消申请", response = FlowTaskDto.class)
     @PostMapping(value = "/stopProcess")
-    public R stopProcess(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult stopProcess(@RequestBody FlowTaskVo flowTaskVo) {
         return flowTaskService.stopProcess(flowTaskVo);
     }
 
     @ApiOperation(value = "撤回流程", response = FlowTaskDto.class)
     @PostMapping(value = "/revokeProcess")
-    public R revokeProcess(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult revokeProcess(@RequestBody FlowTaskVo flowTaskVo) {
         return flowTaskService.revokeProcess(flowTaskVo);
     }
 
     @ApiOperation(value = "获取待办列表", response = FlowTaskDto.class)
     @GetMapping(value = "/todoList")
-    public R todoList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
+    public AjaxResult todoList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
                                @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
         return flowTaskService.todoList(pageNum, pageSize);
     }
 
     @ApiOperation(value = "获取已办任务", response = FlowTaskDto.class)
     @GetMapping(value = "/finishedList")
-    public R finishedList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
+    public AjaxResult finishedList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
                                    @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
         return flowTaskService.finishedList(pageNum, pageSize);
     }
@@ -69,81 +69,81 @@ public class FlowTaskController {
 
     @ApiOperation(value = "流程历史流转记录", response = FlowTaskDto.class)
     @GetMapping(value = "/flowRecord")
-    public R flowRecord(String procInsId,String deployId) {
+    public AjaxResult flowRecord(String procInsId, String deployId) {
         return flowTaskService.flowRecord(procInsId,deployId);
     }
 
     @ApiOperation(value = "获取流程变量", response = FlowTaskDto.class)
     @GetMapping(value = "/processVariables/{taskId}")
-    public R processVariables(@ApiParam(value = "流程任务Id")  @PathVariable(value = "taskId") String taskId) {
+    public AjaxResult processVariables(@ApiParam(value = "流程任务Id")  @PathVariable(value = "taskId") String taskId) {
         return flowTaskService.processVariables(taskId);
     }
 
     @ApiOperation(value = "审批任务")
     @PostMapping(value = "/complete")
-    public R complete(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult complete(@RequestBody FlowTaskVo flowTaskVo) {
        return flowTaskService.complete(flowTaskVo);
     }
 
 
     @ApiOperation(value = "驳回任务")
     @PostMapping(value = "/reject")
-    public R taskReject(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult taskReject(@RequestBody FlowTaskVo flowTaskVo) {
         flowTaskService.taskReject(flowTaskVo);
-        return R.success();
+        return AjaxResult.success();
     }
 
     @ApiOperation(value = "退回任务")
     @PostMapping(value = "/return")
-    public R taskReturn(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult taskReturn(@RequestBody FlowTaskVo flowTaskVo) {
         flowTaskService.taskReturn(flowTaskVo);
-        return R.success();
+        return AjaxResult.success();
     }
 
     @ApiOperation(value = "获取所有可回退的节点")
     @PostMapping(value = "/returnList")
-    public R findReturnTaskList(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult findReturnTaskList(@RequestBody FlowTaskVo flowTaskVo) {
         return flowTaskService.findReturnTaskList(flowTaskVo);
     }
 
     @ApiOperation(value = "删除任务")
     @DeleteMapping(value = "/delete")
-    public R delete(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult delete(@RequestBody FlowTaskVo flowTaskVo) {
         flowTaskService.deleteTask(flowTaskVo);
-        return R.success();
+        return AjaxResult.success();
     }
 
     @ApiOperation(value = "认领/签收任务")
     @PostMapping(value = "/claim")
-    public R claim(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult claim(@RequestBody FlowTaskVo flowTaskVo) {
         flowTaskService.claim(flowTaskVo);
-        return R.success();
+        return AjaxResult.success();
     }
 
     @ApiOperation(value = "取消认领/签收任务")
     @PostMapping(value = "/unClaim")
-    public R unClaim(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult unClaim(@RequestBody FlowTaskVo flowTaskVo) {
         flowTaskService.unClaim(flowTaskVo);
-        return R.success();
+        return AjaxResult.success();
     }
 
     @ApiOperation(value = "委派任务")
     @PostMapping(value = "/delegate")
-    public R delegate(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult delegate(@RequestBody FlowTaskVo flowTaskVo) {
         flowTaskService.delegateTask(flowTaskVo);
-        return R.success();
+        return AjaxResult.success();
     }
 
     @ApiOperation(value = "转办任务")
     @PostMapping(value = "/assign")
-    public R assign(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult assign(@RequestBody FlowTaskVo flowTaskVo) {
         flowTaskService.assignTask(flowTaskVo);
-        return R.success();
+        return AjaxResult.success();
     }
 
     @ApiOperation(value = "获取下一节点")
     @PostMapping(value = "/nextFlowNode")
-    public R getNextFlowNode(@RequestBody FlowTaskVo flowTaskVo) {
+    public AjaxResult getNextFlowNode(@RequestBody FlowTaskVo flowTaskVo) {
         return flowTaskService.getNextFlowNode(flowTaskVo);
     }
 
@@ -185,7 +185,7 @@ public class FlowTaskController {
      * @param procInsId 任务ID
      */
     @RequestMapping("/flowViewer/{procInsId}")
-    public R getFlowViewer(@PathVariable("procInsId") String procInsId) {
+    public AjaxResult getFlowViewer(@PathVariable("procInsId") String procInsId) {
         return flowTaskService.getFlowViewer(procInsId);
     }
 }

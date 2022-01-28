@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
@@ -61,8 +61,8 @@ public class SysConfigController extends BaseController {
     @ApiOperation("根据参数编号获取详细信息")
     @SaCheckPermission("system:config:query")
     @GetMapping(value = "/{configId}")
-    public R<SysConfig> getInfo(@ApiParam("参数ID") @PathVariable Long configId) {
-        return R.success(configService.selectConfigById(configId));
+    public AjaxResult<SysConfig> getInfo(@ApiParam("参数ID") @PathVariable Long configId) {
+        return AjaxResult.success(configService.selectConfigById(configId));
     }
 
     /**
@@ -70,8 +70,8 @@ public class SysConfigController extends BaseController {
      */
     @ApiOperation("根据参数键名查询参数值")
     @GetMapping(value = "/configKey/{configKey}")
-    public R<Void> getConfigKey(@ApiParam("参数Key") @PathVariable String configKey) {
-        return R.success(configService.selectConfigByKey(configKey));
+    public AjaxResult<Void> getConfigKey(@ApiParam("参数Key") @PathVariable String configKey) {
+        return AjaxResult.success(configService.selectConfigByKey(configKey));
     }
 
     /**
@@ -81,9 +81,9 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission("system:config:add")
     @Log(title = "参数管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<Void> add(@Validated @RequestBody SysConfig config) {
+    public AjaxResult<Void> add(@Validated @RequestBody SysConfig config) {
         if (UserConstants.NOT_UNIQUE.equals(configService.checkConfigKeyUnique(config))) {
-            return R.error("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
+            return AjaxResult.error("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
         return toAjax(configService.insertConfig(config));
     }
@@ -95,9 +95,9 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission("system:config:edit")
     @Log(title = "参数管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<Void> edit(@Validated @RequestBody SysConfig config) {
+    public AjaxResult<Void> edit(@Validated @RequestBody SysConfig config) {
         if (UserConstants.NOT_UNIQUE.equals(configService.checkConfigKeyUnique(config))) {
-            return R.error("修改参数'" + config.getConfigName() + "'失败，参数键名已存在");
+            return AjaxResult.error("修改参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
         return toAjax(configService.updateConfig(config));
     }
@@ -109,7 +109,7 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission("system:config:remove")
     @Log(title = "参数管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{configIds}")
-    public R<Void> remove(@ApiParam("参数ID串") @PathVariable Long[] configIds) {
+    public AjaxResult<Void> remove(@ApiParam("参数ID串") @PathVariable Long[] configIds) {
         configService.deleteConfigByIds(configIds);
         return success();
     }
@@ -121,8 +121,8 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission("system:config:remove")
     @Log(title = "参数管理", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
-    public R<Void> refreshCache() {
+    public AjaxResult<Void> refreshCache() {
         configService.resetConfigCache();
-        return R.success();
+        return AjaxResult.success();
     }
 }

@@ -1,6 +1,6 @@
 package com.ruoyi.common.core.controller;
 
-import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.LoginUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -15,29 +15,29 @@ public class BaseController {
     /**
      * 返回成功
      */
-    public R<Void> success() {
-        return R.success();
+    public AjaxResult<Void> success() {
+        return AjaxResult.success();
     }
 
     /**
      * 返回失败消息
      */
-    public R<Void> error() {
-        return R.error();
+    public AjaxResult<Void> error() {
+        return AjaxResult.error();
     }
 
     /**
      * 返回成功消息
      */
-    public R<Void> success(String message) {
-        return R.success(message);
+    public AjaxResult<Void> success(String message) {
+        return AjaxResult.success(message);
     }
 
     /**
      * 返回失败消息
      */
-    public R<Void> error(String message) {
-        return R.error(message);
+    public AjaxResult<Void> error(String message) {
+        return AjaxResult.error(message);
     }
 
     /**
@@ -46,8 +46,8 @@ public class BaseController {
      * @param rows 影响行数
      * @return 操作结果
      */
-    protected R<Void> toAjax(int rows) {
-        return rows > 0 ? R.success() : R.error();
+    protected AjaxResult<Void> toAjax(int rows) {
+        return rows > 0 ? AjaxResult.success() : AjaxResult.error();
     }
 
     /**
@@ -56,7 +56,7 @@ public class BaseController {
      * @param result 结果
      * @return 操作结果
      */
-    protected R<Void> toAjax(boolean result) {
+    protected AjaxResult<Void> toAjax(boolean result) {
         return result ? success() : error();
     }
 

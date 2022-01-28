@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(chain = true)
 @ApiModel("请求响应对象")
-public class R<T> {
+public class AjaxResult<T> {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,7 +46,7 @@ public class R<T> {
 	 * @param code 状态码
 	 * @param msg  返回内容
 	 */
-	public R(int code, String msg) {
+	public AjaxResult(int code, String msg) {
 		this.code = code;
 		this.msg = msg;
 	}
@@ -56,8 +56,8 @@ public class R<T> {
 	 *
 	 * @return 成功消息
 	 */
-	public static R<Void> success() {
-		return R.success("操作成功");
+	public static AjaxResult<Void> success() {
+		return AjaxResult.success("操作成功");
 	}
 
 	/**
@@ -65,8 +65,8 @@ public class R<T> {
 	 *
 	 * @return 成功消息
 	 */
-	public static <T> R<T> success(T data) {
-		return R.success("操作成功", data);
+	public static <T> AjaxResult<T> success(T data) {
+		return AjaxResult.success("操作成功", data);
 	}
 
 	/**
@@ -75,8 +75,8 @@ public class R<T> {
 	 * @param msg 返回内容
 	 * @return 成功消息
 	 */
-	public static R<Void> success(String msg) {
-		return R.success(msg, null);
+	public static AjaxResult<Void> success(String msg) {
+		return AjaxResult.success(msg, null);
 	}
 
 	/**
@@ -86,8 +86,8 @@ public class R<T> {
 	 * @param data 数据对象
 	 * @return 成功消息
 	 */
-	public static <T> R<T> success(String msg, T data) {
-		return new R<>(HttpStatus.HTTP_OK, msg, data);
+	public static <T> AjaxResult<T> success(String msg, T data) {
+		return new AjaxResult<>(HttpStatus.HTTP_OK, msg, data);
 	}
 
 	/**
@@ -95,8 +95,8 @@ public class R<T> {
 	 *
 	 * @return
 	 */
-	public static R<Void> error() {
-		return R.error("操作失败");
+	public static AjaxResult<Void> error() {
+		return AjaxResult.error("操作失败");
 	}
 
 	/**
@@ -105,8 +105,8 @@ public class R<T> {
 	 * @param msg 返回内容
 	 * @return 警告消息
 	 */
-	public static R<Void> error(String msg) {
-		return R.error(msg, null);
+	public static AjaxResult<Void> error(String msg) {
+		return AjaxResult.error(msg, null);
 	}
 
 	/**
@@ -116,8 +116,8 @@ public class R<T> {
 	 * @param data 数据对象
 	 * @return 警告消息
 	 */
-	public static <T> R<T> error(String msg, T data) {
-		return new R<>(HttpStatus.HTTP_INTERNAL_ERROR, msg, data);
+	public static <T> AjaxResult<T> error(String msg, T data) {
+		return new AjaxResult<>(HttpStatus.HTTP_INTERNAL_ERROR, msg, data);
 	}
 
 	/**
@@ -127,8 +127,8 @@ public class R<T> {
 	 * @param msg  返回内容
 	 * @return 警告消息
 	 */
-	public static R<Void> error(int code, String msg) {
-		return new R<>(code, msg, null);
+	public static AjaxResult<Void> error(int code, String msg) {
+		return new AjaxResult<>(code, msg, null);
 	}
 
 }

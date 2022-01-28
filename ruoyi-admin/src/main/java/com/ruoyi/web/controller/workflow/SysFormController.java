@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
-import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -58,8 +58,8 @@ public class SysFormController extends BaseController {
      */
     @SaCheckPermission("flowable:form:query")
     @GetMapping(value = "/{formId}")
-    public R getInfo(@PathVariable("formId") Long formId) {
-        return R.success(SysFormService.selectSysFormById(formId));
+    public AjaxResult getInfo(@PathVariable("formId") Long formId) {
+        return AjaxResult.success(SysFormService.selectSysFormById(formId));
     }
 
     /**
@@ -68,7 +68,7 @@ public class SysFormController extends BaseController {
     @SaCheckPermission("flowable:form:add")
     @Log(title = "流程表单", businessType = BusinessType.INSERT)
     @PostMapping
-    public R add(@RequestBody SysForm sysForm) {
+    public AjaxResult add(@RequestBody SysForm sysForm) {
         return toAjax(SysFormService.insertSysForm(sysForm));
     }
 
@@ -78,7 +78,7 @@ public class SysFormController extends BaseController {
     @SaCheckPermission("flowable:form:edit")
     @Log(title = "流程表单", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R edit(@RequestBody SysForm sysForm) {
+    public AjaxResult edit(@RequestBody SysForm sysForm) {
         return toAjax(SysFormService.updateSysForm(sysForm));
     }
 
@@ -88,7 +88,7 @@ public class SysFormController extends BaseController {
     @SaCheckPermission("flowable:form:remove")
     @Log(title = "流程表单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{formIds}")
-    public R remove(@PathVariable Long[] formIds) {
+    public AjaxResult remove(@PathVariable Long[] formIds) {
         return toAjax(SysFormService.deleteSysFormByIds(formIds));
     }
 
@@ -98,7 +98,7 @@ public class SysFormController extends BaseController {
      */
     @Log(title = "流程表单", businessType = BusinessType.INSERT)
     @PostMapping("/addDeployForm")
-    public R addDeployForm(@RequestBody SysDeployForm sysDeployForm) {
+    public AjaxResult addDeployForm(@RequestBody SysDeployForm sysDeployForm) {
         return toAjax(sysDeployFormService.insertSysDeployForm(sysDeployForm));
     }
 }

@@ -2,7 +2,7 @@ package com.ruoyi.demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.demo.domain.TestDemo;
 import com.ruoyi.demo.mapper.TestDemoMapper;
 import io.swagger.annotations.Api;
@@ -42,7 +42,7 @@ public class TestBatchController extends BaseController {
     @ApiOperation(value = "新增批量方法")
     @PostMapping("/add")
 //    @DS("slave")
-    public R<Void> add() {
+    public AjaxResult<Void> add() {
         List<TestDemo> list = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
             list.add(new TestDemo().setOrderNum(-1L).setTestKey("批量新增").setValue("测试新增"));
@@ -58,7 +58,7 @@ public class TestBatchController extends BaseController {
     @ApiOperation(value = "新增或更新批量方法")
     @PostMapping("/addOrUpdate")
 //    @DS("slave")
-    public R<Void> addOrUpdate() {
+    public AjaxResult<Void> addOrUpdate() {
         List<TestDemo> list = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
             list.add(new TestDemo().setOrderNum(-1L).setTestKey("批量新增").setValue("测试新增"));
@@ -80,7 +80,7 @@ public class TestBatchController extends BaseController {
     @ApiOperation(value = "删除批量方法")
     @DeleteMapping()
 //    @DS("slave")
-    public R<Void> remove() {
+    public AjaxResult<Void> remove() {
         return toAjax(testDemoMapper.delete(new LambdaQueryWrapper<TestDemo>()
             .eq(TestDemo::getOrderNum, -1L)));
     }

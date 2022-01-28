@@ -5,7 +5,7 @@ import cn.hutool.captcha.generator.CodeGenerator;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.IdUtil;
 import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.CaptchaType;
 import com.ruoyi.common.utils.redis.RedisUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -42,12 +42,12 @@ public class CaptchaController {
      */
     @ApiOperation("生成验证码")
     @GetMapping("/captchaImage")
-    public R<Map<String, Object>> getCode() {
+    public AjaxResult<Map<String, Object>> getCode() {
         Map<String, Object> ajax = new HashMap<>();
         boolean captchaOnOff = configService.selectCaptchaOnOff();
         ajax.put("captchaOnOff", captchaOnOff);
         if (!captchaOnOff) {
-            return R.success(ajax);
+            return AjaxResult.success(ajax);
         }
         // 保存验证码信息
         String uuid = IdUtil.simpleUUID();
@@ -64,7 +64,7 @@ public class CaptchaController {
         RedisUtils.setCacheObject(verifyKey, code, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
         ajax.put("uuid", uuid);
         ajax.put("img", captcha.getImageBase64());
-        return R.success(ajax);
+        return AjaxResult.success(ajax);
     }
 
     private String getCodeResult(String capStr) {

@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.entity.SysDictType;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -58,8 +58,8 @@ public class SysDictTypeController extends BaseController {
     @ApiOperation("查询字典类型详细")
     @SaCheckPermission("system:dict:query")
     @GetMapping(value = "/{dictId}")
-    public R<SysDictType> getInfo(@ApiParam("字典ID") @PathVariable Long dictId) {
-        return R.success(dictTypeService.selectDictTypeById(dictId));
+    public AjaxResult<SysDictType> getInfo(@ApiParam("字典ID") @PathVariable Long dictId) {
+        return AjaxResult.success(dictTypeService.selectDictTypeById(dictId));
     }
 
     /**
@@ -69,9 +69,9 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:add")
     @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<Void> add(@Validated @RequestBody SysDictType dict) {
+    public AjaxResult<Void> add(@Validated @RequestBody SysDictType dict) {
         if (UserConstants.NOT_UNIQUE.equals(dictTypeService.checkDictTypeUnique(dict))) {
-            return R.error("新增字典'" + dict.getDictName() + "'失败，字典类型已存在");
+            return AjaxResult.error("新增字典'" + dict.getDictName() + "'失败，字典类型已存在");
         }
         return toAjax(dictTypeService.insertDictType(dict));
     }
@@ -83,9 +83,9 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:edit")
     @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<Void> edit(@Validated @RequestBody SysDictType dict) {
+    public AjaxResult<Void> edit(@Validated @RequestBody SysDictType dict) {
         if (UserConstants.NOT_UNIQUE.equals(dictTypeService.checkDictTypeUnique(dict))) {
-            return R.error("修改字典'" + dict.getDictName() + "'失败，字典类型已存在");
+            return AjaxResult.error("修改字典'" + dict.getDictName() + "'失败，字典类型已存在");
         }
         return toAjax(dictTypeService.updateDictType(dict));
     }
@@ -97,7 +97,7 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:remove")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictIds}")
-    public R<Void> remove(@ApiParam("字典ID串") @PathVariable Long[] dictIds) {
+    public AjaxResult<Void> remove(@ApiParam("字典ID串") @PathVariable Long[] dictIds) {
         dictTypeService.deleteDictTypeByIds(dictIds);
         return success();
     }
@@ -109,9 +109,9 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:remove")
     @Log(title = "字典类型", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
-    public R<Void> refreshCache() {
+    public AjaxResult<Void> refreshCache() {
         dictTypeService.resetDictCache();
-        return R.success();
+        return AjaxResult.success();
     }
 
     /**
@@ -119,8 +119,8 @@ public class SysDictTypeController extends BaseController {
      */
     @ApiOperation("获取字典选择框列表")
     @GetMapping("/optionselect")
-    public R<List<SysDictType>> optionselect() {
+    public AjaxResult<List<SysDictType>> optionselect() {
         List<SysDictType> dictTypes = dictTypeService.selectDictTypeAll();
-        return R.success(dictTypes);
+        return AjaxResult.success(dictTypes);
     }
 }
