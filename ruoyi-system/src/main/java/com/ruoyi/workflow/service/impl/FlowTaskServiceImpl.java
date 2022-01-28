@@ -571,7 +571,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         TaskQuery taskQuery = taskService.createTaskQuery()
             .active()
             .includeProcessVariables()
-            .taskAssignee(userId.toString())
+            .taskCandidateOrAssigned(userId.toString())
             .orderByTaskCreateTime().desc();
         page.setTotal(taskQuery.count());
         List<Task> taskList = taskQuery.listPage(pageNum - 1, pageSize);
