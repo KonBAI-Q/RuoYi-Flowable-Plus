@@ -8,8 +8,12 @@
         <version>3.5.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>jar</packaging>
+
     <artifactId>ruoyi-flowable</artifactId>
+
+    <description>
+        flowable工作流
+    </description>
 
     <dependencies>
 

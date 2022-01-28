@@ -231,6 +231,13 @@
                 <version>${tlog.version}</version>
             </dependency>
 
+            <!-- flowable -->
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-process</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+
             <!-- 定时任务 -->
             <dependency>
                 <groupId>com.ruoyi</groupId>
@@ -271,12 +278,6 @@
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-flowable</artifactId>
                 <version>${ruoyi-flowable-plus.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.flowable</groupId>
-                <artifactId>flowable-spring-boot-starter-process</artifactId>
-                <version>${flowable.version}</version>
             </dependency>
 
             <!-- OSS对象存储模块 -->
