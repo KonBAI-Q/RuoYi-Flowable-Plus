@@ -6,8 +6,6 @@
       v-bind="controlForm"
       keyboard
       ref="processDesigner"
-      :processId="flowEntryInfo.processDefinitionKey"
-      :processName="flowEntryInfo.processDefinitionName"
       :events="[
         'element.click',
         'connection.added',
@@ -26,7 +24,7 @@
 <script>
 import Vue from 'vue';
 import '@/plugins/package/theme/index.scss';
-import { BpmnProcessDesigner, BmpnProcessPenal } from '@/plugins/package/index.js';
+import { BpmnProcessDesigner, BmpnProcessPenal } from '@/plugins/package/index';
 // 自定义元素选中时的弹出菜单（修改 默认任务 为 用户任务）
 import CustomContentPadProvider from '@/plugins/package/designer/plugins/content-pad';
 // 自定义左侧菜单（修改 默认任务 为 用户任务）
@@ -38,7 +36,11 @@ Vue.use(vuePlugin);
 export default {
   name: 'ProcessDesigner',
   props: {
-    flowEntryInfo: {
+    bpmnXml: {
+      type: String,
+      required: true
+    },
+    designerForm: {
       type: Object,
       required: true
     }
@@ -51,11 +53,11 @@ export default {
     return {
       height: document.documentElement.clientHeight - 94.5 + "px;",
       reloadIndex: 0,
-      xmlString: this.flowEntryInfo.bpmnXml,
+      xmlString: this.bpmnXml,
       modeler: null,
       controlForm: {
-        processId: '',
-        processName: '',
+        processId: this.designerForm.processId || '',
+        processName: this.designerForm.processName || '',
         simulation: false,
         labelEditing: false,
         labelVisible: false,
@@ -77,8 +79,7 @@ export default {
     handlerEvent (eventName, element) {
     },
     onSaveProcess (saveData) {
-      let modeler = this.modeler;
-      this.$emit('save', { saveData, modeler });
+      this.$emit('save', saveData);
     }
   }
 }

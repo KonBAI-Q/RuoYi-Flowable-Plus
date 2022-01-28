@@ -14,11 +14,6 @@
       </el-form-item>
       <!--流程的基础属性-->
       <template v-if="elementBaseInfo.$type === 'bpmn:Process'">
-        <el-form-item label="流程分类">
-          <el-select v-model="elementBaseInfo.processCategory" placeholder="请选择" clearable @change="updateBaseInfo('processCategory')">
-            <el-option v-for="item in categoryOptions" :key="item.categoryId" :label="item.categoryName" :value="item.code" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="版本标签">
           <el-input v-model="elementBaseInfo.versionTag" clearable @change="updateBaseInfo('versionTag')" />
         </el-form-item>
@@ -30,7 +25,6 @@
   </div>
 </template>
 <script>
-import { listCategory } from "@/api/workflow/category";
 
 export default {
   name: "ElementBaseInfo",
@@ -45,7 +39,6 @@ export default {
   data() {
     return {
       elementBaseInfo: {},
-      categoryOptions: []
     };
   },
   watch: {
@@ -57,11 +50,6 @@ export default {
         }
       }
     }
-  },
-  created() {
-    listCategory().then(response => {
-      this.categoryOptions = response.rows
-    })
   },
   methods: {
     resetBaseInfo() {

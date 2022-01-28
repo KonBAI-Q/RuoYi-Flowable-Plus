@@ -40,7 +40,7 @@
           plain
           icon="el-icon-plus"
           size="mini"
-          @click="handleLoadXml"
+          @click="handleAdd"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -77,7 +77,11 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="流程分类" align="center" prop="categoryCode" />
+      <el-table-column label="流程分类" align="center" prop="categoryName">
+        <template slot-scope="scope">
+          <span>{{ categoryOptions.find(k => k.code === scope.row.categoryCode).categoryName }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="业务表单" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button v-if="scope.row.formId" type="text" @click="handleForm(scope.row.formId)">
@@ -104,7 +108,7 @@
             type="text"
             size="mini"
             icon="el-icon-edit"
-            @click="handleLoadXml(scope.row)"
+            @click="handleUpdate(scope.row)"
           >编辑</el-button>
           <el-button
             type="text"
@@ -179,6 +183,27 @@
     <!-- 流程图 -->
     <el-dialog :title="processView.title" :visible.sync="processView.open" width="70%" append-to-body>
        <process-viewer :xml="processView.xmlData" :style="{height: '400px'}" />
+    </el-dialog>
+
+    <!--  编辑流程  -->
+    <el-dialog :title="process.title" :visible.sync="process.open" width="500px" append-to-body>
+      <el-form :model="process.form" size="mini" label-width="80px">
+        <el-form-item label="流程标识">
+          <el-input v-model="process.form.processKey" clearable disabled />
+        </el-form-item>
+        <el-form-item label="流程名称">
+          <el-input v-model="process.form.processName" clearable />
+        </el-form-item>
+        <el-form-item label="流程分类">
+          <el-select v-model="process.form.categoryCode" placeholder="请选择" clearable style="width:100%">
+            <el-option v-for="item in categoryOptions" :key="item.categoryId" :label="item.categoryName" :value="item.code" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleLoadXml(process.form)">确 定</el-button>
+        <el-button @click="process.open = false">取 消</el-button>
+      </div>
     </el-dialog>
 
     <!-- 版本管理 -->
@@ -288,10 +313,11 @@
 
 <script>
 import { listDefinition, publishList, updateState, delDeployment, exportDeployment, definitionStart, readXml} from "@/api/workflow/definition";
-import { getToken } from "@/utils/auth";
 import { getForm, addDeployForm ,listForm } from "@/api/workflow/form";
+import { listCategory } from '@/api/workflow/category'
 import Parser from '@/utils/generator/parser'
 import ProcessViewer from '@/components/ProcessViewer'
+import { getToken } from "@/utils/auth";
 
 export default {
   name: "Definition",
@@ -315,6 +341,12 @@ export default {
       total: 0,
       // 流程定义表格数据
       definitionList: [],
+      categoryOptions: [],
+      process: {
+        title: '',
+        open: false,
+        form: {}
+      },
       publish: {
         open: false,
         loading: false,
@@ -385,6 +417,9 @@ export default {
     };
   },
   created() {
+    listCategory().then(response => {
+      this.categoryOptions = response.rows
+    })
     this.getList();
   },
   methods: {
@@ -438,10 +473,16 @@ export default {
       this.multiple = !selection.length
     },
     /** 跳转到流程设计页面 */
-    handleLoadXml(row){
+    handleLoadXml(row) {
+      this.process.open = false;
       this.$router.push({
         path: '/definition/designer/index',
-        query: { definitionId: row.definitionId }
+        query: {
+          definitionId: row.definitionId,
+          processId: row.processKey,
+          processName: row.processName,
+          category: row.categoryCode
+        }
       })
     },
     handlePublish(row) {
@@ -525,15 +566,20 @@ export default {
         this.getPublishList();
       });
     },
+    handleAdd() {
+      const dateTime = new Date().getTime();
+      this.process.title = '新增流程';
+      this.process.form = {
+        processKey: `Process_${dateTime}`,
+        processName: `业务流程_${dateTime}`
+      };
+      this.process.open = true;
+    },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getDeployment(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改流程定义";
-      });
+      this.process.title = '编辑流程';
+      this.process.form = JSON.parse(JSON.stringify(row));
+      this.process.open = true;
     },
     /** 删除按钮操作 */
     handleDelete(row) {

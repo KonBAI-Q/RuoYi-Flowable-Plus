@@ -3,7 +3,8 @@
     <process-designer
       v-loading="loading"
       :key="`designer-${loadIndex}`"
-      :flowEntryInfo="formFlowEntryData"
+      :bpmnXml="bpmnXml"
+      :designerForm="designerForm"
       @save="onSaveFlowEntry"
     />
   </div>
@@ -20,59 +21,42 @@ export default {
     return {
       loadIndex: 0,
       loading: false,
-      formFlowEntryData: {
-        entryId: undefined,
-        processDefinitionName: undefined,
-        processDefinitionKey: undefined,
-        categoryId: undefined,
-        bindFormType: [
-          {
-            id: 0,
-            name: '动态表单',
-            symbol: 'ONLINE_FORM'
-          },
-          {
-            id: 1,
-            name: '路由表单',
-            symbol: 'ROUTER_FORM'
-          }
-        ],
-        pageId: undefined,
-        defaultFormId: undefined,
-        defaultRouterName: undefined,
-        bpmnXml: undefined
-      },
+      bpmnXml: '',
+      designerForm: {
+        definitionId: undefined,
+        processId: undefined,
+        processName: undefined,
+        category: undefined
+      }
     }
   },
   created() {
-    const definitionId = this.$route.query && this.$route.query.definitionId;
-    //  查询流程xml
-    if (definitionId) {
-      this.getModelDetail(definitionId);
+    const query = this.$route.query
+    if (query) {
+      this.designerForm = query;
+      //  查询流程xml
+      if (query.definitionId) {
+        this.getModelDetail(query.definitionId);
+      }
     }
-    this.getDicts("sys_process_category").then(res => {
-      this.categorys = res.data;
-    });
   },
   methods: {
     /** xml 文件 */
     getModelDetail(definitionId) {
       this.loading = true;
       // 发送请求，获取xml
-      readXml(definitionId).then(res =>{
-        this.formFlowEntryData.bpmnXml = res.data;
+      readXml(definitionId).then(res => {
+        this.bpmnXml = res.data;
         this.loadIndex = definitionId;
         this.loading = false;
       })
     },
-    onSaveFlowEntry ({ saveData, modeler }) {
-      this.formFlowEntryData.bpmnXml = saveData;
-      // TODO 2022/01/05 改进获取流程名称的方式
-      const process = modeler.get('elementRegistry').find(el => el.type === 'bpmn:Process');
+    onSaveFlowEntry (saveData) {
+      this.bpmnXml = saveData;
       saveXml({
-        name: process.businessObject.name,
-        category: process.businessObject.processCategory,
-        xml: this.formFlowEntryData.bpmnXml
+        name: this.designerForm.processName,
+        category: this.designerForm.category,
+        xml: this.bpmnXml
       }).then(res => {
         this.$message(res.msg)
         // 关闭当前标签页并返回上个页面
