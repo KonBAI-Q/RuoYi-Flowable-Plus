@@ -16,7 +16,7 @@ spring:
         # 设置 Spring Boot Admin Server 地址
         url: http://172.30.0.90:9090/admin
         instance:
-          prefer-ip: true # 注册实例时，优先使用 IP
+          service-host-type: IP
         username: ruoyi
         password: 123456
 
@@ -60,7 +60,7 @@ spring:
           driverClassName: com.mysql.cj.jdbc.Driver
           # jdbc 所有参数配置参考 https://lionli.blog.csdn.net/article/details/122018562
           # rewriteBatchedStatements=true 批处理优化 大幅提升批量插入更新删除性能(对数据库有性能损耗 使用批量操作应考虑性能问题)
-          url: jdbc:mysql://172.30.0.36:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true
+          url: jdbc:mysql://172.30.0.36:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
           username: root
           password: root
         # 从库数据源
@@ -157,11 +157,5 @@ redisson:
     retryAttempts: 3
     # 命令重试发送时间间隔，单位：毫秒
     retryInterval: 1500
-    # 发布和订阅连接的最小空闲连接数
-    subscriptionConnectionMinimumIdleSize: 1
     # 发布和订阅连接池大小
     subscriptionConnectionPoolSize: 50
-    # 单个连接最大订阅数量
-    subscriptionsPerConnection: 5
-    # DNS监测时间间隔，单位：毫秒
-    dnsMonitoringInterval: 5000

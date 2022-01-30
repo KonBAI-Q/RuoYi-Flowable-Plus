@@ -1,5 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.constant.UserConstants;
@@ -8,8 +10,7 @@ import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.LoginUtils;
-import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.SysRoleDept;
 import com.ruoyi.system.domain.SysRoleMenu;
@@ -88,7 +89,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
         List<SysRole> perms = baseMapper.selectRolePermissionByUserId(userId);
         Set<String> permsSet = new HashSet<>();
         for (SysRole perm : perms) {
-            if (StringUtils.isNotNull(perm)) {
+            if (ObjectUtil.isNotNull(perm)) {
                 permsSet.addAll(Arrays.asList(perm.getRoleKey().trim().split(",")));
             }
         }
@@ -135,11 +136,10 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public String checkRoleNameUnique(SysRole role) {
-        Long roleId = StringUtils.isNull(role.getRoleId()) ? -1L : role.getRoleId();
-        boolean count = baseMapper.exists(new LambdaQueryWrapper<SysRole>()
-                .eq(SysRole::getRoleName, role.getRoleName())
-                .ne(SysRole::getRoleId, roleId));
-        if (count) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysRole>()
+            .eq(SysRole::getRoleName, role.getRoleName())
+            .ne(ObjectUtil.isNotNull(role.getRoleId()), SysRole::getRoleId, role.getRoleId()));
+        if (exist) {
             return UserConstants.NOT_UNIQUE;
         }
         return UserConstants.UNIQUE;
@@ -153,11 +153,10 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public String checkRoleKeyUnique(SysRole role) {
-        Long roleId = StringUtils.isNull(role.getRoleId()) ? -1L : role.getRoleId();
-        boolean count = baseMapper.exists(new LambdaQueryWrapper<SysRole>()
-                .eq(SysRole::getRoleKey, role.getRoleKey())
-                .ne(SysRole::getRoleId, roleId));
-        if (count) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysRole>()
+            .eq(SysRole::getRoleKey, role.getRoleKey())
+            .ne(ObjectUtil.isNotNull(role.getRoleId()), SysRole::getRoleId, role.getRoleId()));
+        if (exist) {
             return UserConstants.NOT_UNIQUE;
         }
         return UserConstants.UNIQUE;
@@ -170,7 +169,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public void checkRoleAllowed(SysRole role) {
-        if (StringUtils.isNotNull(role.getRoleId()) && role.isAdmin()) {
+        if (ObjectUtil.isNotNull(role.getRoleId()) && role.isAdmin()) {
             throw new ServiceException("不允许操作超级管理员角色");
         }
     }
@@ -182,11 +181,11 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public void checkRoleDataScope(Long roleId) {
-        if (!SysUser.isAdmin(LoginUtils.getUserId())) {
+        if (!SysUser.isAdmin(LoginHelper.getUserId())) {
             SysRole role = new SysRole();
             role.setRoleId(roleId);
             List<SysRole> roles = SpringUtils.getAopProxy(this).selectRoleList(role);
-            if (StringUtils.isEmpty(roles)) {
+            if (CollUtil.isEmpty(roles)) {
                 throw new ServiceException("没有权限访问角色数据！");
             }
         }
@@ -330,6 +329,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     public int deleteRoleByIds(Long[] roleIds) {
         for (Long roleId : roleIds) {
             checkRoleAllowed(new SysRole(roleId));
+            checkRoleDataScope(roleId);
             SysRole role = selectRoleById(roleId);
             if (countUserRoleByRoleId(roleId) > 0) {
                 throw new ServiceException(String.format("%1$s已分配,不能删除", role.getRoleName()));
@@ -352,8 +352,8 @@ public class SysRoleServiceImpl implements ISysRoleService {
     @Override
     public int deleteAuthUser(SysUserRole userRole) {
         return userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
-                .eq(SysUserRole::getRoleId, userRole.getRoleId())
-                .eq(SysUserRole::getUserId, userRole.getUserId()));
+            .eq(SysUserRole::getRoleId, userRole.getRoleId())
+            .eq(SysUserRole::getUserId, userRole.getUserId()));
     }
 
     /**
@@ -366,8 +366,8 @@ public class SysRoleServiceImpl implements ISysRoleService {
     @Override
     public int deleteAuthUsers(Long roleId, Long[] userIds) {
         return userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
-                .eq(SysUserRole::getRoleId, roleId)
-                .in(SysUserRole::getUserId, Arrays.asList(userIds)));
+            .eq(SysUserRole::getRoleId, roleId)
+            .in(SysUserRole::getUserId, Arrays.asList(userIds)));
     }
 
     /**

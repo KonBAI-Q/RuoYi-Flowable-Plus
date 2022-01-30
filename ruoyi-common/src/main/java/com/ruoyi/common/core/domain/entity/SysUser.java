@@ -12,7 +12,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -29,7 +28,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Accessors(chain = true)
 @TableName("sys_user")
 @ApiModel("用户信息业务对象")
 public class SysUser extends BaseEntity {
@@ -63,6 +61,12 @@ public class SysUser extends BaseEntity {
     @Xss(message = "用户昵称不能包含脚本字符")
     @Size(min = 0, max = 30, message = "用户昵称长度不能超过30个字符")
     private String nickName;
+
+    /**
+     * 用户类型（sys_user系统用户）
+     */
+    @ApiModelProperty(value = "用户类型")
+    private String userType;
 
     /**
      * 用户邮箱

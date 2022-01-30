@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.LoginUtils;
+import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.enums.FlowComment;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
@@ -213,7 +213,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
 //           variables.put("skip", true);
 //           variables.put(ProcessConstants.FLOWABLE_SKIP_EXPRESSION_ENABLED, true);
             // 设置流程发起人Id到流程中
-            String UserIdStr = LoginUtils.getUserId().toString();
+            String UserIdStr = LoginHelper.getUserId().toString();
             identityService.setAuthenticatedUserId(UserIdStr);
             variables.put(ProcessConstants.PROCESS_INITIATOR, UserIdStr);
             ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
@@ -223,7 +223,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
                 if (!StrUtil.equalsAny(task.getAssignee(), UserIdStr)) {
                     throw new ServiceException("数据验证失败，该工作流第一个用户任务的指派人并非当前用户，不能执行该操作！");
                 }
-                taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginUtils.getNickName() + "发起流程申请");
+                taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginHelper.getNickName() + "发起流程申请");
                 // taskService.setAssignee(task.getId(), UserIdStr);
                 taskService.complete(task.getId(), variables);
             }

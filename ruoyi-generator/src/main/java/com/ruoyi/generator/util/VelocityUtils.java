@@ -1,6 +1,8 @@
 package com.ruoyi.generator.util;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.common.constant.GenConstants;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.JsonUtils;
@@ -219,7 +221,7 @@ public class VelocityUtils {
         List<GenTableColumn> columns = genTable.getColumns();
         GenTable subGenTable = genTable.getSubTable();
         HashSet<String> importList = new HashSet<String>();
-        if (StringUtils.isNotNull(subGenTable)) {
+        if (ObjectUtil.isNotNull(subGenTable)) {
             importList.add("java.util.List");
         }
         for (GenTableColumn column : columns) {
@@ -244,8 +246,8 @@ public class VelocityUtils {
         Set<String> dicts = new HashSet<String>();
         for (GenTableColumn column : columns) {
             if (!column.isSuperColumn() && StringUtils.isNotEmpty(column.getDictType()) && StringUtils.equalsAny(
-                    column.getHtmlType(),
-                new String[] { GenConstants.HTML_SELECT, GenConstants.HTML_RADIO, GenConstants.HTML_CHECKBOX })) {
+                column.getHtmlType(),
+                new String[]{GenConstants.HTML_SELECT, GenConstants.HTML_RADIO, GenConstants.HTML_CHECKBOX})) {
                 dicts.add("'" + column.getDictType() + "'");
             }
         }
@@ -270,8 +272,8 @@ public class VelocityUtils {
      * @return 上级菜单ID字段
      */
     public static String getParentMenuId(Map<String, Object> paramsObj) {
-        if (StringUtils.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.PARENT_MENU_ID)
-                && StringUtils.isNotEmpty(Convert.toStr(paramsObj.get(GenConstants.PARENT_MENU_ID)))) {
+        if (CollUtil.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.PARENT_MENU_ID)
+            && StringUtils.isNotEmpty(Convert.toStr(paramsObj.get(GenConstants.PARENT_MENU_ID)))) {
             return Convert.toStr(paramsObj.get(GenConstants.PARENT_MENU_ID));
         }
         return DEFAULT_PARENT_MENU_ID;
@@ -284,7 +286,7 @@ public class VelocityUtils {
      * @return 树编码
      */
     public static String getTreecode(Map<String, Object> paramsObj) {
-        if (StringUtils.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.TREE_CODE)) {
+        if (CollUtil.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.TREE_CODE)) {
             return StringUtils.toCamelCase(Convert.toStr(paramsObj.get(GenConstants.TREE_CODE)));
         }
         return StringUtils.EMPTY;
@@ -297,7 +299,7 @@ public class VelocityUtils {
      * @return 树父编码
      */
     public static String getTreeParentCode(Map<String, Object> paramsObj) {
-        if (StringUtils.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.TREE_PARENT_CODE)) {
+        if (CollUtil.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.TREE_PARENT_CODE)) {
             return StringUtils.toCamelCase(Convert.toStr(paramsObj.get(GenConstants.TREE_PARENT_CODE)));
         }
         return StringUtils.EMPTY;
@@ -310,7 +312,7 @@ public class VelocityUtils {
      * @return 树名称
      */
     public static String getTreeName(Map<String, Object> paramsObj) {
-        if (StringUtils.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.TREE_NAME)) {
+        if (CollUtil.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.TREE_NAME)) {
             return StringUtils.toCamelCase(Convert.toStr(paramsObj.get(GenConstants.TREE_NAME)));
         }
         return StringUtils.EMPTY;

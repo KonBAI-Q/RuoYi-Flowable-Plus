@@ -5,7 +5,7 @@ ruoyi:
   # 版本
   version: ${ruoyi-flowable-plus.version}
   # 版权年份
-  copyrightYear: 2021
+  copyrightYear: 2022
   # 实例演示开关
   demoEnabled: true
   # 获取ip地址开关
@@ -52,10 +52,6 @@ logging:
     com.ruoyi: @logging.level@
     org.springframework: warn
   config: classpath:logback.xml
-
-# tlog 全局访问性能拦截
-tlog:
-  enable-invoke-time-print: true
 
 # Spring配置
 spring:
@@ -326,5 +322,9 @@ management:
     logfile:
       external-file: ./logs/sys-console.log
 
+--- # Flowable 配置
 flowable:
+  # 关闭定时任务 job
+  async-executor-activate: false
+  # 库与数据库表结构不一致时，会自动将数据库表结构升级至新版本。
   database-schema-update: true

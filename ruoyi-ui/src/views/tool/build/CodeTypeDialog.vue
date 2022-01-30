@@ -31,7 +31,7 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item v-if="showFileName" label="文件名" prop="fileName">
-              <el-input v-model="formData.fileName" placeholder="请输入文件名" clearable />
+              <el-input v-model="formData.fileName" placeholder="请输入文件名" clearable/>
             </el-form-item>
           </el-col>
         </el-form>
@@ -79,10 +79,10 @@ export default {
       }]
     }
   },
-  computed: {
-  },
+  computed: {},
   watch: {},
-  mounted() {},
+  mounted() {
+  },
   methods: {
     onOpen() {
       if (this.showFileName) {

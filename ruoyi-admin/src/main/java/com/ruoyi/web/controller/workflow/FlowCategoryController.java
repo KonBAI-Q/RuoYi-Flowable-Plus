@@ -5,7 +5,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.validate.AddGroup;
 import com.ruoyi.common.core.validate.EditGroup;
@@ -72,10 +72,10 @@ public class FlowCategoryController extends BaseController {
     @ApiOperation("获取流程分类详细信息")
     @SaCheckPermission("workflow:category:query")
     @GetMapping("/{categoryId}")
-    public AjaxResult<FlowCategoryVo> getInfo(@ApiParam("主键")
+    public R<FlowCategoryVo> getInfo(@ApiParam("主键")
                                                   @NotNull(message = "主键不能为空")
                                                   @PathVariable("categoryId") Long categoryId) {
-        return AjaxResult.success(iFlowCategoryService.queryById(categoryId));
+        return R.ok(iFlowCategoryService.queryById(categoryId));
     }
 
     /**
@@ -86,7 +86,7 @@ public class FlowCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public AjaxResult<Void> add(@Validated(AddGroup.class) @RequestBody FlowCategoryBo bo) {
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody FlowCategoryBo bo) {
         return toAjax(iFlowCategoryService.insertByBo(bo) ? 1 : 0);
     }
 
@@ -98,7 +98,7 @@ public class FlowCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public AjaxResult<Void> edit(@Validated(EditGroup.class) @RequestBody FlowCategoryBo bo) {
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FlowCategoryBo bo) {
         return toAjax(iFlowCategoryService.updateByBo(bo) ? 1 : 0);
     }
 
@@ -109,7 +109,7 @@ public class FlowCategoryController extends BaseController {
     @SaCheckPermission("workflow:category:remove")
     @Log(title = "流程分类" , businessType = BusinessType.DELETE)
     @DeleteMapping("/{categoryIds}")
-    public AjaxResult<Void> remove(@ApiParam("主键串")
+    public R<Void> remove(@ApiParam("主键串")
                                        @NotEmpty(message = "主键不能为空")
                                        @PathVariable Long[] categoryIds) {
         return toAjax(iFlowCategoryService.deleteWithValidByIds(Arrays.asList(categoryIds), true) ? 1 : 0);

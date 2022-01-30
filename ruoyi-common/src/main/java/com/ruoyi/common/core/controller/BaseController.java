@@ -1,8 +1,8 @@
 package com.ruoyi.common.core.controller;
 
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.utils.LoginUtils;
+import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.StringUtils;
 
 /**
@@ -15,29 +15,29 @@ public class BaseController {
     /**
      * 返回成功
      */
-    public AjaxResult<Void> success() {
-        return AjaxResult.success();
+    public R<Void> success() {
+        return R.ok();
     }
 
     /**
      * 返回失败消息
      */
-    public AjaxResult<Void> error() {
-        return AjaxResult.error();
+    public R<Void> error() {
+        return R.fail();
     }
 
     /**
      * 返回成功消息
      */
-    public AjaxResult<Void> success(String message) {
-        return AjaxResult.success(message);
+    public R<Void> success(String message) {
+        return R.ok(message);
     }
 
     /**
      * 返回失败消息
      */
-    public AjaxResult<Void> error(String message) {
-        return AjaxResult.error(message);
+    public R<Void> error(String message) {
+        return R.fail(message);
     }
 
     /**
@@ -46,8 +46,8 @@ public class BaseController {
      * @param rows 影响行数
      * @return 操作结果
      */
-    protected AjaxResult<Void> toAjax(int rows) {
-        return rows > 0 ? AjaxResult.success() : AjaxResult.error();
+    protected R<Void> toAjax(int rows) {
+        return rows > 0 ? R.ok() : R.fail();
     }
 
     /**
@@ -56,7 +56,7 @@ public class BaseController {
      * @param result 结果
      * @return 操作结果
      */
-    protected AjaxResult<Void> toAjax(boolean result) {
+    protected R<Void> toAjax(boolean result) {
         return result ? success() : error();
     }
 
@@ -71,27 +71,27 @@ public class BaseController {
      * 获取用户缓存信息
      */
     public LoginUser getLoginUser() {
-        return LoginUtils.getLoginUser();
+        return LoginHelper.getLoginUser();
     }
 
     /**
      * 获取登录用户id
      */
     public Long getUserId() {
-        return LoginUtils.getUserId();
+        return LoginHelper.getUserId();
     }
 
     /**
      * 获取登录部门id
      */
     public Long getDeptId() {
-        return LoginUtils.getDeptId();
+        return LoginHelper.getDeptId();
     }
 
     /**
      * 获取登录用户名
      */
     public String getUsername() {
-        return LoginUtils.getUsername();
+        return LoginHelper.getUsername();
     }
 }

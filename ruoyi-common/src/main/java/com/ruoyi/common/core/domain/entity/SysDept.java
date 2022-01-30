@@ -8,10 +8,10 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -22,7 +22,6 @@ import javax.validation.constraints.Size;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Accessors(chain = true)
 @TableName("sys_dept")
 @ApiModel("部门业务对象")
 public class SysDept extends TreeEntity {
@@ -47,8 +46,8 @@ public class SysDept extends TreeEntity {
      * 显示顺序
      */
     @ApiModelProperty(value = "显示顺序")
-    @NotBlank(message = "显示顺序不能为空")
-    private String orderNum;
+    @NotNull(message = "显示顺序不能为空")
+    private Long orderNum;
 
     /**
      * 负责人

@@ -9,7 +9,7 @@ spring:
         # 设置 Spring Boot Admin Server 地址
         url: http://localhost:9090/admin
         instance:
-          prefer-ip: true # 注册实例时，优先使用 IP
+          service-host-type: IP
         username: ruoyi
         password: 123456
 
@@ -55,7 +55,7 @@ spring:
           # rewriteBatchedStatements=true 批处理优化 大幅提升批量插入更新删除性能(对数据库有性能损耗 使用批量操作应考虑性能问题)
           url: jdbc:mysql://localhost:3306/ry-flowable-plus?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&nullCatalogMeansCurrent=true
           username: root
-          password: 123456
+          password: root
         # 从库数据源
         slave:
           lazy: true
@@ -121,7 +121,7 @@ spring:
     # 数据库索引
     database: 0
     # 密码
-    password: konbai123..
+    password:
     # 连接超时时间
     timeout: 10s
     # 是否开启ssl
@@ -150,11 +150,5 @@ redisson:
     retryAttempts: 3
     # 命令重试发送时间间隔，单位：毫秒
     retryInterval: 1500
-    # 发布和订阅连接的最小空闲连接数
-    subscriptionConnectionMinimumIdleSize: 1
     # 发布和订阅连接池大小
     subscriptionConnectionPoolSize: 50
-    # 单个连接最大订阅数量
-    subscriptionsPerConnection: 5
-    # DNS监测时间间隔，单位：毫秒
-    dnsMonitoringInterval: 5000

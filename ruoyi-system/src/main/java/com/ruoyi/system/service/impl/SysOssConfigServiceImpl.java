@@ -2,6 +2,7 @@ package com.ruoyi.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -106,7 +107,7 @@ public class SysOssConfigServiceImpl implements ISysOssConfigService {
      */
     private void validEntityBeforeSave(SysOssConfig entity) {
         if (StringUtils.isNotEmpty(entity.getConfigKey())
-                && UserConstants.NOT_UNIQUE.equals(checkConfigKeyUnique(entity))) {
+            && UserConstants.NOT_UNIQUE.equals(checkConfigKeyUnique(entity))) {
             throw new ServiceException("操作配置'" + entity.getConfigKey() + "'失败, 配置key已存在!");
         }
     }
@@ -136,11 +137,11 @@ public class SysOssConfigServiceImpl implements ISysOssConfigService {
      * 判断configKey是否唯一
      */
     private String checkConfigKeyUnique(SysOssConfig sysOssConfig) {
-        long ossConfigId = StringUtils.isNull(sysOssConfig.getOssConfigId()) ? -1L : sysOssConfig.getOssConfigId();
+        long ossConfigId = ObjectUtil.isNull(sysOssConfig.getOssConfigId()) ? -1L : sysOssConfig.getOssConfigId();
         SysOssConfig info = baseMapper.selectOne(new LambdaQueryWrapper<SysOssConfig>()
-                .select(SysOssConfig::getOssConfigId, SysOssConfig::getConfigKey)
-                .eq(SysOssConfig::getConfigKey, sysOssConfig.getConfigKey()));
-        if (StringUtils.isNotNull(info) && info.getOssConfigId() != ossConfigId) {
+            .select(SysOssConfig::getOssConfigId, SysOssConfig::getConfigKey)
+            .eq(SysOssConfig::getConfigKey, sysOssConfig.getConfigKey()));
+        if (ObjectUtil.isNotNull(info) && info.getOssConfigId() != ossConfigId) {
             return UserConstants.NOT_UNIQUE;
         }
         return UserConstants.UNIQUE;
@@ -154,7 +155,7 @@ public class SysOssConfigServiceImpl implements ISysOssConfigService {
     public int updateOssConfigStatus(SysOssConfigBo bo) {
         SysOssConfig sysOssConfig = BeanUtil.toBean(bo, SysOssConfig.class);
         int row = baseMapper.update(null, new LambdaUpdateWrapper<SysOssConfig>()
-                .set(SysOssConfig::getStatus, "1"));
+            .set(SysOssConfig::getStatus, "1"));
         row += baseMapper.updateById(sysOssConfig);
         if (row > 0) {
             RedisUtils.setCacheObject(OssConstant.CACHE_CONFIG_KEY, sysOssConfig.getConfigKey());
@@ -182,8 +183,8 @@ public class SysOssConfigServiceImpl implements ISysOssConfigService {
     private boolean setConfigCache(boolean flag, SysOssConfig config) {
         if (flag) {
             RedisUtils.setCacheObject(
-                    getCacheKey(config.getConfigKey()),
-                    JsonUtils.toJsonString(config));
+                getCacheKey(config.getConfigKey()),
+                JsonUtils.toJsonString(config));
             RedisUtils.publish(OssConstant.CACHE_CONFIG_KEY, config.getConfigKey(), msg -> {
                 log.info("发布刷新OSS配置 => " + msg);
             });

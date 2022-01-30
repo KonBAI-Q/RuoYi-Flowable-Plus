@@ -1,24 +1,30 @@
 package com.ruoyi.system.service;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.dto.RoleDTO;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.service.LogininforService;
 import com.ruoyi.common.enums.DeviceType;
 import com.ruoyi.common.enums.UserStatus;
-import com.ruoyi.common.enums.UserType;
 import com.ruoyi.common.exception.user.CaptchaException;
 import com.ruoyi.common.exception.user.CaptchaExpireException;
 import com.ruoyi.common.exception.user.UserException;
-import com.ruoyi.common.utils.*;
+import com.ruoyi.common.helper.LoginHelper;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.MessageUtils;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.redis.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,17 +66,8 @@ public class SysLoginService {
             throw new UserException("user.password.retry.limit.exceed", Constants.LOGIN_ERROR_LIMIT_TIME);
         }
 
-        SysUser user = userService.selectUserByUserName(username);
-        if (StringUtils.isNull(user)) {
-            log.info("登录用户：{} 不存在.", username);
-            throw new UserException("user.not.exists", username);
-        } else if (UserStatus.DELETED.getCode().equals(user.getDelFlag())) {
-            log.info("登录用户：{} 已被删除.", username);
-            throw new UserException("user.password.delete", username);
-        } else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
-            log.info("登录用户：{} 已被停用.", username);
-            throw new UserException("user.blocked", username);
-        }
+        SysUser user = loadUserByUsername(username);
+
         if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
             // 是否第一次
             errorNumber = ObjectUtil.isNull(errorNumber) ? 1 : errorNumber + 1;
@@ -92,15 +89,10 @@ public class SysLoginService {
         asyncService.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success"), request);
         recordLoginInfo(user.getUserId(), username);
 
-        LoginUser loginUser = new LoginUser();
-        loginUser.setUserId(user.getUserId());
-        loginUser.setDeptId(user.getDeptId());
-        loginUser.setUsername(user.getUserName());
-        loginUser.setMenuPermission(permissionService.getMenuPermission(user));
-        loginUser.setRolePermission(permissionService.getRolePermission(user));
+        LoginUser loginUser = buildLoginUser(user);
 
         // 生成token
-        LoginUtils.loginByDevice(loginUser, UserType.SYS_USER, DeviceType.PC);
+        LoginHelper.loginByDevice(loginUser, DeviceType.PC);
         return StpUtil.getTokenValue();
     }
 
@@ -123,6 +115,39 @@ public class SysLoginService {
             asyncService.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error"), request);
             throw new CaptchaException();
         }
+    }
+
+    private SysUser loadUserByUsername(String username) {
+        SysUser user = userService.selectUserByUserName(username);
+        if (ObjectUtil.isNull(user)) {
+            log.info("登录用户：{} 不存在.", username);
+            throw new UserException("user.not.exists", username);
+        } else if (UserStatus.DELETED.getCode().equals(user.getDelFlag())) {
+            log.info("登录用户：{} 已被删除.", username);
+            throw new UserException("user.password.delete", username);
+        } else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
+            log.info("登录用户：{} 已被停用.", username);
+            throw new UserException("user.blocked", username);
+        }
+        return user;
+    }
+
+    /**
+     * 构建登录用户
+     */
+    private LoginUser buildLoginUser(SysUser user) {
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUserId(user.getUserId());
+        loginUser.setDeptId(user.getDeptId());
+        loginUser.setUsername(user.getUserName());
+        loginUser.setNickName(user.getNickName());
+        loginUser.setUserType(user.getUserType());
+        loginUser.setMenuPermission(permissionService.getMenuPermission(user));
+        loginUser.setRolePermission(permissionService.getRolePermission(user));
+        loginUser.setDeptName(user.getDept().getDeptName());
+        List<RoleDTO> roles = BeanUtil.copyToList(user.getRoles(), RoleDTO.class);
+        loginUser.setRoles(roles);
+        return loginUser;
     }
 
     /**

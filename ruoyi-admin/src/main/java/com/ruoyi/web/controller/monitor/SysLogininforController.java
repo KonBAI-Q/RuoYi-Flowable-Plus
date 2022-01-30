@@ -3,7 +3,7 @@ package com.ruoyi.web.controller.monitor;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
@@ -13,7 +13,6 @@ import com.ruoyi.system.service.ISysLogininforService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +26,7 @@ import java.util.List;
  */
 @Validated
 @Api(value = "系统访问记录", tags = {"系统访问记录管理"})
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/monitor/logininfor")
 public class SysLogininforController extends BaseController {
@@ -54,7 +53,7 @@ public class SysLogininforController extends BaseController {
     @SaCheckPermission("monitor:logininfor:remove")
     @Log(title = "登录日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{infoIds}")
-    public AjaxResult<Void> remove(@PathVariable Long[] infoIds) {
+    public R<Void> remove(@PathVariable Long[] infoIds) {
         return toAjax(logininforService.deleteLogininforByIds(infoIds));
     }
 
@@ -62,8 +61,8 @@ public class SysLogininforController extends BaseController {
     @SaCheckPermission("monitor:logininfor:remove")
     @Log(title = "登录日志", businessType = BusinessType.CLEAN)
     @DeleteMapping("/clean")
-    public AjaxResult<Void> clean() {
+    public R<Void> clean() {
         logininforService.cleanLogininfor();
-        return AjaxResult.success();
+        return R.ok();
     }
 }

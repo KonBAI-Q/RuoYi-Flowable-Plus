@@ -13,6 +13,7 @@ import com.ruoyi.oss.enumd.OssEnumd;
 import com.ruoyi.oss.exception.OssException;
 import com.ruoyi.oss.properties.OssProperties;
 import com.ruoyi.oss.service.abstractd.AbstractOssStrategy;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -22,13 +23,14 @@ import java.io.InputStream;
  *
  * @author Lion Li
  */
+@Component
 public class QcloudOssStrategy extends AbstractOssStrategy {
 
     private COSClient client;
 
     @Override
-    public void init(OssProperties cloudStorageProperties) {
-        properties = cloudStorageProperties;
+    public void init(OssProperties ossProperties) {
+        super.init(ossProperties);
         try {
             COSCredentials credentials = new BasicCOSCredentials(
                 properties.getAccessKey(), properties.getSecretKey());
@@ -46,6 +48,7 @@ public class QcloudOssStrategy extends AbstractOssStrategy {
         } catch (Exception e) {
             throw new OssException("腾讯云存储配置错误! 请检查系统配置:[" + e.getMessage() + "]");
         }
+        isInit = true;
     }
 
     @Override
@@ -64,8 +67,8 @@ public class QcloudOssStrategy extends AbstractOssStrategy {
     }
 
     @Override
-    public String getServiceType() {
-        return OssEnumd.QCLOUD.getValue();
+    public OssEnumd getServiceType() {
+        return OssEnumd.QCLOUD;
     }
 
     @Override
@@ -82,7 +85,7 @@ public class QcloudOssStrategy extends AbstractOssStrategy {
         } catch (Exception e) {
             throw new OssException("上传文件失败，请检查腾讯云配置信息:[" + e.getMessage() + "]");
         }
-        return new UploadResult().setUrl(getEndpointLink() + "/" + path).setFilename(path);
+        return UploadResult.builder().url(getEndpointLink() + "/" + path).filename(path).build();
     }
 
     @Override

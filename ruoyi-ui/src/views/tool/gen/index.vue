@@ -181,7 +181,9 @@
 <script>
 import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen";
 import importTable from "./importTable";
+import "highlight.js/styles/github-gist.css";
 const hljs = require("highlight.js/lib/core");
+hljs.registerLanguage("java", require("highlight.js/lib/languages/java"));
 hljs.registerLanguage("java", require("highlight.js/lib/languages/java"));
 hljs.registerLanguage("xml", require("highlight.js/lib/languages/xml"));
 hljs.registerLanguage("html", require("highlight.js/lib/languages/xml"));

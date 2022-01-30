@@ -1,6 +1,6 @@
 package com.ruoyi.workflow.service;
 
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.workflow.domain.vo.FlowTaskVo;
 import org.flowable.task.api.Task;
 
@@ -17,7 +17,7 @@ public interface IFlowTaskService {
      *
      * @param task 请求实体参数
      */
-    AjaxResult complete(FlowTaskVo task);
+    R complete(FlowTaskVo task);
 
     /**
      * 驳回任务
@@ -40,7 +40,7 @@ public interface IFlowTaskService {
      * @param flowTaskVo
      * @return
      */
-    AjaxResult findReturnTaskList(FlowTaskVo flowTaskVo);
+    R findReturnTaskList(FlowTaskVo flowTaskVo);
 
     /**
      * 删除任务
@@ -84,21 +84,21 @@ public interface IFlowTaskService {
      * @param pageSize
      * @return
      */
-    AjaxResult myProcess(Integer pageNum, Integer pageSize);
+    R myProcess(Integer pageNum, Integer pageSize);
 
     /**
      * 取消申请
      * @param flowTaskVo
      * @return
      */
-    AjaxResult stopProcess(FlowTaskVo flowTaskVo);
+    R stopProcess(FlowTaskVo flowTaskVo);
 
     /**
      * 撤回流程
      * @param flowTaskVo
      * @return
      */
-    AjaxResult revokeProcess(FlowTaskVo flowTaskVo);
+    R revokeProcess(FlowTaskVo flowTaskVo);
 
 
     /**
@@ -108,7 +108,7 @@ public interface IFlowTaskService {
      * @param pageSize 每页条数
      * @return
      */
-    AjaxResult todoList(Integer pageNum, Integer pageSize);
+    R todoList(Integer pageNum, Integer pageSize);
 
 
     /**
@@ -118,7 +118,7 @@ public interface IFlowTaskService {
      * @param pageSize 每页条数
      * @return
      */
-    AjaxResult finishedList(Integer pageNum, Integer pageSize);
+    R finishedList(Integer pageNum, Integer pageSize);
 
     /**
      * 流程历史流转记录
@@ -126,7 +126,7 @@ public interface IFlowTaskService {
      * @param procInsId 流程实例Id
      * @return
      */
-    AjaxResult flowRecord(String procInsId, String deployId);
+    R flowRecord(String procInsId, String deployId);
 
     /**
      * 根据任务ID查询挂载的表单信息
@@ -148,19 +148,19 @@ public interface IFlowTaskService {
      * @param procInsId
      * @return
      */
-    AjaxResult getFlowViewer(String procInsId);
+    R getFlowViewer(String procInsId);
 
     /**
      * 获取流程变量
      * @param taskId
      * @return
      */
-    AjaxResult processVariables(String taskId);
+    R processVariables(String taskId);
 
     /**
      * 获取下一节点
      * @param flowTaskVo 任务
      * @return
      */
-    AjaxResult getNextFlowNode(FlowTaskVo flowTaskVo);
+    R getNextFlowNode(FlowTaskVo flowTaskVo);
 }

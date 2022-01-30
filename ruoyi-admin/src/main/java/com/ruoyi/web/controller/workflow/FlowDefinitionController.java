@@ -2,7 +2,7 @@ package com.ruoyi.web.controller.workflow;
 
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -75,7 +75,7 @@ public class FlowDefinitionController extends BaseController {
 
     @ApiOperation(value = "导入流程文件", notes = "上传bpmn20的xml文件")
     @PostMapping("/import")
-    public AjaxResult<Void> importFile(@RequestParam(required = false) String name,
+    public R<Void> importFile(@RequestParam(required = false) String name,
                                        @RequestParam(required = false) String category,
                                        MultipartFile file) {
         try (InputStream in = file.getInputStream()) {
@@ -91,11 +91,11 @@ public class FlowDefinitionController extends BaseController {
 
     @ApiOperation(value = "读取xml文件")
     @GetMapping("/readXml/{definitionId}")
-    public AjaxResult<String> readXml(@ApiParam(value = "流程定义ID") @PathVariable(value = "definitionId") String definitionId) {
+    public R<String> readXml(@ApiParam(value = "流程定义ID") @PathVariable(value = "definitionId") String definitionId) {
         try {
-            return AjaxResult.success(null, flowDefinitionService.readXml(definitionId));
+            return R.ok(null, flowDefinitionService.readXml(definitionId));
         } catch (Exception e) {
-            return AjaxResult.error("加载xml文件异常", null);
+            return R.fail("加载xml文件异常", null);
         }
 
     }
@@ -118,7 +118,7 @@ public class FlowDefinitionController extends BaseController {
 
     @ApiOperation(value = "保存流程设计器内的xml文件")
     @PostMapping("/save")
-    public AjaxResult<Void> save(@RequestBody FlowSaveXmlVo vo) {
+    public R<Void> save(@RequestBody FlowSaveXmlVo vo) {
         try (InputStream in = new ByteArrayInputStream(vo.getXml().getBytes(StandardCharsets.UTF_8))) {
             flowDefinitionService.importFile(vo.getName(), vo.getCategory(), in);
         } catch (Exception e) {
@@ -132,7 +132,7 @@ public class FlowDefinitionController extends BaseController {
 
     @ApiOperation(value = "根据流程定义id启动流程实例")
     @PostMapping("/start/{procDefId}")
-    public AjaxResult<Void> start(@ApiParam(value = "流程定义id") @PathVariable(value = "procDefId") String procDefId,
+    public R<Void> start(@ApiParam(value = "流程定义id") @PathVariable(value = "procDefId") String procDefId,
                                   @ApiParam(value = "变量集合,json对象") @RequestBody Map<String, Object> variables) {
         flowDefinitionService.startProcessInstanceById(procDefId, variables);
         return success("流程启动成功");
@@ -141,7 +141,7 @@ public class FlowDefinitionController extends BaseController {
 
     @ApiOperation(value = "激活或挂起流程定义")
     @PutMapping(value = "/updateState")
-    public AjaxResult<Void> updateState(@ApiParam(value = "ture:挂起,false:激活", required = true) @RequestParam Boolean suspended,
+    public R<Void> updateState(@ApiParam(value = "ture:挂起,false:激活", required = true) @RequestParam Boolean suspended,
                                         @ApiParam(value = "流程定义ID", required = true) @RequestParam String definitionId) {
         flowDefinitionService.updateState(suspended, definitionId);
         return success();
@@ -149,23 +149,23 @@ public class FlowDefinitionController extends BaseController {
 
     @ApiOperation(value = "删除流程")
     @DeleteMapping(value = "/delete")
-    public AjaxResult<Void> delete(@ApiParam(value = "流程部署ID", required = true) @RequestParam String deployId) {
+    public R<Void> delete(@ApiParam(value = "流程部署ID", required = true) @RequestParam String deployId) {
         flowDefinitionService.delete(deployId);
         return success();
     }
 
     @ApiOperation(value = "指定流程办理人员列表")
     @GetMapping("/userList")
-    public AjaxResult<List<SysUser>> userList(SysUser user) {
+    public R<List<SysUser>> userList(SysUser user) {
         List<SysUser> list = userService.selectUserList(user);
-        return AjaxResult.success(list);
+        return R.ok(list);
     }
 
     @ApiOperation(value = "指定流程办理组列表")
     @GetMapping("/roleList")
-    public AjaxResult<List<SysRole>> roleList(SysRole role) {
+    public R<List<SysRole>> roleList(SysRole role) {
         List<SysRole> list = sysRoleService.selectRoleList(role);
-        return AjaxResult.success(list);
+        return R.ok(list);
     }
 
 }
