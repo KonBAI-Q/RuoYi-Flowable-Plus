@@ -75,6 +75,45 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/definition',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'designer',
+        component: () => import('@/views/workflow/definition/designer'),
+        name: 'WorkflowDesigner',
+        meta: { title: '流程设计', icon: '' }
+      }
+    ]
+  },
+  {
+    path: '/task',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'record/index',
+        component: () => import('@/views/workflow/task/record/index'),
+        name: 'Record',
+        meta: { title: '流程处理', icon: '' }
+      }
+    ]
+  },
+  {
+    path: '/tool',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'build/index',
+        component: () => import('@/views/tool/build/index'),
+        name: 'FormBuild',
+        meta: { title: '表单配置', icon: '' }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,

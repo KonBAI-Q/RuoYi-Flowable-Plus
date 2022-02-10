@@ -295,6 +295,7 @@ export default {
     handleFlowRecord(row){
       this.$router.push({ path: '/task/record/index',
         query: {
+          definitionId: row.procDefId,
           procInsId: row.procInsId,
           deployId: row.deployId,
           taskId: row.taskId,

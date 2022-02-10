@@ -476,7 +476,7 @@ export default {
     handleLoadXml(row) {
       this.process.open = false;
       this.$router.push({
-        path: '/definition/designer/index',
+        path: '/definition/designer',
         query: {
           definitionId: row.definitionId,
           processId: row.processKey,

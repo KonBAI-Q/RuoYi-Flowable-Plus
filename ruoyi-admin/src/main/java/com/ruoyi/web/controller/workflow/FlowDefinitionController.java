@@ -93,7 +93,7 @@ public class FlowDefinitionController extends BaseController {
     @GetMapping("/readXml/{definitionId}")
     public R<String> readXml(@ApiParam(value = "流程定义ID") @PathVariable(value = "definitionId") String definitionId) {
         try {
-            return R.ok(null, flowDefinitionService.readXml(definitionId));
+            return R.ok(flowDefinitionService.readXml(definitionId), null);
         } catch (Exception e) {
             return R.fail("加载xml文件异常", null);
         }

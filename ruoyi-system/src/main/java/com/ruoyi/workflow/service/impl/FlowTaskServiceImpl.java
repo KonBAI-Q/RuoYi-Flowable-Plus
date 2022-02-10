@@ -445,6 +445,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 .processDefinitionId(hisIns.getProcessDefinitionId())
                 .singleResult();
             flowTask.setDeployId(pd.getDeploymentId());
+            flowTask.setProcDefId(hisIns.getProcessDefinitionId());
             flowTask.setProcDefName(pd.getName());
             flowTask.setProcDefVersion(pd.getVersion());
             flowTask.setCategory(pd.getCategory());
