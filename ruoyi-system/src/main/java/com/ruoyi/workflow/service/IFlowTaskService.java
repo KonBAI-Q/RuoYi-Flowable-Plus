@@ -1,10 +1,17 @@
 package com.ruoyi.workflow.service;
 
+import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.workflow.domain.dto.FlowTaskDto;
 import com.ruoyi.workflow.domain.vo.FlowTaskVo;
+import com.ruoyi.workflow.domain.vo.FlowViewerVo;
+import org.flowable.bpmn.model.UserTask;
 import org.flowable.task.api.Task;
 
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author XuanXuan
@@ -17,7 +24,7 @@ public interface IFlowTaskService {
      *
      * @param task 请求实体参数
      */
-    R complete(FlowTaskVo task);
+    void complete(FlowTaskVo task);
 
     /**
      * 驳回任务
@@ -40,7 +47,7 @@ public interface IFlowTaskService {
      * @param flowTaskVo
      * @return
      */
-    R findReturnTaskList(FlowTaskVo flowTaskVo);
+    List<UserTask> findReturnTaskList(FlowTaskVo flowTaskVo);
 
     /**
      * 删除任务
@@ -80,45 +87,40 @@ public interface IFlowTaskService {
 
     /**
      * 我发起的流程
-     * @param pageNum
-     * @param pageSize
+     *
      * @return
      */
-    R myProcess(Integer pageNum, Integer pageSize);
+    TableDataInfo<FlowTaskDto> myProcess(PageQuery pageQuery);
 
     /**
      * 取消申请
      * @param flowTaskVo
      * @return
      */
-    R stopProcess(FlowTaskVo flowTaskVo);
+    void stopProcess(FlowTaskVo flowTaskVo);
 
     /**
      * 撤回流程
      * @param flowTaskVo
      * @return
      */
-    R revokeProcess(FlowTaskVo flowTaskVo);
+    void revokeProcess(FlowTaskVo flowTaskVo);
 
 
     /**
      * 代办任务列表
      *
-     * @param pageNum  当前页码
-     * @param pageSize 每页条数
      * @return
      */
-    R todoList(Integer pageNum, Integer pageSize);
+    TableDataInfo<FlowTaskDto> todoList(PageQuery pageQuery);
 
 
     /**
      * 已办任务列表
      *
-     * @param pageNum  当前页码
-     * @param pageSize 每页条数
      * @return
      */
-    R finishedList(Integer pageNum, Integer pageSize);
+    TableDataInfo<FlowTaskDto> finishedList(PageQuery pageQuery);
 
     /**
      * 流程历史流转记录
@@ -126,7 +128,7 @@ public interface IFlowTaskService {
      * @param procInsId 流程实例Id
      * @return
      */
-    R flowRecord(String procInsId, String deployId);
+    Map<String, Object> flowRecord(String procInsId, String deployId);
 
     /**
      * 根据任务ID查询挂载的表单信息
@@ -148,7 +150,7 @@ public interface IFlowTaskService {
      * @param procInsId
      * @return
      */
-    R getFlowViewer(String procInsId);
+    FlowViewerVo getFlowViewer(String procInsId);
 
     /**
      * 获取流程变量

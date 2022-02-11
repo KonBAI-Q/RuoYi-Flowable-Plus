@@ -1,6 +1,8 @@
 package com.ruoyi.web.controller.workflow;
 
+import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.workflow.domain.dto.FlowTaskDto;
 import com.ruoyi.workflow.domain.vo.FlowTaskVo;
 import com.ruoyi.workflow.service.IFlowTaskService;
@@ -35,42 +37,41 @@ public class FlowTaskController {
 
     @ApiOperation(value = "我发起的流程", response = FlowTaskDto.class)
     @GetMapping(value = "/myProcess")
-    public R myProcess(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
-                                @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
-        return flowTaskService.myProcess(pageNum, pageSize);
+    public TableDataInfo<FlowTaskDto> myProcess(PageQuery pageQuery) {
+        return flowTaskService.myProcess(pageQuery);
     }
 
     @ApiOperation(value = "取消申请", response = FlowTaskDto.class)
     @PostMapping(value = "/stopProcess")
     public R stopProcess(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.stopProcess(flowTaskVo);
+        flowTaskService.stopProcess(flowTaskVo);
+        return R.ok();
     }
 
     @ApiOperation(value = "撤回流程", response = FlowTaskDto.class)
     @PostMapping(value = "/revokeProcess")
     public R revokeProcess(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.revokeProcess(flowTaskVo);
+        flowTaskService.revokeProcess(flowTaskVo);
+        return R.ok();
     }
 
     @ApiOperation(value = "获取待办列表", response = FlowTaskDto.class)
     @GetMapping(value = "/todoList")
-    public R todoList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
-                               @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
-        return flowTaskService.todoList(pageNum, pageSize);
+    public TableDataInfo<FlowTaskDto> todoList(PageQuery pageQuery) {
+        return flowTaskService.todoList(pageQuery);
     }
 
     @ApiOperation(value = "获取已办任务", response = FlowTaskDto.class)
     @GetMapping(value = "/finishedList")
-    public R finishedList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
-                                   @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
-        return flowTaskService.finishedList(pageNum, pageSize);
+    public TableDataInfo<FlowTaskDto> finishedList(PageQuery pageQuery) {
+        return flowTaskService.finishedList(pageQuery);
     }
 
 
     @ApiOperation(value = "流程历史流转记录", response = FlowTaskDto.class)
     @GetMapping(value = "/flowRecord")
     public R flowRecord(String procInsId, String deployId) {
-        return flowTaskService.flowRecord(procInsId,deployId);
+        return R.ok(flowTaskService.flowRecord(procInsId, deployId));
     }
 
     @ApiOperation(value = "获取流程变量", response = FlowTaskDto.class)
@@ -82,7 +83,8 @@ public class FlowTaskController {
     @ApiOperation(value = "审批任务")
     @PostMapping(value = "/complete")
     public R complete(@RequestBody FlowTaskVo flowTaskVo) {
-       return flowTaskService.complete(flowTaskVo);
+        flowTaskService.complete(flowTaskVo);
+        return R.ok();
     }
 
 
@@ -103,7 +105,7 @@ public class FlowTaskController {
     @ApiOperation(value = "获取所有可回退的节点")
     @PostMapping(value = "/returnList")
     public R findReturnTaskList(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.findReturnTaskList(flowTaskVo);
+        return R.ok(flowTaskService.findReturnTaskList(flowTaskVo));
     }
 
     @ApiOperation(value = "删除任务")
@@ -186,6 +188,6 @@ public class FlowTaskController {
      */
     @RequestMapping("/flowViewer/{procInsId}")
     public R getFlowViewer(@PathVariable("procInsId") String procInsId) {
-        return flowTaskService.getFlowViewer(procInsId);
+        return R.ok(flowTaskService.getFlowViewer(procInsId));
     }
 }

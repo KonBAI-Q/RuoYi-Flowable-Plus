@@ -135,8 +135,8 @@ export default {
     getList() {
       this.loading = true;
       todoList(this.queryParams).then(response => {
-        this.todoList = response.data.records;
-        this.total = response.data.total;
+        this.todoList = response.rows;
+        this.total = response.total;
         this.loading = false;
       });
     },
