@@ -1,73 +1,84 @@
 <template>
   <div class="app-container">
-    <el-card class="box-card" >
-        <div slot="header" class="clearfix">
-          <span class="el-icon-document">基础信息</span>
-          <el-button style="float: right;" type="primary" @click="goBack">返回</el-button>
-        </div>
+    <el-tabs tab-position="top">
+      <el-tab-pane label="基础信息">
+        <el-card class="box-card">
+          <!--流程处理表单模块-->
+          <el-col :span="16" :offset="6" v-if="variableOpen">
+            <div>
+              <parser :key="new Date().getTime()" :form-conf="variablesData"/>
+            </div>
+            <div style="margin-left:10%;margin-bottom: 20px;font-size: 14px;" v-if="finished === 'true'">
+              <el-button icon="el-icon-edit-outline" type="success" size="mini" @click="handleComplete">审批</el-button>
+              <!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleDelegate">委派</el-button>-->
+              <!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleAssign">转办</el-button>-->
+              <!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleDelegate">签收</el-button>-->
+              <el-button icon="el-icon-refresh-left" type="warning" size="mini" @click="handleReturn">退回</el-button>
+              <el-button icon="el-icon-circle-close" type="danger" size="mini" @click="handleReject">驳回</el-button>
+            </div>
+          </el-col>
 
-      <!--流程处理表单模块-->
-      <el-col :span="16" :offset="6" v-if="variableOpen">
-          <div>
-            <parser :key="new Date().getTime()" :form-conf="variablesData" />
-          </div>
-          <div style="margin-left:10%;margin-bottom: 20px;font-size: 14px;" v-if="finished === 'true'">
-            <el-button  icon="el-icon-edit-outline" type="success" size="mini" @click="handleComplete">审批</el-button>
-<!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleDelegate">委派</el-button>-->
-<!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleAssign">转办</el-button>-->
-<!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleDelegate">签收</el-button>-->
-            <el-button  icon="el-icon-refresh-left" type="warning" size="mini" @click="handleReturn">退回</el-button>
-            <el-button  icon="el-icon-circle-close" type="danger" size="mini" @click="handleReject">驳回</el-button>
-          </div>
-     </el-col>
-
-      <!--初始化流程加载表单信息-->
-      <el-col :span="16" :offset="4" v-if="formConfOpen">
-        <div class="test-form">
-          <parser :key="new Date().getTime()"  :form-conf="formConf" @submit="submitForm" ref="parser" @getData="getData" />
-        </div>
-      </el-col>
-    </el-card>
-
-    <!--流程流转记录-->
-    <el-card class="box-card" v-if="flowRecordList">
-          <div slot="header" class="clearfix">
-            <span class="el-icon-notebook-1">审批记录</span>
-          </div>
-          <el-col :span="16" :offset="4" >
+          <!--初始化流程加载表单信息-->
+          <el-col :span="16" :offset="4" v-if="formConfOpen">
+            <div class="form-conf">
+              <parser :key="new Date().getTime()" :form-conf="formConf" @submit="submitForm" ref="parser" @getData="getData"/>
+            </div>
+          </el-col>
+        </el-card>
+      </el-tab-pane>
+      <el-tab-pane label="流转记录">
+        <el-card class="box-card">
+          <el-col :span="16" :offset="4">
             <div class="block">
               <el-timeline>
-                <el-timeline-item
-                  v-for="(item,index ) in flowRecordList"
-                  :key="index"
-                  :icon="setIcon(item.finishTime)"
-                  :color="setColor(item.finishTime)"
-                >
-                  <p style="font-weight: 700">{{item.taskName}}</p>
+                <el-timeline-item v-for="(item,index ) in flowRecordList" :key="index" :icon="setIcon(item.finishTime)" :color="setColor(item.finishTime)">
+                  <p style="font-weight: 700">{{ item.taskName }}</p>
                   <el-card :body-style="{ padding: '10px' }">
-                    <label v-if="item.assigneeName" style="font-weight: normal;margin-right: 30px;">实际办理： {{item.assigneeName}} <el-tag type="info" size="mini">{{item.deptName}}</el-tag></label>
-                    <label v-if="item.candidate" style="font-weight: normal;margin-right: 30px;">候选办理： {{item.candidate}}</label>
-                    <label style="font-weight: normal">接收时间： </label><label style="color:#8a909c;font-weight: normal">{{item.createTime}}</label>
-                    <label v-if="item.finishTime" style="margin-left: 30px;font-weight: normal">办结时间： </label><label style="color:#8a909c;font-weight: normal">{{item.finishTime}}</label>
-                    <label v-if="item.duration" style="margin-left: 30px;font-weight: normal">耗时： </label><label style="color:#8a909c;font-weight: normal">{{item.duration}}</label>
-
-                    <p  v-if="item.comment">
-                      <el-tag type="success" v-if="item.comment.type === '1'">  {{item.comment.comment}}</el-tag>
-                      <el-tag type="warning" v-if="item.comment.type === '2'">  {{item.comment.comment}}</el-tag>
-                      <el-tag type="danger" v-if="item.comment.type === '3'">  {{item.comment.comment}}</el-tag>
+                    <label v-if="item.assigneeName" style="font-weight: normal;margin-right: 30px;">实际办理：
+                      {{ item.assigneeName }}
+                      <el-tag type="info" size="mini">{{ item.deptName }}</el-tag>
+                    </label>
+                    <label v-if="item.candidate" style="font-weight: normal;margin-right: 30px;">
+                      候选办理： {{ item.candidate }}
+                    </label>
+                    <label style="font-weight: normal">
+                      接收时间：
+                    </label>
+                    <label style="color:#8a909c;font-weight: normal">
+                      {{ item.createTime }}
+                    </label>
+                    <label v-if="item.finishTime" style="margin-left: 30px;font-weight: normal">
+                      办结时间：
+                    </label>
+                    <label style="color:#8a909c;font-weight: normal">
+                      {{ item.finishTime }}
+                    </label>
+                    <label v-if="item.duration" style="margin-left: 30px;font-weight: normal">
+                      耗时：
+                    </label>
+                    <label style="color:#8a909c;font-weight: normal">
+                      {{ item.duration }}
+                    </label>
+                    <p v-if="item.comment">
+                      <el-tag type="success" v-if="item.comment.type === '1'"> {{ item.comment.comment }}</el-tag>
+                      <el-tag type="warning" v-if="item.comment.type === '2'"> {{ item.comment.comment }}</el-tag>
+                      <el-tag type="danger" v-if="item.comment.type === '3'"> {{ item.comment.comment }}</el-tag>
                     </p>
                   </el-card>
                 </el-timeline-item>
               </el-timeline>
             </div>
           </el-col>
-      </el-card>
-    <el-card class="box-card">
-        <div slot="header" class="clearfix">
-          <span class="el-icon-picture-outline">流程图</span>
-        </div>
-        <process-viewer :key="`designer-${loadIndex}`" :style="{height: '400px'}" :xml="xmlData" :finishedInfo="finishedInfo" :allCommentList="null"></process-viewer>
-    </el-card>
+        </el-card>
+      </el-tab-pane>
+      <el-tab-pane label="流程跟踪">
+        <el-card class="box-card">
+          <process-viewer :key="`designer-${loadIndex}`" :style="'height:' + height" :xml="xmlData"
+                          :finishedInfo="finishedInfo" :allCommentList="null"
+          />
+        </el-card>
+      </el-tab-pane>
+    </el-tabs>
 
     <!--审批正常流程-->
     <el-dialog :title="completeTitle" :visible.sync="completeOpen" width="60%" append-to-body>
@@ -186,6 +197,7 @@ export default {
   props: {},
   data() {
     return {
+      height: document.documentElement.clientHeight - 205 + 'px;',
       // 模型xml数据
       loadIndex: 0,
       xmlData: undefined,
@@ -565,7 +577,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.test-form {
+.form-conf {
   margin: 15px auto;
   width: 800px;
   padding: 15px;
