@@ -95,7 +95,7 @@ public class FlowDefinitionController extends BaseController {
         try {
             return R.ok(flowDefinitionService.readXml(definitionId), null);
         } catch (Exception e) {
-            return R.fail("加载xml文件异常", null);
+            return R.fail("加载xml文件异常");
         }
 
     }

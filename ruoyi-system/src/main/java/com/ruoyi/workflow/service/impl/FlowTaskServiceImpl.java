@@ -694,6 +694,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             for (HistoricActivityInstance histIns : list) {
                 if (StringUtils.isNotBlank(histIns.getTaskId())) {
                     FlowTaskDto flowTask = new FlowTaskDto();
+                    flowTask.setProcDefId(histIns.getProcessDefinitionId());
                     flowTask.setTaskId(histIns.getTaskId());
                     flowTask.setTaskName(histIns.getActivityName());
                     flowTask.setCreateTime(histIns.getStartTime());
