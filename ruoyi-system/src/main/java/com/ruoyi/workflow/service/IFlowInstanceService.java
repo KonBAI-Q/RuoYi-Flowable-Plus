@@ -1,6 +1,5 @@
 package com.ruoyi.workflow.service;
 
-import com.ruoyi.common.core.domain.R;
 import com.ruoyi.workflow.domain.vo.FlowTaskVo;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.task.api.Task;
@@ -54,5 +53,5 @@ public interface IFlowInstanceService {
      * @param variables 流程变量
      * @return
      */
-    R startProcessInstanceById(String procDefId, Map<String, Object> variables);
+    void startProcessInstanceById(String procDefId, Map<String, Object> variables);
 }

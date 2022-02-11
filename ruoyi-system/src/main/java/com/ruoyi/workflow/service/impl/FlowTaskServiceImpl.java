@@ -781,7 +781,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }
 
         // 获得活动的节点
-        List<HistoricActivityInstance> highLightedFlowList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processId).orderByHistoricActivityInstanceStartTime().asc().list();
+        List<HistoricActivityInstance> highLightedFlowList = historyService.createHistoricActivityInstanceQuery()
+            .processInstanceId(processId).orderByHistoricActivityInstanceStartTime().asc().list();
 
         List<String> highLightedFlows = new ArrayList<>();
         List<String> highLightedNodes = new ArrayList<>();
@@ -801,9 +802,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         ProcessEngineConfiguration configuration = processEngine.getProcessEngineConfiguration();
         //获取自定义图片生成器
         ProcessDiagramGenerator diagramGenerator = new CustomProcessDiagramGenerator();
-        InputStream in = diagramGenerator.generateDiagram(bpmnModel, "png", highLightedNodes, highLightedFlows, configuration.getActivityFontName(),
+        return diagramGenerator.generateDiagram(bpmnModel, "png", highLightedNodes, highLightedFlows, configuration.getActivityFontName(),
             configuration.getLabelFontName(), configuration.getAnnotationFontName(), configuration.getClassLoader(), 1.0, true);
-        return in;
 
     }
 

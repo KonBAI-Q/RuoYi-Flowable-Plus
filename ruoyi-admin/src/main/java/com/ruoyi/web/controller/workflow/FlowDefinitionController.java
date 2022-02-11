@@ -62,6 +62,7 @@ public class FlowDefinitionController extends BaseController {
 
     /**
      * 列出指定流程的发布版本列表
+     *
      * @param processKey 流程定义Key
      * @return
      */
@@ -76,8 +77,8 @@ public class FlowDefinitionController extends BaseController {
     @ApiOperation(value = "导入流程文件", notes = "上传bpmn20的xml文件")
     @PostMapping("/import")
     public R<Void> importFile(@RequestParam(required = false) String name,
-                                       @RequestParam(required = false) String category,
-                                       MultipartFile file) {
+                              @RequestParam(required = false) String category,
+                              MultipartFile file) {
         try (InputStream in = file.getInputStream()) {
             flowDefinitionService.importFile(name, category, in);
         } catch (Exception e) {
@@ -133,7 +134,7 @@ public class FlowDefinitionController extends BaseController {
     @ApiOperation(value = "根据流程定义id启动流程实例")
     @PostMapping("/start/{procDefId}")
     public R<Void> start(@ApiParam(value = "流程定义id") @PathVariable(value = "procDefId") String procDefId,
-                                  @ApiParam(value = "变量集合,json对象") @RequestBody Map<String, Object> variables) {
+                         @ApiParam(value = "变量集合,json对象") @RequestBody Map<String, Object> variables) {
         flowDefinitionService.startProcessInstanceById(procDefId, variables);
         return success("流程启动成功");
 
@@ -142,7 +143,7 @@ public class FlowDefinitionController extends BaseController {
     @ApiOperation(value = "激活或挂起流程定义")
     @PutMapping(value = "/updateState")
     public R<Void> updateState(@ApiParam(value = "ture:挂起,false:激活", required = true) @RequestParam Boolean suspended,
-                                        @ApiParam(value = "流程定义ID", required = true) @RequestParam String definitionId) {
+                               @ApiParam(value = "流程定义ID", required = true) @RequestParam String definitionId) {
         flowDefinitionService.updateState(suspended, definitionId);
         return success();
     }

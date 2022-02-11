@@ -76,7 +76,7 @@ public class FlowTaskController {
 
     @ApiOperation(value = "获取流程变量", response = FlowTaskDto.class)
     @GetMapping(value = "/processVariables/{taskId}")
-    public R processVariables(@ApiParam(value = "流程任务Id")  @PathVariable(value = "taskId") String taskId) {
+    public R processVariables(@ApiParam(value = "流程任务Id") @PathVariable(value = "taskId") String taskId) {
         return flowTaskService.processVariables(taskId);
     }
 
@@ -157,7 +157,7 @@ public class FlowTaskController {
     @RequestMapping("/diagram/{processId}")
     public void genProcessDiagram(HttpServletResponse response,
                                   @PathVariable("processId") String processId) {
-        InputStream inputStream =  flowTaskService.diagram(processId);
+        InputStream inputStream = flowTaskService.diagram(processId);
         OutputStream os = null;
         BufferedImage image = null;
         try {
@@ -167,9 +167,9 @@ public class FlowTaskController {
             if (image != null) {
                 ImageIO.write(image, "png", os);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
                 if (os != null) {
                     os.flush();

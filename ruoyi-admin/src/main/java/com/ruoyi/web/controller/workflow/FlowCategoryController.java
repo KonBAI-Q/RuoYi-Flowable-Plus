@@ -42,7 +42,7 @@ import java.util.List;
 @RequestMapping("/workflow/category")
 public class FlowCategoryController extends BaseController {
 
-    private final IFlowCategoryService iFlowCategoryService;
+    private final IFlowCategoryService flowCategoryService;
 
     /**
      * 查询流程分类列表
@@ -51,7 +51,7 @@ public class FlowCategoryController extends BaseController {
     @SaCheckPermission("workflow:category:list")
     @GetMapping("/list")
     public TableDataInfo<FlowCategoryVo> list(@Validated(QueryGroup.class) FlowCategoryBo bo, PageQuery pageQuery) {
-        return iFlowCategoryService.queryPageList(bo, pageQuery);
+        return flowCategoryService.queryPageList(bo, pageQuery);
     }
 
     /**
@@ -62,7 +62,7 @@ public class FlowCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(@Validated FlowCategoryBo bo, HttpServletResponse response) {
-        List<FlowCategoryVo> list = iFlowCategoryService.queryList(bo);
+        List<FlowCategoryVo> list = flowCategoryService.queryList(bo);
         ExcelUtil.exportExcel(list, "流程分类", FlowCategoryVo.class, response);
     }
 
@@ -75,7 +75,7 @@ public class FlowCategoryController extends BaseController {
     public R<FlowCategoryVo> getInfo(@ApiParam("主键")
                                                   @NotNull(message = "主键不能为空")
                                                   @PathVariable("categoryId") Long categoryId) {
-        return R.ok(iFlowCategoryService.queryById(categoryId));
+        return R.ok(flowCategoryService.queryById(categoryId));
     }
 
     /**
@@ -87,7 +87,7 @@ public class FlowCategoryController extends BaseController {
     @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody FlowCategoryBo bo) {
-        return toAjax(iFlowCategoryService.insertByBo(bo) ? 1 : 0);
+        return toAjax(flowCategoryService.insertByBo(bo) ? 1 : 0);
     }
 
     /**
@@ -99,7 +99,7 @@ public class FlowCategoryController extends BaseController {
     @RepeatSubmit()
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody FlowCategoryBo bo) {
-        return toAjax(iFlowCategoryService.updateByBo(bo) ? 1 : 0);
+        return toAjax(flowCategoryService.updateByBo(bo) ? 1 : 0);
     }
 
     /**
@@ -109,9 +109,7 @@ public class FlowCategoryController extends BaseController {
     @SaCheckPermission("workflow:category:remove")
     @Log(title = "流程分类" , businessType = BusinessType.DELETE)
     @DeleteMapping("/{categoryIds}")
-    public R<Void> remove(@ApiParam("主键串")
-                                       @NotEmpty(message = "主键不能为空")
-                                       @PathVariable Long[] categoryIds) {
-        return toAjax(iFlowCategoryService.deleteWithValidByIds(Arrays.asList(categoryIds), true) ? 1 : 0);
+    public R<Void> remove(@ApiParam("主键串") @NotEmpty(message = "主键不能为空") @PathVariable Long[] categoryIds) {
+        return toAjax(flowCategoryService.deleteWithValidByIds(Arrays.asList(categoryIds), true) ? 1 : 0);
     }
 }
