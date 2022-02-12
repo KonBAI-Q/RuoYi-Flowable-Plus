@@ -17,7 +17,7 @@ export default {
   name: 'TagSelect',
   props: {
     value: {
-      type: [Object, Array]
+      type: [Object, Array, String]
     }
   },
   data () {

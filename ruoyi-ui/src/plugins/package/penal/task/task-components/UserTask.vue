@@ -8,8 +8,10 @@
       </el-select>
     </el-form-item>
     <el-form-item label="指定方式" v-if="formData.groupType === 'ASSIGNEE'">
-      <el-radio v-model="formData.assignType" label="1">固定</el-radio>
-      <el-radio v-model="formData.assignType" label="2">动态</el-radio>
+      <el-radio-group v-model="formData.assignType" @change="onAssignTypeChange">
+        <el-radio :label="'1'">固定</el-radio>
+        <el-radio :label="'2'">动态</el-radio>
+      </el-radio-group>
     </el-form-item>
     <el-form-item label="处理用户" v-if="formData.groupType === 'ASSIGNEE'">
       <tag-select v-if="formData.assignType === '1'" v-model="userTaskForm.assignee">
@@ -73,13 +75,8 @@
           </el-card>
         </el-col>
         <el-col :span="14">
-          <el-table
-            ref="singleTable"
-            height="600"
-            :data="userList"
-            border
-            @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="50" align="center" />
+          <el-table ref="multipleTable" height="600" :data="userList" border @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="50" align="center" :selectable="selectEnable" />
             <el-table-column label="用户名" align="center" prop="nickName" />
             <el-table-column label="部门" align="center" prop="dept.deptName" />
           </el-table>
@@ -212,10 +209,10 @@ export default {
         } else if (key === "candidateGroups") {
           // TODO 2022/01/28 添加候选组的设值 this.$set(this.userTaskForm, key, value);
         } else if (key === "assignee") {
+          this.formData.groupType = 'ASSIGNEE';
           let val = this.bpmnElement?.businessObject[key] || this.defaultTaskForm[key];
           // 判断是否为动态用户
           if (val && val.startsWith('${') && val.endsWith('}')) {
-            this.formData.groupType = 'ASSIGNEE';
             this.formData.assignType = '2';
             this.$set(this.userTaskForm, key, val);
           } else {
@@ -265,6 +262,17 @@ export default {
         }
       );
     },
+    selectEnable(row, index) {
+      if (this.formData.groupType === 'ASSIGNEE') {
+        if (this.selectedUserDate.length > 0) {
+          return this.selectedUserDate[0].userId === row.userId;
+        } else {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    },
     // 筛选节点
     filterNode(value, data) {
       if (!value) return true;
@@ -278,6 +286,7 @@ export default {
     // 关闭标签
     handleClose(tag) {
       this.selectedUserDate.splice(this.selectedUserDate.indexOf(tag), 1);
+      this.$refs.multipleTable.toggleRowSelection(tag);
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -304,9 +313,15 @@ export default {
     },
     onGroupTypeChange(val) {
       this.userTaskForm = {}
+      // 清空已选候选人数据
       if (val === 'ASSIGNEE') {
         this.formData.assignType = '1'
       }
+      this.selectedUserDate = []
+      this.$refs.multipleTable?.clearSelection();
+    },
+    onAssignTypeChange() {
+      this.userTaskForm.assignee = null
     },
     onSelectAssignee() {
       this.getDeptTreeSelect();
