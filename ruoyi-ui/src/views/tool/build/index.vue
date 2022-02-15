@@ -149,7 +149,7 @@ import { beautifierConf, titleCase, deepClone, isObjectObject } from '@/utils/in
 import { makeUpHtml, vueTemplate, vueScript, cssStyle } from '@/utils/generator/html'
 import { makeUpJs } from '@/utils/generator/js'
 import { makeUpCss } from '@/utils/generator/css'
-import drawingDefalut from '@/utils/generator/drawingDefalut'
+import drawingDefalut from '@/utils/generator/drawingDefault'
 import logo from '@/assets/logo/logo.png'
 import CodeTypeDialog from './CodeTypeDialog'
 import DraggableItem from './DraggableItem'

@@ -83,10 +83,10 @@ public class FlowDefinitionController extends BaseController {
             flowDefinitionService.importFile(name, category, in);
         } catch (Exception e) {
             log.error("导入失败:", e);
-            return error(e.getMessage());
+            return R.fail(e.getMessage());
         }
 
-        return success("导入成功");
+        return R.ok("导入成功");
     }
 
 
@@ -94,7 +94,7 @@ public class FlowDefinitionController extends BaseController {
     @GetMapping("/readXml/{definitionId}")
     public R<String> readXml(@ApiParam(value = "流程定义ID") @PathVariable(value = "definitionId") String definitionId) {
         try {
-            return R.ok(flowDefinitionService.readXml(definitionId), null);
+            return R.ok(null, flowDefinitionService.readXml(definitionId));
         } catch (Exception e) {
             return R.fail("加载xml文件异常");
         }
@@ -124,10 +124,10 @@ public class FlowDefinitionController extends BaseController {
             flowDefinitionService.importFile(vo.getName(), vo.getCategory(), in);
         } catch (Exception e) {
             log.error("导入失败:", e);
-            return success(e.getMessage());
+            return R.ok(e.getMessage());
         }
 
-        return success("导入成功");
+        return R.ok("导入成功");
     }
 
 
@@ -136,7 +136,7 @@ public class FlowDefinitionController extends BaseController {
     public R<Void> start(@ApiParam(value = "流程定义id") @PathVariable(value = "procDefId") String procDefId,
                          @ApiParam(value = "变量集合,json对象") @RequestBody Map<String, Object> variables) {
         flowDefinitionService.startProcessInstanceById(procDefId, variables);
-        return success("流程启动成功");
+        return R.ok("流程启动成功");
 
     }
 
@@ -145,14 +145,14 @@ public class FlowDefinitionController extends BaseController {
     public R<Void> updateState(@ApiParam(value = "ture:挂起,false:激活", required = true) @RequestParam Boolean suspended,
                                @ApiParam(value = "流程定义ID", required = true) @RequestParam String definitionId) {
         flowDefinitionService.updateState(suspended, definitionId);
-        return success();
+        return R.ok();
     }
 
     @ApiOperation(value = "删除流程")
     @DeleteMapping(value = "/delete")
     public R<Void> delete(@ApiParam(value = "流程部署ID", required = true) @RequestParam String deployId) {
         flowDefinitionService.delete(deployId);
-        return success();
+        return R.ok();
     }
 
     @ApiOperation(value = "指定流程办理人员列表")

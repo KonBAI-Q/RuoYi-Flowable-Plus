@@ -59,7 +59,7 @@
       <div slot="footer">
         <el-button
           type="primary"
-          @click="handelConfirm"
+          @click="handleConfirm"
         >
           确定
         </el-button>
@@ -72,9 +72,6 @@
 </template>
 <script>
 import { isNumberStr } from '@/utils/index'
-import { getTreeNodeId, saveTreeNodeId } from '@/utils/db'
-
-const id = getTreeNodeId()
 
 export default {
   components: {},
@@ -82,7 +79,7 @@ export default {
   props: [],
   data() {
     return {
-      id,
+      id: 100,
       formData: {
         label: undefined,
         value: undefined
@@ -121,9 +118,6 @@ export default {
     // eslint-disable-next-line func-names
     'formData.value': function (val) {
       this.dataType = isNumberStr(val) ? 'number' : 'string'
-    },
-    id(val) {
-      saveTreeNodeId(val)
     }
   },
   created() {},
@@ -139,7 +133,7 @@ export default {
     close() {
       this.$emit('update:visible', false)
     },
-    handelConfirm() {
+    handleConfirm() {
       this.$refs.elForm.validate(valid => {
         if (!valid) return
         if (this.dataType === 'number') {
@@ -153,6 +147,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

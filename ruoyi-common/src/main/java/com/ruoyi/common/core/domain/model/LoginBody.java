@@ -37,7 +37,6 @@ public class LoginBody {
     /**
      * 验证码
      */
-    @NotBlank(message = "{user.jcaptcha.blank}")
     @ApiModelProperty(value = "验证码")
     private String code;
 
@@ -45,6 +44,6 @@ public class LoginBody {
      * 唯一标识
      */
     @ApiModelProperty(value = "唯一标识")
-    private String uuid = "";
+    private String uuid;
 
 }

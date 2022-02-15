@@ -1,5 +1,6 @@
 package com.ruoyi.system.service;
 
+import cn.dev33.satoken.secure.BCrypt;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -10,8 +11,8 @@ import com.ruoyi.common.exception.user.CaptchaException;
 import com.ruoyi.common.exception.user.CaptchaExpireException;
 import com.ruoyi.common.exception.user.UserException;
 import com.ruoyi.common.utils.MessageUtils;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.redis.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,7 @@ public class SysRegisterService {
         SysUser sysUser = new SysUser();
         sysUser.setUserName(username);
         sysUser.setNickName(username);
-        sysUser.setPassword(SecurityUtils.encryptPassword(password));
+        sysUser.setPassword(BCrypt.hashpw(password));
         sysUser.setUserType(userType);
         boolean regFlag = userService.registerUser(sysUser);
         if (!regFlag) {
@@ -71,7 +72,7 @@ public class SysRegisterService {
      * @return 结果
      */
     public void validateCaptcha(String username, String code, String uuid, HttpServletRequest request) {
-        String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
+        String verifyKey = Constants.CAPTCHA_CODE_KEY + StringUtils.defaultString(uuid, "");
         String captcha = RedisUtils.getCacheObject(verifyKey);
         RedisUtils.deleteObject(verifyKey);
         if (captcha == null) {
