@@ -138,24 +138,23 @@
 <script>
 import draggable from 'vuedraggable'
 import { debounce } from 'throttle-debounce'
-import { saveAs } from 'file-saver'
 import ClipboardJS from 'clipboard'
 import render from '@/utils/generator/render'
 import FormDrawer from './FormDrawer'
 import JsonDrawer from './JsonDrawer'
 import RightPanel from './RightPanel'
 import { inputComponents, selectComponents, layoutComponents, formConf } from '@/utils/generator/config'
-import { beautifierConf, titleCase, deepClone, isObjectObject } from '@/utils/index'
+import { beautifierConf, titleCase, deepClone } from '@/utils/index'
 import { makeUpHtml, vueTemplate, vueScript, cssStyle } from '@/utils/generator/html'
 import { makeUpJs } from '@/utils/generator/js'
 import { makeUpCss } from '@/utils/generator/css'
-import drawingDefalut from '@/utils/generator/drawingDefault'
+import drawingDefault from '@/utils/generator/drawingDefault'
 import logo from '@/assets/logo/logo.png'
 import CodeTypeDialog from './CodeTypeDialog'
 import DraggableItem from './DraggableItem'
 import { getDrawingList, saveDrawingList, getIdGlobal, saveIdGlobal, getFormConf } from '@/utils/db'
 import loadBeautifier from '@/utils/loadBeautifier'
-import {getForm, addForm, updateForm} from "@/api/workflow/form";
+import { getForm, addForm, updateForm } from '@/api/workflow/form'
 
 let beautifier
 const emptyActiveData = { style: {}, autosize: {} }
@@ -184,16 +183,16 @@ export default {
       selectComponents,
       layoutComponents,
       labelWidth: 100,
-      drawingList: drawingDefalut,
+      drawingList: drawingDefault,
       drawingData: {},
-      activeId: drawingDefalut[0].formId,
+      activeId: drawingDefault[0].formId,
       drawerVisible: false,
       formData: {},
       dialogVisible: false,
       jsonDrawerVisible: false,
       generateConf: null,
       showFileName: false,
-      activeData: drawingDefalut[0],
+      activeData: drawingDefault[0],
       saveDrawingListDebounce: debounce(340, saveDrawingList),
       saveIdGlobalDebounce: debounce(340, saveIdGlobal),
       leftComponents: [
@@ -223,7 +222,12 @@ export default {
       rules: {}
     }
   },
-  computed: {
+  created() {
+    // 防止 firefox 下 拖拽 会新打卡一个选项卡
+    document.body.ondrop = event => {
+      event.preventDefault()
+      event.stopPropagation()
+    }
   },
   watch: {
     // eslint-disable-next-line func-names
@@ -263,7 +267,7 @@ export default {
     if (Array.isArray(drawingListInDB) && drawingListInDB.length > 0) {
       that.drawingList = drawingListInDB
     } else {
-      that.drawingList = drawingDefalut
+      that.drawingList = drawingDefault
     }
     this.activeFormItem(that.drawingList[0])
     // // if (formConfInDB) {
@@ -306,7 +310,7 @@ export default {
       arr.reduce((pre, item, i) => {
         if (arr.length === i + 1) {
           pre[item] = data
-        } else if (!isObjectObject(pre[item])) {
+        } else if (!(pre[item] instanceof Object)) {
           pre[item] = {}
         }
         return pre[item]
@@ -405,7 +409,7 @@ export default {
     execDownload(data) {
       const codeStr = this.generateCode()
       const blob = new Blob([codeStr], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, data.fileName)
+      this.$download.saveAs(blob, data.fileName)
     },
     execCopy(data) {
       document.getElementById('copyNode').click()
