@@ -44,7 +44,7 @@ create table sys_user (
   dept_id           bigint(20)      default null               comment '部门ID',
   user_name         varchar(30)     not null                   comment '用户账号',
   nick_name         varchar(30)     not null                   comment '用户昵称',
-  user_type         varchar(10)      default 'sys_user'        comment '用户类型（sys_user系统用户）',
+  user_type         varchar(10)     default 'sys_user'         comment '用户类型（sys_user系统用户）',
   email             varchar(50)     default ''                 comment '用户邮箱',
   phonenumber       varchar(11)     default ''                 comment '手机号码',
   sex               char(1)         default '0'                comment '用户性别（0男 1女 2未知）',
@@ -691,22 +691,22 @@ create table sys_oss (
 -- ----------------------------
 drop table if exists sys_oss_config;
 create table sys_oss_config (
-  oss_config_id   bigint(20)   not null auto_increment comment '主建',
-  config_key      varchar(255)  not null default ''     comment '配置key',
-  access_key      varchar(255)            default ''    comment 'accessKey',
-  secret_key      varchar(255)            default ''    comment '秘钥',
-  bucket_name     varchar(255)            default ''    comment '桶名称',
-  prefix           varchar(255)           default ''     comment '前缀',
-  endpoint         varchar(255)           default ''     comment '访问站点',
-  is_https         char(1)                default 'N'    comment '是否https（Y=是,N=否）',
-  region           varchar(255)           default ''     comment '域',
-  status           char(1)                default '1'    comment '状态（0=正常,1=停用）',
-  ext1             varchar(255)           default ''      comment '扩展字段',
+  oss_config_id   bigint(20)   not null   auto_increment comment '主建',
+  config_key      varchar(255)  not null  default ''     comment '配置key',
+  access_key      varchar(255)            default ''     comment 'accessKey',
+  secret_key      varchar(255)            default ''     comment '秘钥',
+  bucket_name     varchar(255)            default ''     comment '桶名称',
+  prefix          varchar(255)            default ''     comment '前缀',
+  endpoint        varchar(255)            default ''     comment '访问站点',
+  is_https        char(1)                 default 'N'    comment '是否https（Y=是,N=否）',
+  region          varchar(255)            default ''     comment '域',
+  status          char(1)                 default '1'    comment '状态（0=正常,1=停用）',
+  ext1            varchar(255)            default ''     comment '扩展字段',
   create_by       varchar(64)             default ''     comment '创建者',
   create_time     datetime                default null   comment '创建时间',
-  update_by       varchar(64)             default ''      comment '更新者',
-  update_time     datetime                default null    comment '更新时间',
-  remark           varchar(500)           default null    comment '备注',
+  update_by       varchar(64)             default ''     comment '更新者',
+  update_time     datetime                default null   comment '更新时间',
+  remark          varchar(500)            default null   comment '备注',
   primary key (oss_config_id)
 ) engine=innodb comment='对象存储配置表';
 
@@ -716,45 +716,45 @@ insert into sys_oss_config values (3, 'aliyun', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXX
 insert into sys_oss_config values (4, 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1250000000',  '', 'http://cos.ap-beijing.myqcloud.com',   'N', 'ap-beijing',  '1', '', 'admin', sysdate(), 'admin', sysdate(), NULL);
 
 -- ----------------------------
--- Table structure for sys_deploy_form
+-- sys_deploy_form流程实例关联表
 -- ----------------------------
 drop table if exists `sys_deploy_form`;
 create table `sys_deploy_form` (
-    id        bigint not null auto_increment comment '主键',
-    form_id   bigint null default null comment '表单主键',
-    deploy_id varchar(50) character set utf8mb4 collate utf8mb4_general_ci null default null comment '流程实例主键',
-    primary key (`id`) using btree
-) engine = innodb auto_increment = 1 character set = utf8mb4 collate = utf8mb4_general_ci comment = '流程实例关联表单' row_format = dynamic;
+    id        bigint(20)   not null    auto_increment comment '主键',
+    form_id   bigint(20)               default null   comment '表单主键',
+    deploy_id varchar(50)              default ''     comment '流程实例主键',
+    primary key (`id`)
+) engine = innodb comment = '流程实例关联表单';
 
 -- ----------------------------
--- Table structure for sys_form
+-- sys_form流程表单信息表
 -- ----------------------------
 drop table if exists `sys_form`;
 create table `sys_form` (
-    form_id      bigint not null auto_increment comment '表单主键',
-    form_name    varchar(50) character set utf8mb4 collate utf8mb4_general_ci null default null comment '表单名称',
-    form_content longtext character set utf8mb4 collate utf8mb4_general_ci null comment '表单内容',
-    create_time  datetime null default null comment '创建时间',
-    update_time  datetime null default null comment '更新时间',
-    create_by    bigint null default null comment '创建人员',
-    update_by    bigint null default null comment '更新人员',
-    remark       varchar(255) character set utf8mb4 collate utf8mb4_general_ci null default null comment '备注',
-    primary key (`form_id`) using btree
-) engine = innodb auto_increment = 1 character set = utf8mb4 collate = utf8mb4_general_ci comment = '流程表单' row_format = dynamic;
+    form_id      bigint(20)   not null auto_increment comment '表单主键',
+    form_name    varchar(50)           default ''     comment '表单名称',
+    form_content longtext              default null   comment '表单内容',
+    create_by    varchar(64)           default ''     comment '创建者',
+    create_time  datetime              default null   comment '创建时间',
+    update_by    varchar(64)           default ''     comment '更新者',
+    update_time  datetime              default null   comment '更新时间',
+    remark       varchar(255)          default null   comment '备注',
+    primary key (`form_id`)
+) engine = innodb comment = '流程表单信息表';
 
 -- ----------------------------
--- Table structure for workflow_category
+-- workflow_category流程分类表
 -- ----------------------------
 drop table if exists `workflow_category`;
 create table `workflow_category` (
     category_id   bigint       not null  auto_increment comment '流程分类id',
-    category_name varchar(64)  default   null           comment '流程分类名称',
-    code          varchar(64)  default   null           comment '分类编码',
-    remark        varchar(500) default   null           comment '备注',
-    create_by     varchar(64)  default   ''             comment '创建者',
-    create_time   datetime                              comment '创建时间',
-    update_by     varchar(64)  default   ''             comment '更新者',
-    update_time   datetime                              comment '更新时间',
-    del_flag      char(1)      default   '0'            comment '删除标志（0代表存在 2代表删除）',
+    category_name varchar(64)            default ''     comment '流程分类名称',
+    code          varchar(64)            default ''     comment '分类编码',
+    remark        varchar(500)           default ''     comment '备注',
+    create_by     varchar(64)            default ''     comment '创建者',
+    create_time   datetime               default null   comment '创建时间',
+    update_by     varchar(64)            default ''     comment '更新者',
+    update_time   datetime               default null   comment '更新时间',
+    del_flag      char(1)                default '0'    comment '删除标志（0代表存在 2代表删除）',
     primary key (`category_id`)
-) engine=innodb auto_increment=2 default charset=utf8mb4 collate=utf8mb4_0900_ai_ci;
+) engine=innodb comment = '流程分类表';
