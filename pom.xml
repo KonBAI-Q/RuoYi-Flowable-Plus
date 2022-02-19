@@ -6,15 +6,15 @@
 
     <groupId>com.ruoyi</groupId>
     <artifactId>ruoyi-flowable-plus</artifactId>
-    <version>3.5.0</version>
+    <version>4.0.0</version>
 
     <name>RuoYi-Flowable-Plus</name>
     <url>https://gitee.com/KonBAI-Q/ruoyi-flowable-plus</url>
     <description>RuoYi-Flowable-Plus后台管理系统</description>
 
     <properties>
-        <ruoyi-flowable-plus.version>3.5.0</ruoyi-flowable-plus.version>
-        <spring-boot.version>2.5.8</spring-boot.version>
+        <ruoyi-flowable-plus.version>4.0.0</ruoyi-flowable-plus.version>
+        <spring-boot.version>2.6.3</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -273,7 +273,7 @@
                 <version>${ruoyi-flowable-plus.version}</version>
             </dependency>
 
-
+            <!-- 工作流模块 -->
             <dependency>
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-flowable</artifactId>
