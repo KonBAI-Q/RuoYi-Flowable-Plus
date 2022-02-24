@@ -9,8 +9,8 @@ import com.ruoyi.workflow.service.IFlowTaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
@@ -28,12 +28,12 @@ import java.io.OutputStream;
  */
 @Slf4j
 @Api(tags = "工作流流程任务管理")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/task")
 public class FlowTaskController {
 
-    @Autowired
-    private IFlowTaskService flowTaskService;
+    private final IFlowTaskService flowTaskService;
 
     @ApiOperation(value = "我发起的流程", response = FlowTaskDto.class)
     @GetMapping(value = "/myProcess")

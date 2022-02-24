@@ -28,6 +28,7 @@ import com.ruoyi.workflow.domain.vo.FlowTaskVo;
 import com.ruoyi.workflow.domain.vo.FlowViewerVo;
 import com.ruoyi.workflow.service.IFlowTaskService;
 import com.ruoyi.workflow.service.ISysDeployFormService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +56,6 @@ import org.flowable.task.api.history.HistoricTaskInstanceQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,20 +67,16 @@ import java.util.stream.Collectors;
  * @author XuanXuan
  * @date 2021-04-03
  **/
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTaskService {
 
-    @Resource
-    private ISysUserService sysUserService;
+    private final ISysUserService sysUserService;
 
+    private final ISysRoleService sysRoleService;
 
-    @Resource
-    private ISysRoleService sysRoleService;
-
-
-    @Resource
-    private ISysDeployFormService sysInstanceFormService;
+    private final ISysDeployFormService sysInstanceFormService;
 
     /**
      * 完成任务
@@ -442,23 +438,22 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 flowTask.setDuration(getDate(time));
             }
             // 流程定义信息
-            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
+            ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionId(hisIns.getProcessDefinitionId())
                 .singleResult();
-            flowTask.setDeployId(pd.getDeploymentId());
+            flowTask.setDeployId(processDefinition.getDeploymentId());
             flowTask.setProcDefId(hisIns.getProcessDefinitionId());
-            flowTask.setProcDefName(pd.getName());
-            flowTask.setProcDefVersion(pd.getVersion());
-            flowTask.setCategory(pd.getCategory());
-            flowTask.setProcDefVersion(pd.getVersion());
+            flowTask.setProcDefName(processDefinition.getName());
+            flowTask.setProcDefVersion(processDefinition.getVersion());
+            flowTask.setCategory(processDefinition.getCategory());
             // 当前所处流程 todo: 本地启动放开以下注释
-//            List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
-//            if (CollectionUtils.isNotEmpty(taskList)) {
-//                flowTask.setTaskId(taskList.get(0).getId());
-//            } else {
-//                List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
-//                flowTask.setTaskId(historicTaskInstance.get(0).getId());
-//            }
+            // List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
+            // if (CollectionUtils.isNotEmpty(taskList)) {
+            //     flowTask.setTaskId(taskList.get(0).getId());
+            // } else {
+            //     List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
+            //     flowTask.setTaskId(historicTaskInstance.get(0).getId());
+            // }
             flowList.add(flowTask);
         }
         page.setRecords(flowList);
@@ -478,8 +473,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             throw new RuntimeException("流程未启动或已执行完成，取消申请失败");
         }
 
-        ProcessInstance processInstance =
-            runtimeService.createProcessInstanceQuery().processInstanceId(flowTaskVo.getInstanceId()).singleResult();
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+            .processInstanceId(flowTaskVo.getInstanceId()).singleResult();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processInstance.getProcessDefinitionId());
         if (Objects.nonNull(bpmnModel)) {
             Process process = bpmnModel.getMainProcess();
@@ -489,12 +484,12 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
 //                taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.STOP.getType(),
 //                        StringUtils.isBlank(flowTaskVo.getComment()) ? "取消申请" : flowTaskVo.getComment());
                 String endId = endNodes.get(0).getId();
-                List<Execution> executions =
-                    runtimeService.createExecutionQuery().parentId(processInstance.getProcessInstanceId()).list();
+                List<Execution> executions = runtimeService.createExecutionQuery()
+                    .parentId(processInstance.getProcessInstanceId()).list();
                 List<String> executionIds = new ArrayList<>();
                 executions.forEach(execution -> executionIds.add(execution.getId()));
-                runtimeService.createChangeActivityStateBuilder().moveExecutionsToSingleActivityId(executionIds,
-                    endId).changeState();
+                runtimeService.createChangeActivityStateBuilder()
+                    .moveExecutionsToSingleActivityId(executionIds, endId).changeState();
             }
         }
     }

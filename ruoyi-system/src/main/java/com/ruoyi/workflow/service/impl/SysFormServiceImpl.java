@@ -3,10 +3,10 @@ package com.ruoyi.workflow.service.impl;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.workflow.service.ISysFormService;
 import com.ruoyi.system.domain.SysForm;
 import com.ruoyi.system.mapper.SysFormMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ruoyi.workflow.service.ISysFormService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +17,11 @@ import java.util.List;
  * @author XuanXuan Xuan
  * @date 2021-04-03
  */
+@RequiredArgsConstructor
 @Service
 public class SysFormServiceImpl implements ISysFormService {
 
-    @Autowired
-    private SysFormMapper sysFormMapper;
+    private final SysFormMapper sysFormMapper;
 
     /**
      * 查询流程表单

@@ -7,8 +7,8 @@ import com.ruoyi.workflow.service.IFlowInstanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -21,12 +21,12 @@ import java.util.Map;
  */
 @Slf4j
 @Api(tags = "工作流流程实例管理")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/instance")
 public class FlowInstanceController {
 
-    @Autowired
-    private IFlowInstanceService flowInstanceService;
+    private final IFlowInstanceService flowInstanceService;
 
     @ApiOperation(value = "根据流程定义id启动流程实例")
     @PostMapping("/startBy/{procDefId}")

@@ -14,12 +14,11 @@ import com.ruoyi.workflow.service.IFlowDefinitionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
@@ -40,18 +39,16 @@ import java.util.Map;
  */
 @Slf4j
 @Api(tags = "流程定义")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/definition")
 public class FlowDefinitionController extends BaseController {
 
-    @Autowired
-    private IFlowDefinitionService flowDefinitionService;
+    private final IFlowDefinitionService flowDefinitionService;
 
-    @Autowired
-    private ISysUserService userService;
+    private final ISysUserService userService;
 
-    @Resource
-    private ISysRoleService sysRoleService;
+    private final ISysRoleService sysRoleService;
 
 
     @GetMapping(value = "/list")

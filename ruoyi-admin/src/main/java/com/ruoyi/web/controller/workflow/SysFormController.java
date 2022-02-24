@@ -8,11 +8,11 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.workflow.service.ISysDeployFormService;
-import com.ruoyi.workflow.service.ISysFormService;
 import com.ruoyi.system.domain.SysDeployForm;
 import com.ruoyi.system.domain.SysForm;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ruoyi.workflow.service.ISysDeployFormService;
+import com.ruoyi.workflow.service.ISysFormService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,14 +24,14 @@ import java.util.List;
  * @author XuanXuan
  * @date 2021-04-03
  */
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/form")
 public class SysFormController extends BaseController {
-    @Autowired
-    private ISysFormService SysFormService;
 
-    @Autowired
-    private ISysDeployFormService sysDeployFormService;
+    private final ISysFormService SysFormService;
+
+    private final ISysDeployFormService sysDeployFormService;
 
     /**
      * 查询流程表单列表

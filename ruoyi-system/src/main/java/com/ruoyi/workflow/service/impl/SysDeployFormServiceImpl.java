@@ -1,10 +1,10 @@
 package com.ruoyi.workflow.service.impl;
 
-import com.ruoyi.workflow.service.ISysDeployFormService;
 import com.ruoyi.system.domain.SysDeployForm;
 import com.ruoyi.system.domain.SysForm;
 import com.ruoyi.system.mapper.SysDeployFormMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ruoyi.workflow.service.ISysDeployFormService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +16,11 @@ import java.util.Objects;
  * @author XuanXuan Xuan
  * @date 2021-04-03
  */
+@RequiredArgsConstructor
 @Service
 public class SysDeployFormServiceImpl implements ISysDeployFormService {
 
-    @Autowired
-    private SysDeployFormMapper sysDeployFormMapper;
+    private final SysDeployFormMapper sysDeployFormMapper;
 
     /**
      * 查询流程实例关联表单
