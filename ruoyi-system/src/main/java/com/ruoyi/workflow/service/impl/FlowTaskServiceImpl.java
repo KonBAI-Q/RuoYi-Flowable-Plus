@@ -42,6 +42,7 @@ import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
+import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
@@ -437,15 +438,14 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 long time = System.currentTimeMillis() - hisIns.getStartTime().getTime();
                 flowTask.setDuration(getDate(time));
             }
-            // 流程定义信息
-            ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionId(hisIns.getProcessDefinitionId())
-                .singleResult();
-            flowTask.setDeployId(processDefinition.getDeploymentId());
+            // 流程部署实例信息
+            Deployment deployment = repositoryService.createDeploymentQuery()
+                .deploymentId(hisIns.getDeploymentId()).singleResult();
+            flowTask.setDeployId(hisIns.getDeploymentId());
             flowTask.setProcDefId(hisIns.getProcessDefinitionId());
-            flowTask.setProcDefName(processDefinition.getName());
-            flowTask.setProcDefVersion(processDefinition.getVersion());
-            flowTask.setCategory(processDefinition.getCategory());
+            flowTask.setProcDefName(hisIns.getProcessDefinitionName());
+            flowTask.setProcDefVersion(hisIns.getProcessDefinitionVersion());
+            flowTask.setCategory(deployment.getCategory());
             // 当前所处流程 todo: 本地启动放开以下注释
             // List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
             // if (CollectionUtils.isNotEmpty(taskList)) {
