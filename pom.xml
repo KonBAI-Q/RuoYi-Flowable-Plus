@@ -2,18 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ruoyi</groupId>
     <artifactId>ruoyi-flowable-plus</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
 
     <name>RuoYi-Flowable-Plus</name>
     <url>https://gitee.com/KonBAI-Q/ruoyi-flowable-plus</url>
     <description>RuoYi-Flowable-Plus后台管理系统</description>
 
     <properties>
-        <ruoyi-flowable-plus.version>4.0.0</ruoyi-flowable-plus.version>
+        <ruoyi-flowable-plus.version>4.0.1</ruoyi-flowable-plus.version>
         <spring-boot.version>2.6.3</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -43,10 +43,10 @@
         <jaxb.version>3.0.1</jaxb.version>
 
         <!-- OSS 配置 -->
-        <qiniu.version>7.9.2</qiniu.version>
+        <qiniu.version>7.9.3</qiniu.version>
         <aliyun.oss.version>3.14.0</aliyun.oss.version>
         <qcloud.cos.version>5.6.68</qcloud.cos.version>
-        <minio.version>8.3.5</minio.version>
+        <minio.version>8.3.7</minio.version>
 
         <!-- docker 配置 -->
         <docker.registry.url>localhost</docker.registry.url>
