@@ -74,7 +74,8 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
         if (pageTotal <= 0) {
             return TableDataInfo.build();
         }
-        List<ProcessDefinition> definitionList = processDefinitionQuery.listPage(pageQuery.getPageNum() - 1, pageQuery.getPageSize());
+        int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
+        List<ProcessDefinition> definitionList = processDefinitionQuery.listPage(offset, pageQuery.getPageSize());
 
         List<FlowDefinitionVo> definitionVoList = new ArrayList<>();
         for (ProcessDefinition processDefinition : definitionList) {
@@ -115,8 +116,9 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             return TableDataInfo.build();
         }
         // 根据查询条件，查询所有版本
+        int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<ProcessDefinition> processDefinitionList = processDefinitionQuery
-            .listPage(pageQuery.getPageNum() - 1, pageQuery.getPageSize());
+            .listPage(offset, pageQuery.getPageSize());
         List<FlowDefinitionVo> flowDefinitionVoList = processDefinitionList.stream().map(item -> {
             FlowDefinitionVo vo = new FlowDefinitionVo();
             vo.setDefinitionId(item.getId());

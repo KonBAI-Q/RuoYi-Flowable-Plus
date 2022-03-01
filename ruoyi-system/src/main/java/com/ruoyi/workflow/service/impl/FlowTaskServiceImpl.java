@@ -420,8 +420,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             .startedBy(userId.toString())
             .orderByProcessInstanceStartTime()
             .desc();
+        int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<HistoricProcessInstance> historicProcessInstances = historicProcessInstanceQuery
-            .listPage(pageQuery.getPageNum() - 1, pageQuery.getPageSize());
+            .listPage(offset, pageQuery.getPageSize());
         page.setTotal(historicProcessInstanceQuery.count());
         List<FlowTaskDto> flowList = new ArrayList<>();
         for (HistoricProcessInstance hisIns : historicProcessInstances) {
@@ -564,7 +565,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             .taskCandidateOrAssigned(userId.toString())
             .orderByTaskCreateTime().desc();
         page.setTotal(taskQuery.count());
-        List<Task> taskList = taskQuery.listPage(pageQuery.getPageNum() - 1, pageQuery.getPageSize());
+        int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
+        List<Task> taskList = taskQuery.listPage(offset, pageQuery.getPageSize());
         List<FlowTaskDto> flowList = new ArrayList<>();
         for (Task task : taskList) {
             FlowTaskDto flowTask = new FlowTaskDto();
@@ -615,7 +617,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             .taskAssignee(userId.toString())
             .orderByHistoricTaskInstanceEndTime()
             .desc();
-        List<HistoricTaskInstance> historicTaskInstanceList = taskInstanceQuery.listPage(pageQuery.getPageNum() - 1, pageQuery.getPageSize());
+        int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
+        List<HistoricTaskInstance> historicTaskInstanceList = taskInstanceQuery.listPage(offset, pageQuery.getPageSize());
         List<FlowTaskDto> hisTaskList = Lists.newArrayList();
         for (HistoricTaskInstance histTask : historicTaskInstanceList) {
             FlowTaskDto flowTask = new FlowTaskDto();
@@ -649,7 +652,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setStartDeptName(startUser.getDept().getDeptName());
             hisTaskList.add(flowTask);
         }
-        page.setTotal(hisTaskList.size());
+        page.setTotal(taskInstanceQuery.count());
         page.setRecords(hisTaskList);
 //        Map<String, Object> result = new HashMap<>();
 //        result.put("result",page);
