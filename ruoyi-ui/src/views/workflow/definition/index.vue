@@ -32,6 +32,7 @@
           icon="el-icon-upload"
           size="mini"
           @click="handleImport"
+          v-hasPermi="['workflow:definition:designer']"
         >导入</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -41,6 +42,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
+          v-hasPermi="['workflow:definition:designer']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -51,7 +53,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:deployment:remove']"
+          v-hasPermi="['workflow:definition:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -61,7 +63,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:deployment:export']"
+          v-hasPermi="['workflow:definition:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -109,13 +111,14 @@
             size="mini"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
+            v-hasPermi="['workflow:definition:designer']"
           >编辑</el-button>
           <el-button
             type="text"
             size="mini"
             icon="el-icon-delete"
-            v-hasPermi="['system:deployment:remove']"
             @click="handleDelete(scope.row)"
+            v-hasPermi="['workflow:definition:remove']"
           >删除</el-button>
           <el-dropdown>
             <span class="el-dropdown-link">
@@ -125,15 +128,17 @@
               <el-dropdown-item
                 icon="el-icon-view"
                 @click.native="handleProcessView(scope.row)"
+                v-hasPermi="['workflow:definition:view']"
               >流程图</el-dropdown-item>
               <el-dropdown-item
                 icon="el-icon-connection"
-                @click.native="handleAddForm(scope.row)"
                 v-if="scope.row.formId == null"
+                @click.native="handleAddForm(scope.row)"
               >配置表单</el-dropdown-item>
               <el-dropdown-item
                 icon="el-icon-price-tag"
                 @click.native="handlePublish(scope.row)"
+                v-hasPermi="['workflow:definition:list']"
               >版本管理</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -237,6 +242,7 @@
               icon="el-icon-video-pause"
               v-if="!scope.row.suspended"
               @click.native="handleUpdateSuspended(scope.row)"
+              v-hasPermi="['workflow:definition:update']"
             >挂起</el-button>
             <el-button
               type="text"
@@ -244,13 +250,14 @@
               icon="el-icon-video-play"
               v-if="scope.row.suspended"
               @click.native="handleUpdateSuspended(scope.row)"
+              v-hasPermi="['workflow:definition:update']"
             >激活</el-button>
             <el-button
               type="text"
               size="mini"
               icon="el-icon-delete"
-              v-hasPermi="['system:deployment:remove']"
               @click="handleDelete(scope.row)"
+              v-hasPermi="['workflow:definition:remove']"
             >删除</el-button>
           </template>
         </el-table-column>

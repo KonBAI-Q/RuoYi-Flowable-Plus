@@ -186,12 +186,12 @@ insert into sys_menu values('118',  '文件管理', '1', '10', 'oss', 'system/os
 -- xxl-job-admin控制台
 insert into sys_menu values('120',  '任务调度中心', '2',  '5', 'XxlJob',      'monitor/xxljob/index',      '', 1, 0, 'C', '0', '0', 'monitor:xxljob:list',      'job',     'admin', sysdate(), '', null, 'Xxl-Job控制台菜单');
 -- 流程配置
-insert into sys_menu values('121',  '流程分类', '5',   '1', 'category',   'workflow/category/index',      '', 1, 0, 'C', '0', '0', null, 'nested', 'admin', sysdate(), 'admin', null, '');
-insert into sys_menu values('122',  '流程定义', '5',   '2', 'definition', 'workflow/definition/index',    '', 1, 0, 'C', '0', '0', null, 'example', 'admin', sysdate(), 'admin', null, '');
-insert into sys_menu values('123',  '表单配置', '5',   '3', 'form',       'workflow/task/form/index',     '', 1, 0, 'C', '0', '0', null, 'form', 'admin', sysdate(), 'admin', null, '');
-insert into sys_menu values('124',  '我的流程', '6',   '1', 'process',    'workflow/task/process/index',  '', 1, 0, 'C', '0', '0', null, 'guide', 'admin', sysdate(), 'admin', null, '');
-insert into sys_menu values('125',  '待办任务', '6',   '2', 'todo',       'workflow/task/todo/index',     '', 1, 0, 'C', '0', '0', null, 'cascader', 'admin', sysdate(), 'admin', null, '');
-insert into sys_menu values('126',  '已办任务', '6',   '3', 'finished',   'workflow/task/finished/index', '', 1, 0, 'C', '0', '0', null, 'checkbox', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('121',  '流程分类', '5',   '1', 'category',   'workflow/category/index',      '', 1, 0, 'C', '0', '0', 'workflow:category:list',   'nested', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('122',  '流程定义', '5',   '2', 'definition', 'workflow/definition/index',    '', 1, 0, 'C', '0', '0', 'workflow:definition:list', 'example', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('123',  '表单配置', '5',   '3', 'form',       'workflow/task/form/index',     '', 1, 0, 'C', '0', '0', 'workflow:form:list',       'form', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('124',  '我的流程', '6',   '1', 'process',    'workflow/task/process/index',  '', 1, 0, 'C', '0', '0', null,                       'guide', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('125',  '待办任务', '6',   '2', 'todo',       'workflow/task/todo/index',     '', 1, 0, 'C', '0', '0', null,                       'cascader', 'admin', sysdate(), 'admin', null, '');
+insert into sys_menu values('126',  '已办任务', '6',   '3', 'finished',   'workflow/task/finished/index', '', 1, 0, 'C', '0', '0', null,                       'checkbox', 'admin', sysdate(), 'admin', null, '');
 
 -- 三级菜单
 insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          'admin', sysdate(), '', null, '操作日志菜单');
@@ -269,11 +269,23 @@ insert into sys_menu values('1132', '文件下载', '118', '3', '#', '', '', 1, 
 insert into sys_menu values('1133', '文件删除', '118', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:remove',       '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1134', '配置添加', '118', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:add',          '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1135', '配置编辑', '118', '6', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:edit',         '#', 'admin', sysdate(), '', null, '');
--- 流程管理
+-- 流程分类管理
 insert into sys_menu values('1140', '分类查询', '121', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:category:query',  '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1141', '分类新增', '121', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:category:add',    '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1142', '分类编辑', '121', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:category:edit',   '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1143', '分类删除', '121', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:category:remove', '#', 'admin', sysdate(), '', null, '');
+-- 流程定义
+insert into sys_menu values('1150', '查看流程', '122', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:view',     '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1151', '流程设计', '122', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:designer', '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1152', '启动流程', '122', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:start',    '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1153', '更新流程', '122', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:update',   '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1154', '流程删除', '122', '5', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:remove',   '#', 'admin', sysdate(), '', null, '');
+-- 表单配置
+insert into sys_menu values('1160', '表单查询', '123', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:query',   '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1161', '表单新增', '123', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:add',     '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1162', '表单修改', '123', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:edit',    '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1163', '表单删除', '123', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:remove',  '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1164', '表单导出', '123', '5', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:export',  '#', 'admin', sysdate(), '', null, '');
 
 -- ----------------------------
 -- 6、用户和角色关联表  用户N-1角色
@@ -400,6 +412,16 @@ insert into `sys_role_menu` values (2, 1140);
 insert into `sys_role_menu` values (2, 1141);
 insert into `sys_role_menu` values (2, 1142);
 insert into `sys_role_menu` values (2, 1143);
+insert into `sys_role_menu` values (2, 1150);
+insert into `sys_role_menu` values (2, 1151);
+insert into `sys_role_menu` values (2, 1152);
+insert into `sys_role_menu` values (2, 1153);
+insert into `sys_role_menu` values (2, 1154);
+insert into `sys_role_menu` values (2, 1160);
+insert into `sys_role_menu` values (2, 1161);
+insert into `sys_role_menu` values (2, 1162);
+insert into `sys_role_menu` values (2, 1163);
+insert into `sys_role_menu` values (2, 1164);
 
 -- ----------------------------
 -- 8、角色和部门关联表  角色1-N部门

@@ -36,7 +36,7 @@ public class SysFormController extends BaseController {
     /**
      * 查询流程表单列表
      */
-    @SaCheckPermission("flowable:form:list")
+    @SaCheckPermission("workflow:form:list")
     @GetMapping("/list")
     public TableDataInfo list(SysForm sysForm, PageQuery pageQuery) {
         return SysFormService.selectSysFormPage(sysForm, pageQuery);
@@ -45,7 +45,7 @@ public class SysFormController extends BaseController {
     /**
      * 导出流程表单列表
      */
-    @SaCheckPermission("flowable:form:export")
+    @SaCheckPermission("workflow:form:export")
     @Log(title = "流程表单", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public void export(SysForm sysForm, HttpServletResponse response) {
@@ -56,7 +56,7 @@ public class SysFormController extends BaseController {
     /**
      * 获取流程表单详细信息
      */
-    @SaCheckPermission("flowable:form:query")
+    @SaCheckPermission("workflow:form:query")
     @GetMapping(value = "/{formId}")
     public R getInfo(@PathVariable("formId") Long formId) {
         return R.ok(SysFormService.selectSysFormById(formId));
@@ -65,7 +65,7 @@ public class SysFormController extends BaseController {
     /**
      * 新增流程表单
      */
-    @SaCheckPermission("flowable:form:add")
+    @SaCheckPermission("workflow:form:add")
     @Log(title = "流程表单", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody SysForm sysForm) {
@@ -75,7 +75,7 @@ public class SysFormController extends BaseController {
     /**
      * 修改流程表单
      */
-    @SaCheckPermission("flowable:form:edit")
+    @SaCheckPermission("workflow:form:edit")
     @Log(title = "流程表单", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody SysForm sysForm) {
@@ -85,7 +85,7 @@ public class SysFormController extends BaseController {
     /**
      * 删除流程表单
      */
-    @SaCheckPermission("flowable:form:remove")
+    @SaCheckPermission("workflow:form:remove")
     @Log(title = "流程表单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{formIds}")
     public R remove(@PathVariable Long[] formIds) {

@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.workflow;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
@@ -47,8 +48,8 @@ public class FlowDefinitionController extends BaseController {
 
     private final ISysRoleService sysRoleService;
 
-
     @GetMapping(value = "/list")
+    @SaCheckPermission("workflow:definition:list")
     @ApiOperation(value = "流程定义列表", response = FlowDefinitionVo.class)
     public TableDataInfo<FlowDefinitionVo> list(PageQuery pageQuery) {
         return flowDefinitionService.list(pageQuery);
@@ -61,7 +62,8 @@ public class FlowDefinitionController extends BaseController {
      * @return
      */
     @GetMapping(value = "/publishList")
-    @ApiOperation(value = "流程定义列表", response = FlowDefinitionVo.class)
+    @SaCheckPermission("workflow:definition:list")
+    @ApiOperation(value = "指定流程的发布版本列表", response = FlowDefinitionVo.class)
     public TableDataInfo<FlowDefinitionVo> publishList(@ApiParam(value = "流程定义Key", required = true) @RequestParam String processKey,
                                                        PageQuery pageQuery) {
         return flowDefinitionService.publishList(processKey, pageQuery);
@@ -69,6 +71,7 @@ public class FlowDefinitionController extends BaseController {
 
 
     @ApiOperation(value = "导入流程文件", notes = "上传bpmn20的xml文件")
+    @SaCheckPermission("workflow:definition:designer")
     @PostMapping("/import")
     public R<Void> importFile(@RequestParam(required = false) String name,
                               @RequestParam(required = false) String category,
@@ -85,6 +88,7 @@ public class FlowDefinitionController extends BaseController {
 
 
     @ApiOperation(value = "读取xml文件")
+    @SaCheckPermission("workflow:definition:view")
     @GetMapping("/readXml/{definitionId}")
     public R<String> readXml(@ApiParam(value = "流程定义ID") @PathVariable(value = "definitionId") String definitionId) {
         try {
@@ -96,6 +100,7 @@ public class FlowDefinitionController extends BaseController {
     }
 
     @ApiOperation(value = "读取图片文件")
+    @SaCheckPermission("workflow:definition:view")
     @GetMapping("/readImage/{definitionId}")
     public void readImage(@ApiParam(value = "流程定义id") @PathVariable(value = "definitionId") String definitionId,
                           HttpServletResponse response) {
@@ -112,6 +117,7 @@ public class FlowDefinitionController extends BaseController {
 
 
     @ApiOperation(value = "保存流程设计器内的xml文件")
+    @SaCheckPermission("workflow:definition:designer")
     @PostMapping("/save")
     public R<Void> save(@RequestBody FlowSaveXmlVo vo) {
         try (InputStream in = new ByteArrayInputStream(vo.getXml().getBytes(StandardCharsets.UTF_8))) {
@@ -126,6 +132,7 @@ public class FlowDefinitionController extends BaseController {
 
 
     @ApiOperation(value = "根据流程定义id启动流程实例")
+    @SaCheckPermission("workflow:definition:start")
     @PostMapping("/start/{procDefId}")
     public R<Void> start(@ApiParam(value = "流程定义id") @PathVariable(value = "procDefId") String procDefId,
                          @ApiParam(value = "变量集合,json对象") @RequestBody Map<String, Object> variables) {
@@ -135,6 +142,7 @@ public class FlowDefinitionController extends BaseController {
     }
 
     @ApiOperation(value = "激活或挂起流程定义")
+    @SaCheckPermission("workflow:definition:update")
     @PutMapping(value = "/updateState")
     public R<Void> updateState(@ApiParam(value = "ture:挂起,false:激活", required = true) @RequestParam Boolean suspended,
                                @ApiParam(value = "流程定义ID", required = true) @RequestParam String definitionId) {
@@ -143,6 +151,7 @@ public class FlowDefinitionController extends BaseController {
     }
 
     @ApiOperation(value = "删除流程")
+    @SaCheckPermission("workflow:definition:remove")
     @DeleteMapping(value = "/delete")
     public R<Void> delete(@ApiParam(value = "流程部署ID", required = true) @RequestParam String deployId) {
         flowDefinitionService.delete(deployId);
