@@ -45,24 +45,6 @@ export function updateState(params) {
   })
 }
 
-// 指定流程办理人员列表
-export function userList(query) {
-  return request({
-    url: '/workflow/definition/userList',
-    method: 'get',
-    params: query
-  })
-}
-
-// 指定流程办理组列表
-export function roleList(query) {
-  return request({
-    url: '/workflow/definition/roleList',
-    method: 'get',
-    params: query
-  })
-}
-
 // 读取xml文件
 export function readXml(definitionId) {
   return request({

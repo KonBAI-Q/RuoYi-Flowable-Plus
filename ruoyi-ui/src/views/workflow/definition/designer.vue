@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import {readXml, roleList, saveXml, userList} from "@/api/workflow/definition";
+import { readXml, saveXml } from "@/api/workflow/definition";
 import ProcessDesigner from '@/components/ProcessDesigner';
 
 export default {

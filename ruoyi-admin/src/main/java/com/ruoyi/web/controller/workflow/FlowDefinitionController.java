@@ -3,8 +3,6 @@ package com.ruoyi.web.controller.workflow;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.domain.entity.SysRole;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
@@ -26,7 +24,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -150,20 +147,6 @@ public class FlowDefinitionController extends BaseController {
     public R<Void> delete(@ApiParam(value = "流程部署ID", required = true) @RequestParam String deployId) {
         flowDefinitionService.delete(deployId);
         return R.ok();
-    }
-
-    @ApiOperation(value = "指定流程办理人员列表")
-    @GetMapping("/userList")
-    public R<List<SysUser>> userList(SysUser user) {
-        List<SysUser> list = userService.selectUserList(user);
-        return R.ok(list);
-    }
-
-    @ApiOperation(value = "指定流程办理组列表")
-    @GetMapping("/roleList")
-    public R<List<SysRole>> roleList(SysRole role) {
-        List<SysRole> list = sysRoleService.selectRoleList(role);
-        return R.ok(list);
     }
 
 }
