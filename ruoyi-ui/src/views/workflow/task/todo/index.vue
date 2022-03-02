@@ -33,7 +33,6 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:deployment:remove']"
         >删除
         </el-button>
       </el-col>

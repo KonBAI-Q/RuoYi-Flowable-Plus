@@ -32,7 +32,6 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:deployment:add']"
         >新增流程</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -43,7 +42,6 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:deployment:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -53,7 +51,6 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:deployment:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -97,7 +94,7 @@
               <el-dropdown-item icon="el-icon-circle-close" @click.native="handleStop(scope.row)">
                 取消申请
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['system:deployment:remove']">
+              <el-dropdown-item icon="el-icon-delete" @click.native="handleDelete(scope.row)">
                 删除
               </el-dropdown-item>
             </el-dropdown-menu>
