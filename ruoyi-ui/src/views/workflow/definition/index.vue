@@ -502,7 +502,7 @@ export default {
       getForm(formId).then(res =>{
         this.formTitle = "表单详情";
         this.formConfOpen = true;
-        this.formConf = JSON.parse(res.data.formContent)
+        this.formConf = JSON.parse(res.data.content)
       })
     },
     /** 启动流程 */
@@ -559,7 +559,7 @@ export default {
     },
     handleCurrentChange(data) {
       if (data) {
-        this.currentRow = JSON.parse(data.formContent);
+        this.currentRow = JSON.parse(data.content);
       }
     },
     /** 挂起/激活流程 */

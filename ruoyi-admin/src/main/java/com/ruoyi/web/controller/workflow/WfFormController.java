@@ -6,40 +6,47 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.validate.QueryGroup;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.domain.SysDeployForm;
-import com.ruoyi.system.domain.SysForm;
-import com.ruoyi.workflow.service.ISysDeployFormService;
-import com.ruoyi.workflow.service.ISysFormService;
+import com.ruoyi.workflow.domain.WfDeployForm;
+import com.ruoyi.workflow.domain.bo.WfFormBo;
+import com.ruoyi.workflow.domain.vo.WfFormVo;
+import com.ruoyi.workflow.service.IWfDeployFormService;
+import com.ruoyi.workflow.service.IWfFormService;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * 流程表单Controller
  *
- * @author XuanXuan
- * @date 2021-04-03
+ * @author KonBAI
+ * @createTime 2022/3/7 22:07
  */
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/form")
-public class SysFormController extends BaseController {
+public class WfFormController extends BaseController {
 
-    private final ISysFormService SysFormService;
+    private final IWfFormService formService;
 
-    private final ISysDeployFormService sysDeployFormService;
+    private final IWfDeployFormService deployFormService;
 
     /**
      * 查询流程表单列表
      */
     @SaCheckPermission("workflow:form:list")
     @GetMapping("/list")
-    public TableDataInfo list(SysForm sysForm, PageQuery pageQuery) {
-        return SysFormService.selectSysFormPage(sysForm, pageQuery);
+    public TableDataInfo<WfFormVo> list(@Validated(QueryGroup.class) WfFormBo bo, PageQuery pageQuery) {
+        return formService.queryPageList(bo, pageQuery);
     }
 
     /**
@@ -48,9 +55,9 @@ public class SysFormController extends BaseController {
     @SaCheckPermission("workflow:form:export")
     @Log(title = "流程表单", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
-    public void export(SysForm sysForm, HttpServletResponse response) {
-        List<SysForm> list = SysFormService.selectSysFormList(sysForm);
-        ExcelUtil.exportExcel(list, "form", SysForm.class, response);
+    public void export(@Validated WfFormBo bo, HttpServletResponse response) {
+        List<WfFormVo> list = formService.queryList(bo);
+        ExcelUtil.exportExcel(list, "流程表单", WfFormVo.class, response);
     }
 
     /**
@@ -58,8 +65,8 @@ public class SysFormController extends BaseController {
      */
     @SaCheckPermission("workflow:form:query")
     @GetMapping(value = "/{formId}")
-    public R getInfo(@PathVariable("formId") Long formId) {
-        return R.ok(SysFormService.selectSysFormById(formId));
+    public R<WfFormVo> getInfo(@ApiParam("主键") @NotNull(message = "主键不能为空") @PathVariable("formId") Long formId) {
+        return R.ok(formService.queryById(formId));
     }
 
     /**
@@ -68,8 +75,8 @@ public class SysFormController extends BaseController {
     @SaCheckPermission("workflow:form:add")
     @Log(title = "流程表单", businessType = BusinessType.INSERT)
     @PostMapping
-    public R add(@RequestBody SysForm sysForm) {
-        return toAjax(SysFormService.insertSysForm(sysForm));
+    public R<Void> add(@RequestBody WfFormBo bo) {
+        return toAjax(formService.insertForm(bo));
     }
 
     /**
@@ -78,8 +85,8 @@ public class SysFormController extends BaseController {
     @SaCheckPermission("workflow:form:edit")
     @Log(title = "流程表单", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R edit(@RequestBody SysForm sysForm) {
-        return toAjax(SysFormService.updateSysForm(sysForm));
+    public R<Void> edit(@RequestBody WfFormBo bo) {
+        return toAjax(formService.updateForm(bo));
     }
 
     /**
@@ -88,8 +95,8 @@ public class SysFormController extends BaseController {
     @SaCheckPermission("workflow:form:remove")
     @Log(title = "流程表单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{formIds}")
-    public R remove(@PathVariable Long[] formIds) {
-        return toAjax(SysFormService.deleteSysFormByIds(formIds));
+    public R<Void> remove(@ApiParam("主键串") @NotEmpty(message = "主键不能为空") @PathVariable Long[] formIds) {
+        return toAjax(formService.deleteWithValidByIds(Arrays.asList(formIds)) ? 1 : 0);
     }
 
 
@@ -98,7 +105,7 @@ public class SysFormController extends BaseController {
      */
     @Log(title = "流程表单", businessType = BusinessType.INSERT)
     @PostMapping("/addDeployForm")
-    public R addDeployForm(@RequestBody SysDeployForm sysDeployForm) {
-        return toAjax(sysDeployFormService.insertSysDeployForm(sysDeployForm));
+    public R<Void> addDeployForm(@RequestBody WfDeployForm deployForm) {
+        return toAjax(deployFormService.insertWfDeployForm(deployForm));
     }
 }

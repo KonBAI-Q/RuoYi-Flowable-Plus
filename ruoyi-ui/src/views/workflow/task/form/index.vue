@@ -108,7 +108,7 @@
           <el-input v-model="form.formName" placeholder="请输入表单名称" />
         </el-form-item>
         <el-form-item label="表单内容">
-          <editor v-model="form.formContent" :min-height="192"/>
+          <editor v-model="form.content" :min-height="192"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
@@ -167,7 +167,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         formName: null,
-        formContent: null,
+        content: null,
       },
       // 表单参数
       form: {},
@@ -199,7 +199,7 @@ export default {
       this.form = {
         formId: null,
         formName: null,
-        formContent: null,
+        content: null,
         createTime: null,
         updateTime: null,
         createBy: null,
@@ -228,7 +228,7 @@ export default {
     handleDetail(row){
       this.formConfOpen = true;
       this.formTitle = "流程表单配置详细";
-      this.formConf = JSON.parse(row.formContent)
+      this.formConf = JSON.parse(row.content)
     },
     /** 新增按钮操作 */
     handleAdd() {

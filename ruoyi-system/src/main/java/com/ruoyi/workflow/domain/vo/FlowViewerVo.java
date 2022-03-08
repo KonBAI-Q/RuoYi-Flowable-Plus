@@ -5,12 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * 任务追踪视图类
  *
- * @author konbai
+ * @author KonBAI
  * @createTime 2022/1/8 19:42
  */
 @Data

@@ -738,37 +738,38 @@ insert into sys_oss_config values (3, 'aliyun', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXX
 insert into sys_oss_config values (4, 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1250000000',  '', 'http://cos.ap-beijing.myqcloud.com',   'N', 'ap-beijing',  '1', '', 'admin', sysdate(), 'admin', sysdate(), NULL);
 
 -- ----------------------------
--- sys_deploy_form流程实例关联表
+-- wf_form流程表单信息表
 -- ----------------------------
-drop table if exists `sys_deploy_form`;
-create table `sys_deploy_form` (
-    id        bigint(20)   not null    auto_increment comment '主键',
-    form_id   bigint(20)               default null   comment '表单主键',
-    deploy_id varchar(50)              default ''     comment '流程实例主键',
-    primary key (`id`)
+drop table if exists `wf_form`;
+create table `wf_form` (
+   form_id      bigint(20)   not null auto_increment comment '表单主键',
+   form_name    varchar(64)           default ''     comment '表单名称',
+   content      longtext              default null   comment '表单内容',
+   create_by    varchar(64)           default ''     comment '创建者',
+   create_time  datetime              default null   comment '创建时间',
+   update_by    varchar(64)           default ''     comment '更新者',
+   update_time  datetime              default null   comment '更新时间',
+   remark       varchar(255)          default null   comment '备注',
+   del_flag     char(1)               default '0'    comment '删除标志（0代表存在 2代表删除）',
+   primary key (form_id)
+) engine = innodb comment = '流程表单信息表';
+
+
+-- ----------------------------
+-- wf_deploy_form流程实例关联表
+-- ----------------------------
+drop table if exists `wf_deploy_form`;
+create table `wf_deploy_form` (
+    deploy_id varchar(64)     not null    comment '流程实例主键',
+    form_id   bigint(20)      not null    comment '表单主键',
+    primary key (deploy_id, form_id)
 ) engine = innodb comment = '流程实例关联表单';
 
 -- ----------------------------
--- sys_form流程表单信息表
+-- wf_category流程分类表
 -- ----------------------------
-drop table if exists `sys_form`;
-create table `sys_form` (
-    form_id      bigint(20)   not null auto_increment comment '表单主键',
-    form_name    varchar(50)           default ''     comment '表单名称',
-    form_content longtext              default null   comment '表单内容',
-    create_by    varchar(64)           default ''     comment '创建者',
-    create_time  datetime              default null   comment '创建时间',
-    update_by    varchar(64)           default ''     comment '更新者',
-    update_time  datetime              default null   comment '更新时间',
-    remark       varchar(255)          default null   comment '备注',
-    primary key (`form_id`)
-) engine = innodb comment = '流程表单信息表';
-
--- ----------------------------
--- workflow_category流程分类表
--- ----------------------------
-drop table if exists `workflow_category`;
-create table `workflow_category` (
+drop table if exists `wf_category`;
+create table `wf_category` (
     category_id   bigint       not null  auto_increment comment '流程分类id',
     category_name varchar(64)            default ''     comment '流程分类名称',
     code          varchar(64)            default ''     comment '分类编码',
@@ -778,5 +779,5 @@ create table `workflow_category` (
     update_by     varchar(64)            default ''     comment '更新者',
     update_time   datetime               default null   comment '更新时间',
     del_flag      char(1)                default '0'    comment '删除标志（0代表存在 2代表删除）',
-    primary key (`category_id`)
+    primary key (category_id)
 ) engine=innodb comment = '流程分类表';

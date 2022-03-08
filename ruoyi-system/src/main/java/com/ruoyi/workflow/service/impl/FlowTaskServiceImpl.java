@@ -18,7 +18,6 @@ import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
 import com.ruoyi.flowable.flow.FindNextNodeUtil;
 import com.ruoyi.flowable.flow.FlowableUtils;
-import com.ruoyi.system.domain.SysForm;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.dto.FlowCommentDto;
@@ -26,8 +25,9 @@ import com.ruoyi.workflow.domain.dto.FlowNextDto;
 import com.ruoyi.workflow.domain.dto.FlowTaskDto;
 import com.ruoyi.workflow.domain.vo.FlowTaskVo;
 import com.ruoyi.workflow.domain.vo.FlowViewerVo;
+import com.ruoyi.workflow.domain.vo.WfFormVo;
 import com.ruoyi.workflow.service.IFlowTaskService;
-import com.ruoyi.workflow.service.ISysDeployFormService;
+import com.ruoyi.workflow.service.IWfDeployFormService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,7 +77,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
 
     private final ISysRoleService sysRoleService;
 
-    private final ISysDeployFormService sysInstanceFormService;
+    private final IWfDeployFormService deployFormService;
 
     /**
      * 完成任务
@@ -736,11 +736,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }
         // 第一次申请获取初始化表单
         if (StringUtils.isNotBlank(deployId)) {
-            SysForm sysForm = sysInstanceFormService.selectSysDeployFormByDeployId(deployId);
-            if (Objects.isNull(sysForm)) {
+            WfFormVo formVo = deployFormService.selectSysDeployFormByDeployId(deployId);
+            if (Objects.isNull(formVo)) {
                 throw new ServiceException("请先配置流程表单");
             }
-            map.put("formData", JsonUtils.parseObject(sysForm.getFormContent(), Map.class));
+            map.put("formData", JsonUtils.parseObject(formVo.getContent(), Map.class));
         }
         return map;
     }

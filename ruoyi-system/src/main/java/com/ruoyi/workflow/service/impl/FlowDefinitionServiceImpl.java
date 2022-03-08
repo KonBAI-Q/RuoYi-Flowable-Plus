@@ -9,10 +9,10 @@ import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.enums.FlowComment;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
-import com.ruoyi.system.domain.SysForm;
 import com.ruoyi.workflow.domain.vo.FlowDefinitionVo;
+import com.ruoyi.workflow.domain.vo.WfFormVo;
+import com.ruoyi.workflow.mapper.WfFormMapper;
 import com.ruoyi.workflow.service.IFlowDefinitionService;
-import com.ruoyi.workflow.service.ISysDeployFormService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFlowDefinitionService {
 
-    private final ISysDeployFormService sysDeployFormService;
+    private final WfFormMapper formMapper;
 
     private static final String BPMN_FILE_SUFFIX = ".bpmn";
 
@@ -89,10 +89,10 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             vo.setCategoryCode(processDefinition.getCategory());
             vo.setDeploymentId(processDefinition.getDeploymentId());
             vo.setSuspended(processDefinition.isSuspended());
-            SysForm sysForm = sysDeployFormService.selectSysDeployFormByDeployId(deploymentId);
-            if (Objects.nonNull(sysForm)) {
-                vo.setFormId(sysForm.getFormId());
-                vo.setFormName(sysForm.getFormName());
+            WfFormVo formVo = formMapper.selectFormByDeployId(deploymentId);
+            if (Objects.nonNull(formVo)) {
+                vo.setFormId(formVo.getFormId());
+                vo.setFormName(formVo.getFormName());
             }
             // 流程定义时间
             vo.setCategoryCode(deployment.getCategory());

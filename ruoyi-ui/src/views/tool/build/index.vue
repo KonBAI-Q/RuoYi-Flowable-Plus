@@ -215,7 +215,7 @@ export default {
       form: {
         formId: null,
         formName: null,
-        formContent: null,
+        content: null,
         remark: null
       },
       // 表单校验
@@ -277,11 +277,11 @@ export default {
     const formId =  that.$route.query && that.$route.query.formId;
     if (formId) {
       getForm(formId).then(res =>{
-        that.formConf = JSON.parse(res.data.formContent);
+        that.formConf = JSON.parse(res.data.content);
         that.drawingList = that.formConf.fields;
         that.form = res.data;
       })
-    }else {
+    } else {
       if (formConfInDB) {
         that.formConf = formConfInDB
       }
@@ -505,7 +505,7 @@ export default {
         fields: deepClone(this.drawingList),
         ...this.formConf
       }
-     this.form.formContent = JSON.stringify(this.formData);
+     this.form.content = JSON.stringify(this.formData);
      this.formOpen = true;
      this.formTitle = "添加表单";
     },
@@ -514,7 +514,7 @@ export default {
       this.form = {
         formId: null,
         formName: null,
-        formContent: null,
+        content: null,
         remark: null
       };
       this.resetForm("form");

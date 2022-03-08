@@ -5,17 +5,17 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
-import lombok.experimental.Accessors;
+import lombok.EqualsAndHashCode;
 
 /**
- * 流程分类对象 workflow_category
+ * 流程分类对象 wf_category
  *
  * @author KonBAI
  * @date 2022-01-15
  */
 @Data
-@Accessors(chain = true)
-@TableName("workflow_category")
+@EqualsAndHashCode(callSuper = true)
+@TableName("wf_category")
 public class FlowCategory extends BaseEntity {
 
     private static final long serialVersionUID=1L;
