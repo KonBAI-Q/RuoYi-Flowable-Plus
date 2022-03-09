@@ -6,12 +6,12 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author XuanXuan
- * @date 2021/3/28 15:50
+ * @author KonBAI
+ * @createTime 2022/3/10 00:12
  */
 @Data
 @Builder
-public class FlowCommentDto implements Serializable {
+public class WfCommentDto implements Serializable {
 
     /**
      * 意见类别 0 正常意见  1 退回意见 2 驳回意见

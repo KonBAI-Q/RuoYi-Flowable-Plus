@@ -7,11 +7,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.workflow.domain.FlowCategory;
-import com.ruoyi.workflow.domain.bo.FlowCategoryBo;
-import com.ruoyi.workflow.domain.vo.FlowCategoryVo;
-import com.ruoyi.workflow.mapper.FlowCategoryMapper;
-import com.ruoyi.workflow.service.IFlowCategoryService;
+import com.ruoyi.workflow.domain.WfCategory;
+import com.ruoyi.workflow.domain.bo.WfCategoryBo;
+import com.ruoyi.workflow.domain.vo.WfCategoryVo;
+import com.ruoyi.workflow.mapper.WfCategoryMapper;
+import com.ruoyi.workflow.service.IWfCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,39 +27,39 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Service
-public class FlowCategoryServiceImpl implements IFlowCategoryService {
+public class WfCategoryServiceImpl implements IWfCategoryService {
 
-    private final FlowCategoryMapper baseMapper;
+    private final WfCategoryMapper baseMapper;
 
     @Override
-    public FlowCategoryVo queryById(Long categoryId){
+    public WfCategoryVo queryById(Long categoryId){
         return baseMapper.selectVoById(categoryId);
     }
 
     @Override
-    public TableDataInfo<FlowCategoryVo> queryPageList(FlowCategoryBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<FlowCategory> lqw = buildQueryWrapper(bo);
-        Page<FlowCategoryVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+    public TableDataInfo<WfCategoryVo> queryPageList(WfCategoryBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<WfCategory> lqw = buildQueryWrapper(bo);
+        Page<WfCategoryVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }
 
     @Override
-    public List<FlowCategoryVo> queryList(FlowCategoryBo bo) {
-        LambdaQueryWrapper<FlowCategory> lqw = buildQueryWrapper(bo);
+    public List<WfCategoryVo> queryList(WfCategoryBo bo) {
+        LambdaQueryWrapper<WfCategory> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
     }
 
-    private LambdaQueryWrapper<FlowCategory> buildQueryWrapper(FlowCategoryBo bo) {
+    private LambdaQueryWrapper<WfCategory> buildQueryWrapper(WfCategoryBo bo) {
         Map<String, Object> params = bo.getParams();
-        LambdaQueryWrapper<FlowCategory> lqw = Wrappers.lambdaQuery();
-        lqw.like(StringUtils.isNotBlank(bo.getCategoryName()), FlowCategory::getCategoryName, bo.getCategoryName());
-        lqw.eq(StringUtils.isNotBlank(bo.getCode()), FlowCategory::getCode, bo.getCode());
+        LambdaQueryWrapper<WfCategory> lqw = Wrappers.lambdaQuery();
+        lqw.like(StringUtils.isNotBlank(bo.getCategoryName()), WfCategory::getCategoryName, bo.getCategoryName());
+        lqw.eq(StringUtils.isNotBlank(bo.getCode()), WfCategory::getCode, bo.getCode());
         return lqw;
     }
 
     @Override
-    public Boolean insertByBo(FlowCategoryBo bo) {
-        FlowCategory add = BeanUtil.toBean(bo, FlowCategory.class);
+    public Boolean insertByBo(WfCategoryBo bo) {
+        WfCategory add = BeanUtil.toBean(bo, WfCategory.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
@@ -69,8 +69,8 @@ public class FlowCategoryServiceImpl implements IFlowCategoryService {
     }
 
     @Override
-    public Boolean updateByBo(FlowCategoryBo bo) {
-        FlowCategory update = BeanUtil.toBean(bo, FlowCategory.class);
+    public Boolean updateByBo(WfCategoryBo bo) {
+        WfCategory update = BeanUtil.toBean(bo, WfCategory.class);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
     }
@@ -80,7 +80,7 @@ public class FlowCategoryServiceImpl implements IFlowCategoryService {
      *
      * @param entity 实体类数据
      */
-    private void validEntityBeforeSave(FlowCategory entity){
+    private void validEntityBeforeSave(WfCategory entity){
         //TODO 做一些数据校验,如唯一约束
     }
 

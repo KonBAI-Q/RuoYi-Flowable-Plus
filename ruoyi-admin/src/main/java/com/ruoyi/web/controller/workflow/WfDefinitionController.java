@@ -7,9 +7,9 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
-import com.ruoyi.workflow.domain.dto.FlowSaveXmlVo;
-import com.ruoyi.workflow.domain.vo.FlowDefinitionVo;
-import com.ruoyi.workflow.service.IFlowDefinitionService;
+import com.ruoyi.workflow.domain.bo.WfDesignerBo;
+import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
+import com.ruoyi.workflow.service.IWfDefinitionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,9 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
- * <p>
  * 工作流程定义
- * </p>
  *
  * @author KonBAI
  * @date 2022-01-17
@@ -40,9 +38,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/definition")
-public class FlowDefinitionController extends BaseController {
+public class WfDefinitionController extends BaseController {
 
-    private final IFlowDefinitionService flowDefinitionService;
+    private final IWfDefinitionService flowDefinitionService;
 
     private final ISysUserService userService;
 
@@ -50,8 +48,8 @@ public class FlowDefinitionController extends BaseController {
 
     @GetMapping(value = "/list")
     @SaCheckPermission("workflow:definition:list")
-    @ApiOperation(value = "流程定义列表", response = FlowDefinitionVo.class)
-    public TableDataInfo<FlowDefinitionVo> list(PageQuery pageQuery) {
+    @ApiOperation(value = "流程定义列表", response = WfDefinitionVo.class)
+    public TableDataInfo<WfDefinitionVo> list(PageQuery pageQuery) {
         return flowDefinitionService.list(pageQuery);
     }
 
@@ -63,9 +61,9 @@ public class FlowDefinitionController extends BaseController {
      */
     @GetMapping(value = "/publishList")
     @SaCheckPermission("workflow:definition:list")
-    @ApiOperation(value = "指定流程的发布版本列表", response = FlowDefinitionVo.class)
-    public TableDataInfo<FlowDefinitionVo> publishList(@ApiParam(value = "流程定义Key", required = true) @RequestParam String processKey,
-                                                       PageQuery pageQuery) {
+    @ApiOperation(value = "指定流程的发布版本列表", response = WfDefinitionVo.class)
+    public TableDataInfo<WfDefinitionVo> publishList(@ApiParam(value = "流程定义Key", required = true) @RequestParam String processKey,
+                                                     PageQuery pageQuery) {
         return flowDefinitionService.publishList(processKey, pageQuery);
     }
 
@@ -119,9 +117,9 @@ public class FlowDefinitionController extends BaseController {
     @ApiOperation(value = "保存流程设计器内的xml文件")
     @SaCheckPermission("workflow:definition:designer")
     @PostMapping("/save")
-    public R<Void> save(@RequestBody FlowSaveXmlVo vo) {
-        try (InputStream in = new ByteArrayInputStream(vo.getXml().getBytes(StandardCharsets.UTF_8))) {
-            flowDefinitionService.importFile(vo.getName(), vo.getCategory(), in);
+    public R<Void> save(@RequestBody WfDesignerBo bo) {
+        try (InputStream in = new ByteArrayInputStream(bo.getXml().getBytes(StandardCharsets.UTF_8))) {
+            flowDefinitionService.importFile(bo.getName(), bo.getCategory(), in);
         } catch (Exception e) {
             log.error("导入失败:", e);
             return R.ok(e.getMessage());

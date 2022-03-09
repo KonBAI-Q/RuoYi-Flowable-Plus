@@ -9,10 +9,10 @@ import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.enums.FlowComment;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
-import com.ruoyi.workflow.domain.vo.FlowDefinitionVo;
+import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
 import com.ruoyi.workflow.mapper.WfFormMapper;
-import com.ruoyi.workflow.service.IFlowDefinitionService;
+import com.ruoyi.workflow.service.IWfDefinitionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFlowDefinitionService {
+public class WfDefinitionServiceImpl extends FlowServiceFactory implements IWfDefinitionService {
 
     private final WfFormMapper formMapper;
 
@@ -64,8 +64,8 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
      * @return 流程定义分页列表数据
      */
     @Override
-    public TableDataInfo<FlowDefinitionVo> list(PageQuery pageQuery) {
-        Page<FlowDefinitionVo> page = new Page<>();
+    public TableDataInfo<WfDefinitionVo> list(PageQuery pageQuery) {
+        Page<WfDefinitionVo> page = new Page<>();
         // 流程定义列表数据查询
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
@@ -77,11 +77,11 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<ProcessDefinition> definitionList = processDefinitionQuery.listPage(offset, pageQuery.getPageSize());
 
-        List<FlowDefinitionVo> definitionVoList = new ArrayList<>();
+        List<WfDefinitionVo> definitionVoList = new ArrayList<>();
         for (ProcessDefinition processDefinition : definitionList) {
             String deploymentId = processDefinition.getDeploymentId();
             Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
-            FlowDefinitionVo vo = new FlowDefinitionVo();
+            WfDefinitionVo vo = new WfDefinitionVo();
             vo.setDefinitionId(processDefinition.getId());
             vo.setProcessKey(processDefinition.getKey());
             vo.setProcessName(processDefinition.getName());
@@ -105,8 +105,8 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
     }
 
     @Override
-    public TableDataInfo<FlowDefinitionVo> publishList(String processKey, PageQuery pageQuery) {
-        Page<FlowDefinitionVo> page = new Page<>();
+    public TableDataInfo<WfDefinitionVo> publishList(String processKey, PageQuery pageQuery) {
+        Page<WfDefinitionVo> page = new Page<>();
         // 创建查询条件
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey(processKey)
@@ -119,8 +119,8 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<ProcessDefinition> processDefinitionList = processDefinitionQuery
             .listPage(offset, pageQuery.getPageSize());
-        List<FlowDefinitionVo> flowDefinitionVoList = processDefinitionList.stream().map(item -> {
-            FlowDefinitionVo vo = new FlowDefinitionVo();
+        List<WfDefinitionVo> definitionVoList = processDefinitionList.stream().map(item -> {
+            WfDefinitionVo vo = new WfDefinitionVo();
             vo.setDefinitionId(item.getId());
             vo.setProcessKey(item.getKey());
             vo.setProcessName(item.getName());
@@ -131,7 +131,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             // BeanUtil.copyProperties(item, vo);
             return vo;
         }).collect(Collectors.toList());
-        page.setRecords(flowDefinitionVoList);
+        page.setRecords(definitionVoList);
         page.setTotal(pageTotal);
         return TableDataInfo.build(page);
     }

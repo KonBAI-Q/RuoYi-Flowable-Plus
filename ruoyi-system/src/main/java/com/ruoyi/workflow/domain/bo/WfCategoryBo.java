@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * 流程分类业务对象 flow_category
+ * 流程分类业务对象
  *
  * @author KonBAI
  * @date 2022-01-15
@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ApiModel("流程分类业务对象")
-public class FlowCategoryBo extends BaseEntity {
+public class WfCategoryBo extends BaseEntity {
 
     /**
      * 分类ID

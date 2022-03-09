@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.workflow.mapper.FlowCategoryMapper">
+<mapper namespace="com.ruoyi.workflow.mapper.WfCategoryMapper">
 
-    <resultMap type="com.ruoyi.workflow.domain.FlowCategory" id="FlowCategoryResult">
+    <resultMap type="com.ruoyi.workflow.domain.WfCategory" id="FlowCategoryResult">
         <result property="categoryId" column="category_id"/>
         <result property="categoryName" column="category_name"/>
         <result property="code" column="code"/>

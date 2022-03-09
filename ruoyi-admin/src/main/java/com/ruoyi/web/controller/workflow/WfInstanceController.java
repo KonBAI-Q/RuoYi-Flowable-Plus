@@ -2,8 +2,8 @@ package com.ruoyi.web.controller.workflow;
 
 
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.workflow.domain.vo.FlowTaskVo;
-import com.ruoyi.workflow.service.IFlowInstanceService;
+import com.ruoyi.workflow.domain.bo.WfTaskBo;
+import com.ruoyi.workflow.service.IWfInstanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
- * <p>工作流流程实例管理<p>
+ * 工作流流程实例管理
  *
- * @author XuanXuan
- * @date 2021-04-03
+ * @author KonBAI
+ * @createTime 2022/3/10 00:12
  */
 @Slf4j
 @Api(tags = "工作流流程实例管理")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/instance")
-public class FlowInstanceController {
+public class WfInstanceController {
 
-    private final IFlowInstanceService flowInstanceService;
+    private final IWfInstanceService flowInstanceService;
 
     @ApiOperation(value = "根据流程定义id启动流程实例")
     @PostMapping("/startBy/{procDefId}")
@@ -47,8 +47,8 @@ public class FlowInstanceController {
 
     @ApiOperation("结束流程实例")
     @PostMapping(value = "/stopProcessInstance")
-    public R stopProcessInstance(@RequestBody FlowTaskVo flowTaskVo) {
-        flowInstanceService.stopProcessInstance(flowTaskVo);
+    public R stopProcessInstance(@RequestBody WfTaskBo bo) {
+        flowInstanceService.stopProcessInstance(bo);
         return R.ok();
     }
 

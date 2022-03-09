@@ -1,5 +1,7 @@
 package com.ruoyi.workflow.domain.vo;
 
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * 任务追踪视图类
+ * 任务追踪视图对象
  *
  * @author KonBAI
  * @createTime 2022/1/8 19:42
@@ -15,7 +17,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FlowViewerVo {
+@ApiModel("任务追踪视图对象")
+@ExcelIgnoreUnannotated
+public class WfViewerVo {
 
     /**
      * 获取流程实例的历史节点（去重）

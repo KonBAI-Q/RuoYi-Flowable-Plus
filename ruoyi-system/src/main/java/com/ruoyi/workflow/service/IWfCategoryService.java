@@ -2,8 +2,8 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.workflow.domain.bo.FlowCategoryBo;
-import com.ruoyi.workflow.domain.vo.FlowCategoryVo;
+import com.ruoyi.workflow.domain.bo.WfCategoryBo;
+import com.ruoyi.workflow.domain.vo.WfCategoryVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,36 +14,36 @@ import java.util.List;
  * @author KonBAI
  * @date 2022-01-15
  */
-public interface IFlowCategoryService {
+public interface IWfCategoryService {
     /**
      * 查询单个
      * @return
      */
-    FlowCategoryVo queryById(Long categoryId);
+    WfCategoryVo queryById(Long categoryId);
 
     /**
      * 查询列表
      */
-    TableDataInfo<FlowCategoryVo> queryPageList(FlowCategoryBo bo, PageQuery pageQuery);
+    TableDataInfo<WfCategoryVo> queryPageList(WfCategoryBo bo, PageQuery pageQuery);
 
     /**
      * 查询列表
      */
-    List<FlowCategoryVo> queryList(FlowCategoryBo bo);
+    List<WfCategoryVo> queryList(WfCategoryBo bo);
 
     /**
      * 根据新增业务对象插入【请填写功能名称】
      * @param bo 【请填写功能名称】新增业务对象
      * @return
      */
-    Boolean insertByBo(FlowCategoryBo bo);
+    Boolean insertByBo(WfCategoryBo bo);
 
     /**
      * 根据编辑业务对象修改【请填写功能名称】
      * @param bo 【请填写功能名称】编辑业务对象
      * @return
      */
-    Boolean updateByBo(FlowCategoryBo bo);
+    Boolean updateByBo(WfCategoryBo bo);
 
     /**
      * 校验并删除数据

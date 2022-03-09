@@ -17,7 +17,7 @@ import lombok.Data;
 @Data
 @ApiModel("流程分类视图对象")
 @ExcelIgnoreUnannotated
-public class FlowCategoryVo {
+public class WfCategoryVo {
 
     private static final long serialVersionUID = 1L;
 
