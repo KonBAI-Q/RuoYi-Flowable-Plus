@@ -1,4 +1,4 @@
-package com.ruoyi.workflow.domain.vo;
+package com.ruoyi.workflow.domain.bo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>流程任务<p>
+ * 流程任务业务对象
  *
- * @author XuanXuan
- * @date 2021-04-03
+ * @author KonBAI
+ * @createTime 2022/3/10 00:12
  */
 @Data
-@ApiModel("工作流任务相关--请求参数")
-public class FlowTaskVo {
+@ApiModel("流程任务业务对象")
+public class WfTaskBo {
 
     @ApiModelProperty("任务Id")
     private String taskId;

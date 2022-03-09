@@ -19,7 +19,7 @@ import java.util.Date;
 @Data
 @ApiModel("流程定义视图对象")
 @ExcelIgnoreUnannotated
-public class FlowDefinitionVo {
+public class WfDefinitionVo {
 
     private static final long serialVersionUID = 1L;
 

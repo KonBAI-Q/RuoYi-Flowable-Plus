@@ -1,24 +1,25 @@
-package com.ruoyi.workflow.domain.dto;
+package com.ruoyi.workflow.domain.vo;
 
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.workflow.domain.dto.WfCommentDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>工作流任务<p>
+ * 工作流任务视图对象
  *
- * @author XuanXuan
- * @date 2021-04-03
+ * @author KonBAI
+ * @createTime 2022/3/10 00:12
  */
-@Getter
-@Setter
-@ApiModel("工作流任务相关-返回参数")
-public class FlowTaskDto implements Serializable {
+@Data
+@ApiModel("工作流任务视图对象")
+@ExcelIgnoreUnannotated
+public class WfTaskVo implements Serializable {
 
     @ApiModelProperty("任务编号")
     private String taskId;
@@ -81,7 +82,7 @@ public class FlowTaskDto implements Serializable {
     private String duration;
 
     @ApiModelProperty("任务意见")
-    private FlowCommentDto comment;
+    private WfCommentDto comment;
 
     @ApiModelProperty("候选执行人")
     private String candidate;

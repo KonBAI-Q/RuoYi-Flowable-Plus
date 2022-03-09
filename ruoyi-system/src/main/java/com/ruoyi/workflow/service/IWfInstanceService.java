@@ -1,6 +1,6 @@
 package com.ruoyi.workflow.service;
 
-import com.ruoyi.workflow.domain.vo.FlowTaskVo;
+import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.task.api.Task;
 
@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author XuanXuan
- * @date 2021-04-03 14:40
+ * @author KonBAI
+ * @createTime 2022/3/10 00:12
  */
-public interface IFlowInstanceService {
+public interface IWfInstanceService {
 
     List<Task> queryListByInstanceId(String instanceId);
 
@@ -20,7 +20,7 @@ public interface IFlowInstanceService {
      *
      * @param vo
      */
-    void stopProcessInstance(FlowTaskVo vo);
+    void stopProcessInstance(WfTaskBo vo);
 
     /**
      * 激活或挂起流程实例

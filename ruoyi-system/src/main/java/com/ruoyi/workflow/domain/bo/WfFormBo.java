@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * 流程表单对象 wf_form
+ * 流程表单业务对象
  *
  * @author KonBAI
  * @createTime 2022/3/7 22:07

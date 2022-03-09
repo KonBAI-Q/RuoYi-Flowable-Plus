@@ -2,17 +2,17 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.workflow.domain.vo.FlowDefinitionVo;
+import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
 /**
- * @author XuanXuan
- * @date 2021-04-03 14:41
+ * @author KonBAI
+ * @createTime 2022/3/10 00:12
  */
-public interface IFlowDefinitionService {
+public interface IWfDefinitionService {
 
     boolean exist(String processDefinitionKey);
 
@@ -23,14 +23,14 @@ public interface IFlowDefinitionService {
      * @param pageQuery 分页参数
      * @return 流程定义分页列表数据
      */
-    TableDataInfo<FlowDefinitionVo> list(PageQuery pageQuery);
+    TableDataInfo<WfDefinitionVo> list(PageQuery pageQuery);
 
     /**
      *
      * @param processKey
      * @return
      */
-    TableDataInfo<FlowDefinitionVo> publishList(String processKey, PageQuery pageQuery);
+    TableDataInfo<WfDefinitionVo> publishList(String processKey, PageQuery pageQuery);
 
     /**
      * 导入流程文件

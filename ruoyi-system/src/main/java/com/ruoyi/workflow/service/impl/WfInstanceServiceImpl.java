@@ -5,8 +5,8 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
-import com.ruoyi.workflow.domain.vo.FlowTaskVo;
-import com.ruoyi.workflow.service.IFlowInstanceService;
+import com.ruoyi.workflow.domain.bo.WfTaskBo;
+import com.ruoyi.workflow.service.IWfInstanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -19,14 +19,14 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * <p>工作流流程实例管理<p>
+ * 工作流流程实例管理
  *
- * @author XuanXuan
- * @date 2021-04-03
+ * @author KonBAI
+ * @createTime 2022/3/10 00:12
  */
 @Service
 @Slf4j
-public class FlowInstanceServiceImpl extends FlowServiceFactory implements IFlowInstanceService {
+public class WfInstanceServiceImpl extends FlowServiceFactory implements IWfInstanceService {
 
 
     @Override
@@ -40,7 +40,7 @@ public class FlowInstanceServiceImpl extends FlowServiceFactory implements IFlow
      * @param vo
      */
     @Override
-    public void stopProcessInstance(FlowTaskVo vo) {
+    public void stopProcessInstance(WfTaskBo vo) {
         String taskId = vo.getTaskId();
 
     }

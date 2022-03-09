@@ -20,13 +20,13 @@ import com.ruoyi.flowable.flow.FindNextNodeUtil;
 import com.ruoyi.flowable.flow.FlowableUtils;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
-import com.ruoyi.workflow.domain.dto.FlowCommentDto;
-import com.ruoyi.workflow.domain.dto.FlowNextDto;
-import com.ruoyi.workflow.domain.dto.FlowTaskDto;
-import com.ruoyi.workflow.domain.vo.FlowTaskVo;
-import com.ruoyi.workflow.domain.vo.FlowViewerVo;
+import com.ruoyi.workflow.domain.dto.WfCommentDto;
+import com.ruoyi.workflow.domain.dto.WfNextDto;
+import com.ruoyi.workflow.domain.vo.WfTaskVo;
+import com.ruoyi.workflow.domain.bo.WfTaskBo;
+import com.ruoyi.workflow.domain.vo.WfViewerVo;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
-import com.ruoyi.workflow.service.IFlowTaskService;
+import com.ruoyi.workflow.service.IWfTaskService;
 import com.ruoyi.workflow.service.IWfDeployFormService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,13 +65,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * @author XuanXuan
- * @date 2021-04-03
- **/
+ * @author KonBAI
+ * @createTime 2022/3/10 00:12
+ */
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTaskService {
+public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskService {
 
     private final ISysUserService sysUserService;
 
@@ -86,7 +86,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void complete(FlowTaskVo taskVo) {
+    public void complete(WfTaskBo taskVo) {
         Task task = taskService.createTaskQuery().taskId(taskVo.getTaskId()).singleResult();
         if (Objects.isNull(task)) {
             throw new ServiceException("任务不存在");
@@ -109,15 +109,15 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     /**
      * 驳回任务
      *
-     * @param flowTaskVo
+     * @param bo
      */
     @Override
-    public void taskReject(FlowTaskVo flowTaskVo) {
-        if (taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult().isSuspended()) {
+    public void taskReject(WfTaskBo bo) {
+        if (taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult().isSuspended()) {
             throw new RuntimeException("任务处于挂起状态");
         }
         // 当前任务 task
-        Task task = taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult();
+        Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
         // 获取流程定义信息
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
         // 获取所有节点信息
@@ -205,7 +205,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             }
         }));
         // 设置驳回意见
-        currentTaskIds.forEach(item -> taskService.addComment(item, task.getProcessInstanceId(), FlowComment.REJECT.getType(), flowTaskVo.getComment()));
+        currentTaskIds.forEach(item -> taskService.addComment(item, task.getProcessInstanceId(), FlowComment.REJECT.getType(), bo.getComment()));
 
         try {
             // 如果父级任务多于 1 个，说明当前节点不是并行节点，原因为不考虑多对多情况
@@ -233,16 +233,16 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     /**
      * 退回任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void taskReturn(FlowTaskVo flowTaskVo) {
-        if (taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult().isSuspended()) {
+    public void taskReturn(WfTaskBo bo) {
+        if (taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult().isSuspended()) {
             throw new RuntimeException("任务处于挂起状态");
         }
         // 当前任务 task
-        Task task = taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult();
+        Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
         // 获取流程定义信息
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
         // 获取所有节点信息
@@ -260,7 +260,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     source = flowElement;
                 }
                 // 跳转的节点元素
-                if (flowElement.getId().equals(flowTaskVo.getTargetKey())) {
+                if (flowElement.getId().equals(bo.getTargetKey())) {
                     target = flowElement;
                 }
             }
@@ -269,7 +269,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         // 从当前节点向前扫描
         // 如果存在路线上不存在目标节点，说明目标节点是在网关上或非同一路线上，不可跳转
         // 否则目标节点相对于当前节点，属于串行
-        Boolean isSequential = FlowableUtils.iteratorCheckSequentialReferTarget(source, flowTaskVo.getTargetKey(), null, null);
+        Boolean isSequential = FlowableUtils.iteratorCheckSequentialReferTarget(source, bo.getTargetKey(), null, null);
         if (!isSequential) {
             throw new RuntimeException("当前节点相对于目标节点，不属于串行关系，无法回退");
         }
@@ -294,14 +294,14 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }));
         // 设置回退意见
         for (String currentTaskId : currentTaskIds) {
-            taskService.addComment(currentTaskId, task.getProcessInstanceId(), FlowComment.REBACK.getType(), flowTaskVo.getComment());
+            taskService.addComment(currentTaskId, task.getProcessInstanceId(), FlowComment.REBACK.getType(), bo.getComment());
         }
 
         try {
             // 1 对 1 或 多 对 1 情况，currentIds 当前要跳转的节点列表(1或多)，targetKey 跳转到的节点(1)
             runtimeService.createChangeActivityStateBuilder()
                 .processInstanceId(task.getProcessInstanceId())
-                .moveActivityIdsToSingleActivityId(currentIds, flowTaskVo.getTargetKey()).changeState();
+                .moveActivityIdsToSingleActivityId(currentIds, bo.getTargetKey()).changeState();
         } catch (FlowableObjectNotFoundException e) {
             throw new RuntimeException("未找到流程实例，流程可能已发生变化");
         } catch (FlowableException e) {
@@ -313,13 +313,13 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     /**
      * 获取所有可回退的节点
      *
-     * @param flowTaskVo
+     * @param bo
      * @return
      */
     @Override
-    public List<UserTask> findReturnTaskList(FlowTaskVo flowTaskVo) {
+    public List<UserTask> findReturnTaskList(WfTaskBo bo) {
         // 当前任务 task
-        Task task = taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult();
+        Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
         // 获取流程定义信息
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
         // 获取所有节点信息，暂不考虑子流程情况
@@ -354,57 +354,57 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     /**
      * 删除任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
     @Override
-    public void deleteTask(FlowTaskVo flowTaskVo) {
+    public void deleteTask(WfTaskBo bo) {
         // todo 待确认删除任务是物理删除任务 还是逻辑删除，让这个任务直接通过？
-        taskService.deleteTask(flowTaskVo.getTaskId(), flowTaskVo.getComment());
+        taskService.deleteTask(bo.getTaskId(), bo.getComment());
     }
 
     /**
      * 认领/签收任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void claim(FlowTaskVo flowTaskVo) {
-        taskService.claim(flowTaskVo.getTaskId(), flowTaskVo.getUserId());
+    public void claim(WfTaskBo bo) {
+        taskService.claim(bo.getTaskId(), bo.getUserId());
     }
 
     /**
      * 取消认领/签收任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void unClaim(FlowTaskVo flowTaskVo) {
-        taskService.unclaim(flowTaskVo.getTaskId());
+    public void unClaim(WfTaskBo bo) {
+        taskService.unclaim(bo.getTaskId());
     }
 
     /**
      * 委派任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void delegateTask(FlowTaskVo flowTaskVo) {
-        taskService.delegateTask(flowTaskVo.getTaskId(), flowTaskVo.getAssignee());
+    public void delegateTask(WfTaskBo bo) {
+        taskService.delegateTask(bo.getTaskId(), bo.getAssignee());
     }
 
 
     /**
      * 转办任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void assignTask(FlowTaskVo flowTaskVo) {
-        taskService.setAssignee(flowTaskVo.getTaskId(), flowTaskVo.getComment());
+    public void assignTask(WfTaskBo bo) {
+        taskService.setAssignee(bo.getTaskId(), bo.getComment());
     }
 
     /**
@@ -413,8 +413,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @return
      */
     @Override
-    public TableDataInfo<FlowTaskDto> myProcess(PageQuery pageQuery) {
-        Page<FlowTaskDto> page = new Page<>();
+    public TableDataInfo<WfTaskVo> myProcess(PageQuery pageQuery) {
+        Page<WfTaskVo> page = new Page<>();
         Long userId = LoginHelper.getUserId();
         HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery()
             .startedBy(userId.toString())
@@ -424,9 +424,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         List<HistoricProcessInstance> historicProcessInstances = historicProcessInstanceQuery
             .listPage(offset, pageQuery.getPageSize());
         page.setTotal(historicProcessInstanceQuery.count());
-        List<FlowTaskDto> flowList = new ArrayList<>();
+        List<WfTaskVo> flowList = new ArrayList<>();
         for (HistoricProcessInstance hisIns : historicProcessInstances) {
-            FlowTaskDto flowTask = new FlowTaskDto();
+            WfTaskVo flowTask = new WfTaskVo();
             flowTask.setCreateTime(hisIns.getStartTime());
             flowTask.setFinishTime(hisIns.getEndTime());
             flowTask.setProcInsId(hisIns.getId());
@@ -464,18 +464,18 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     /**
      * 取消申请
      *
-     * @param flowTaskVo
+     * @param bo
      * @return
      */
     @Override
-    public void stopProcess(FlowTaskVo flowTaskVo) {
-        List<Task> task = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).list();
+    public void stopProcess(WfTaskBo bo) {
+        List<Task> task = taskService.createTaskQuery().processInstanceId(bo.getInstanceId()).list();
         if (CollectionUtils.isEmpty(task)) {
             throw new RuntimeException("流程未启动或已执行完成，取消申请失败");
         }
 
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-            .processInstanceId(flowTaskVo.getInstanceId()).singleResult();
+            .processInstanceId(bo.getInstanceId()).singleResult();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processInstance.getProcessDefinitionId());
         if (Objects.nonNull(bpmnModel)) {
             Process process = bpmnModel.getMainProcess();
@@ -498,12 +498,12 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     /**
      * 撤回流程  目前存在错误
      *
-     * @param flowTaskVo
+     * @param bo
      * @return
      */
     @Override
-    public void revokeProcess(FlowTaskVo flowTaskVo) {
-        Task task = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).singleResult();
+    public void revokeProcess(WfTaskBo bo) {
+        Task task = taskService.createTaskQuery().processInstanceId(bo.getInstanceId()).singleResult();
         if (task == null) {
             throw new RuntimeException("流程未启动或已执行完成，无法撤回");
         }
@@ -556,8 +556,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @return
      */
     @Override
-    public TableDataInfo<FlowTaskDto> todoList(PageQuery pageQuery) {
-        Page<FlowTaskDto> page = new Page<>();
+    public TableDataInfo<WfTaskVo> todoList(PageQuery pageQuery) {
+        Page<WfTaskVo> page = new Page<>();
         Long userId = LoginHelper.getUserId();
         TaskQuery taskQuery = taskService.createTaskQuery()
             .active()
@@ -567,9 +567,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         page.setTotal(taskQuery.count());
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<Task> taskList = taskQuery.listPage(offset, pageQuery.getPageSize());
-        List<FlowTaskDto> flowList = new ArrayList<>();
+        List<WfTaskVo> flowList = new ArrayList<>();
         for (Task task : taskList) {
-            FlowTaskDto flowTask = new FlowTaskDto();
+            WfTaskVo flowTask = new WfTaskVo();
             // 当前流程信息
             flowTask.setTaskId(task.getId());
             flowTask.setTaskDefKey(task.getTaskDefinitionKey());
@@ -608,8 +608,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @return
      */
     @Override
-    public TableDataInfo<FlowTaskDto> finishedList(PageQuery pageQuery) {
-        Page<FlowTaskDto> page = new Page<>();
+    public TableDataInfo<WfTaskVo> finishedList(PageQuery pageQuery) {
+        Page<WfTaskVo> page = new Page<>();
         Long userId = LoginHelper.getUserId();
         HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery()
             .includeProcessVariables()
@@ -619,9 +619,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             .desc();
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<HistoricTaskInstance> historicTaskInstanceList = taskInstanceQuery.listPage(offset, pageQuery.getPageSize());
-        List<FlowTaskDto> hisTaskList = Lists.newArrayList();
+        List<WfTaskVo> hisTaskList = Lists.newArrayList();
         for (HistoricTaskInstance histTask : historicTaskInstanceList) {
-            FlowTaskDto flowTask = new FlowTaskDto();
+            WfTaskVo flowTask = new WfTaskVo();
             // 当前流程信息
             flowTask.setTaskId(histTask.getId());
             // 审批人员信息
@@ -680,10 +680,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 .processInstanceId(procInsId)
                 .orderByHistoricActivityInstanceStartTime()
                 .desc().list();
-            List<FlowTaskDto> hisFlowList = new ArrayList<>();
+            List<WfTaskVo> hisFlowList = new ArrayList<>();
             for (HistoricActivityInstance histIns : list) {
                 if (StringUtils.isNotBlank(histIns.getTaskId())) {
-                    FlowTaskDto flowTask = new FlowTaskDto();
+                    WfTaskVo flowTask = new WfTaskVo();
                     flowTask.setProcDefId(histIns.getProcessDefinitionId());
                     flowTask.setTaskId(histIns.getTaskId());
                     flowTask.setTaskName(histIns.getActivityName());
@@ -719,7 +719,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     List<Comment> commentList = taskService.getProcessInstanceComments(histIns.getProcessInstanceId());
                     commentList.forEach(comment -> {
                         if (histIns.getTaskId().equals(comment.getTaskId())) {
-                            flowTask.setComment(FlowCommentDto.builder().type(comment.getType()).comment(comment.getFullMessage()).build());
+                            flowTask.setComment(WfCommentDto.builder().type(comment.getType()).comment(comment.getFullMessage()).build());
                         }
                     });
                     hisFlowList.add(flowTask);
@@ -812,7 +812,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @return
      */
     @Override
-    public FlowViewerVo getFlowViewer(String procInsId) {
+    public WfViewerVo getFlowViewer(String procInsId) {
         // 构建查询条件
         HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery()
             .processInstanceId(procInsId);
@@ -825,7 +825,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             .stream().distinct().map(HistoricActivityInstance::getActivityId)
             .collect(Collectors.toList());
         // 构建视图类
-        return new FlowViewerVo(finishedTaskList, unfinishedTaskList);
+        return new WfViewerVo(finishedTaskList, unfinishedTaskList);
     }
 
     /**
@@ -849,13 +849,13 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     /**
      * 获取下一节点
      *
-     * @param flowTaskVo 任务
+     * @param bo 任务
      * @return
      */
     @Override
-    public R getNextFlowNode(FlowTaskVo flowTaskVo) {
-        Task task = taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult();
-        FlowNextDto flowNextDto = new FlowNextDto();
+    public R getNextFlowNode(WfTaskBo bo) {
+        Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
+        WfNextDto nextDto = new WfNextDto();
         if (Objects.nonNull(task)) {
             List<UserTask> nextUserTask = FindNextNodeUtil.getNextUserTasks(repositoryService, task, new HashMap<>());
             if (CollectionUtils.isNotEmpty(nextUserTask)) {
@@ -865,9 +865,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     if (Objects.nonNull(multiInstance)) {
                         List<SysUser> list = sysUserService.selectUserList(new SysUser());
 
-                        flowNextDto.setVars(ProcessConstants.PROCESS_MULTI_INSTANCE_USER);
-                        flowNextDto.setType(ProcessConstants.PROCESS_MULTI_INSTANCE);
-                        flowNextDto.setUserList(list);
+                        nextDto.setVars(ProcessConstants.PROCESS_MULTI_INSTANCE_USER);
+                        nextDto.setType(ProcessConstants.PROCESS_MULTI_INSTANCE);
+                        nextDto.setUserList(list);
                     } else {
 
                         // 读取自定义节点属性 判断是否是否需要动态指定任务接收人员、组
@@ -879,25 +879,25 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                             if (ProcessConstants.USER_TYPE_ASSIGNEE.equals(userType)) {
                                 List<SysUser> list = sysUserService.selectUserList(new SysUser());
 
-                                flowNextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
-                                flowNextDto.setType(ProcessConstants.USER_TYPE_ASSIGNEE);
-                                flowNextDto.setUserList(list);
+                                nextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
+                                nextDto.setType(ProcessConstants.USER_TYPE_ASSIGNEE);
+                                nextDto.setUserList(list);
                             }
                             // 候选人员(多个)
                             if (ProcessConstants.USER_TYPE_USERS.equals(userType)) {
                                 List<SysUser> list = sysUserService.selectUserList(new SysUser());
 
-                                flowNextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
-                                flowNextDto.setType(ProcessConstants.USER_TYPE_USERS);
-                                flowNextDto.setUserList(list);
+                                nextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
+                                nextDto.setType(ProcessConstants.USER_TYPE_USERS);
+                                nextDto.setUserList(list);
                             }
                             // 候选组
                             if (ProcessConstants.USER_TYPE_ROUPS.equals(userType)) {
                                 List<SysRole> sysRoles = sysRoleService.selectRoleAll();
 
-                                flowNextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
-                                flowNextDto.setType(ProcessConstants.USER_TYPE_ROUPS);
-                                flowNextDto.setRoleList(sysRoles);
+                                nextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
+                                nextDto.setType(ProcessConstants.USER_TYPE_ROUPS);
+                                nextDto.setRoleList(sysRoles);
                             }
                         }
                     }
@@ -906,7 +906,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 return R.ok("流程已完结", null);
             }
         }
-        return R.ok(flowNextDto);
+        return R.ok(nextDto);
     }
 
     /**

@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("wf_category")
-public class FlowCategory extends BaseEntity {
+public class WfCategory extends BaseEntity {
 
     private static final long serialVersionUID=1L;
 

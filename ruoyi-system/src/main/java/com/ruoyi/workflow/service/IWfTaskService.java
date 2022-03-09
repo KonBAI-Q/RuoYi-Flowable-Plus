@@ -3,9 +3,9 @@ package com.ruoyi.workflow.service;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.workflow.domain.dto.FlowTaskDto;
-import com.ruoyi.workflow.domain.vo.FlowTaskVo;
-import com.ruoyi.workflow.domain.vo.FlowViewerVo;
+import com.ruoyi.workflow.domain.vo.WfTaskVo;
+import com.ruoyi.workflow.domain.bo.WfTaskBo;
+import com.ruoyi.workflow.domain.vo.WfViewerVo;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.task.api.Task;
 
@@ -14,97 +14,97 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author XuanXuan
- * @date 2021-04-03 14:42
+ * @author KonBAI
+ * @createTime 2022/3/10 00:12
  */
-public interface IFlowTaskService {
+public interface IWfTaskService {
 
     /**
      * 审批任务
      *
      * @param task 请求实体参数
      */
-    void complete(FlowTaskVo task);
+    void complete(WfTaskBo task);
 
     /**
      * 驳回任务
      *
-     * @param flowTaskVo
+     * @param bo
      */
-    void taskReject(FlowTaskVo flowTaskVo);
+    void taskReject(WfTaskBo bo);
 
 
     /**
      * 退回任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
-    void taskReturn(FlowTaskVo flowTaskVo);
+    void taskReturn(WfTaskBo bo);
 
     /**
      * 获取所有可回退的节点
      *
-     * @param flowTaskVo
+     * @param bo
      * @return
      */
-    List<UserTask> findReturnTaskList(FlowTaskVo flowTaskVo);
+    List<UserTask> findReturnTaskList(WfTaskBo bo);
 
     /**
      * 删除任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
-    void deleteTask(FlowTaskVo flowTaskVo);
+    void deleteTask(WfTaskBo bo);
 
     /**
      * 认领/签收任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
-    void claim(FlowTaskVo flowTaskVo);
+    void claim(WfTaskBo bo);
 
     /**
      * 取消认领/签收任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
-    void unClaim(FlowTaskVo flowTaskVo);
+    void unClaim(WfTaskBo bo);
 
     /**
      * 委派任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
-    void delegateTask(FlowTaskVo flowTaskVo);
+    void delegateTask(WfTaskBo bo);
 
 
     /**
      * 转办任务
      *
-     * @param flowTaskVo 请求实体参数
+     * @param bo 请求实体参数
      */
-    void assignTask(FlowTaskVo flowTaskVo);
+    void assignTask(WfTaskBo bo);
 
     /**
      * 我发起的流程
      *
      * @return
      */
-    TableDataInfo<FlowTaskDto> myProcess(PageQuery pageQuery);
+    TableDataInfo<WfTaskVo> myProcess(PageQuery pageQuery);
 
     /**
      * 取消申请
-     * @param flowTaskVo
+     * @param bo
      * @return
      */
-    void stopProcess(FlowTaskVo flowTaskVo);
+    void stopProcess(WfTaskBo bo);
 
     /**
      * 撤回流程
-     * @param flowTaskVo
+     * @param bo
      * @return
      */
-    void revokeProcess(FlowTaskVo flowTaskVo);
+    void revokeProcess(WfTaskBo bo);
 
 
     /**
@@ -112,7 +112,7 @@ public interface IFlowTaskService {
      *
      * @return
      */
-    TableDataInfo<FlowTaskDto> todoList(PageQuery pageQuery);
+    TableDataInfo<WfTaskVo> todoList(PageQuery pageQuery);
 
 
     /**
@@ -120,7 +120,7 @@ public interface IFlowTaskService {
      *
      * @return
      */
-    TableDataInfo<FlowTaskDto> finishedList(PageQuery pageQuery);
+    TableDataInfo<WfTaskVo> finishedList(PageQuery pageQuery);
 
     /**
      * 流程历史流转记录
@@ -150,7 +150,7 @@ public interface IFlowTaskService {
      * @param procInsId
      * @return
      */
-    FlowViewerVo getFlowViewer(String procInsId);
+    WfViewerVo getFlowViewer(String procInsId);
 
     /**
      * 获取流程变量
@@ -161,8 +161,8 @@ public interface IFlowTaskService {
 
     /**
      * 获取下一节点
-     * @param flowTaskVo 任务
+     * @param bo 任务
      * @return
      */
-    R getNextFlowNode(FlowTaskVo flowTaskVo);
+    R getNextFlowNode(WfTaskBo bo);
 }
