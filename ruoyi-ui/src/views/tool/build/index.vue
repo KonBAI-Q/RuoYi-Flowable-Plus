@@ -183,7 +183,7 @@ export default {
       selectComponents,
       layoutComponents,
       labelWidth: 100,
-      drawingList: drawingDefault,
+      drawingList: [],
       drawingData: {},
       activeId: drawingDefault[0].formId,
       drawerVisible: false,
@@ -500,14 +500,13 @@ export default {
       this.formConf = data
     },
     /** 表单基本信息 */
-    handleForm(){
+    handleForm() {
       this.formData = {
         fields: deepClone(this.drawingList),
-        ...this.formConf
       }
-     this.form.content = JSON.stringify(this.formData);
-     this.formOpen = true;
-     this.formTitle = "添加表单";
+      this.form.content = JSON.stringify(this.formData);
+      this.formOpen = true;
+      this.formTitle = "添加表单";
     },
     // 表单重置
     reset() {
