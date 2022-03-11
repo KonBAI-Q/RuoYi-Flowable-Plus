@@ -49,7 +49,7 @@ public class WfDefinitionVo {
      */
     @ExcelProperty(value = "分类编码")
     @ApiModelProperty("分类编码")
-    private String categoryCode;
+    private String category;
 
     @ApiModelProperty("版本")
     private Integer version;

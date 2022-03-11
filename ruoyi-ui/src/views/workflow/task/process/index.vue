@@ -60,7 +60,11 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程类别" align="center" prop="category" width="100px" />
+      <el-table-column label="流程类别" align="center" prop="category" width="100px">
+        <template slot-scope="scope">
+          <span>{{ categoryOptions.find(k => k.code === scope.row.category).categoryName }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="流程版本" align="center" width="80px">
         <template slot-scope="scope">
           <el-tag size="medium" >v{{ scope.row.procDefVersion }}</el-tag>
@@ -120,7 +124,11 @@
             <el-tag size="medium" >v{{ scope.row.version }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="流程分类" align="center" prop="categoryCode" />
+        <el-table-column label="流程分类" align="center" prop="category">
+          <template slot-scope="scope">
+            <span>{{ categoryOptions.find(k => k.code === scope.row.category).categoryName }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <el-button
@@ -155,6 +163,7 @@ import {
 } from "@/api/workflow/finished";
 import { myProcessList,stopProcess } from "@/api/workflow/process";
 import {listDefinition} from "@/api/workflow/definition";
+import { listCategory } from '@/api/workflow/category';
 export default {
   name: "Deploy",
   components: {
@@ -174,6 +183,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
+      categoryOptions: [],
       processTotal:0,
       // 我发起的流程列表数据
       myProcessList: [],
@@ -205,6 +215,9 @@ export default {
     };
   },
   created() {
+    listCategory().then(response => {
+      this.categoryOptions = response.rows
+    })
     this.getList();
   },
   methods: {

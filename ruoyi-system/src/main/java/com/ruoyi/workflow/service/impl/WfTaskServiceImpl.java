@@ -424,29 +424,29 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         List<HistoricProcessInstance> historicProcessInstances = historicProcessInstanceQuery
             .listPage(offset, pageQuery.getPageSize());
         page.setTotal(historicProcessInstanceQuery.count());
-        List<WfTaskVo> flowList = new ArrayList<>();
+        List<WfTaskVo> taskVoList = new ArrayList<>();
         for (HistoricProcessInstance hisIns : historicProcessInstances) {
-            WfTaskVo flowTask = new WfTaskVo();
-            flowTask.setCreateTime(hisIns.getStartTime());
-            flowTask.setFinishTime(hisIns.getEndTime());
-            flowTask.setProcInsId(hisIns.getId());
+            WfTaskVo taskVo = new WfTaskVo();
+            taskVo.setCreateTime(hisIns.getStartTime());
+            taskVo.setFinishTime(hisIns.getEndTime());
+            taskVo.setProcInsId(hisIns.getId());
 
             // 计算耗时
             if (Objects.nonNull(hisIns.getEndTime())) {
                 long time = hisIns.getEndTime().getTime() - hisIns.getStartTime().getTime();
-                flowTask.setDuration(getDate(time));
+                taskVo.setDuration(getDate(time));
             } else {
                 long time = System.currentTimeMillis() - hisIns.getStartTime().getTime();
-                flowTask.setDuration(getDate(time));
+                taskVo.setDuration(getDate(time));
             }
             // 流程部署实例信息
             Deployment deployment = repositoryService.createDeploymentQuery()
                 .deploymentId(hisIns.getDeploymentId()).singleResult();
-            flowTask.setDeployId(hisIns.getDeploymentId());
-            flowTask.setProcDefId(hisIns.getProcessDefinitionId());
-            flowTask.setProcDefName(hisIns.getProcessDefinitionName());
-            flowTask.setProcDefVersion(hisIns.getProcessDefinitionVersion());
-            flowTask.setCategory(deployment.getCategory());
+            taskVo.setDeployId(hisIns.getDeploymentId());
+            taskVo.setProcDefId(hisIns.getProcessDefinitionId());
+            taskVo.setProcDefName(hisIns.getProcessDefinitionName());
+            taskVo.setProcDefVersion(hisIns.getProcessDefinitionVersion());
+            taskVo.setCategory(deployment.getCategory());
             // 当前所处流程 todo: 本地启动放开以下注释
             // List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
             // if (CollectionUtils.isNotEmpty(taskList)) {
@@ -455,9 +455,9 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             //     List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
             //     flowTask.setTaskId(historicTaskInstance.get(0).getId());
             // }
-            flowList.add(flowTask);
+            taskVoList.add(taskVo);
         }
-        page.setRecords(flowList);
+        page.setRecords(taskVoList);
         return TableDataInfo.build(page);
     }
 

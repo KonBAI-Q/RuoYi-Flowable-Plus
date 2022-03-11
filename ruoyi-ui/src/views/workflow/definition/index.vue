@@ -81,7 +81,7 @@
       </el-table-column>
       <el-table-column label="流程分类" align="center" prop="categoryName">
         <template slot-scope="scope">
-          <span>{{ categoryOptions.find(k => k.code === scope.row.categoryCode).categoryName }}</span>
+          <span>{{ categoryOptions.find(k => k.code === scope.row.category).categoryName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="业务表单" align="center" :show-overflow-tooltip="true">
@@ -200,7 +200,7 @@
           <el-input v-model="process.form.processName" clearable />
         </el-form-item>
         <el-form-item label="流程分类">
-          <el-select v-model="process.form.categoryCode" placeholder="请选择" clearable style="width:100%">
+          <el-select v-model="process.form.category" placeholder="请选择" clearable style="width:100%">
             <el-option v-for="item in categoryOptions" :key="item.categoryId" :label="item.categoryName" :value="item.code" />
           </el-select>
         </el-form-item>
@@ -488,7 +488,7 @@ export default {
           definitionId: row.definitionId,
           processId: row.processKey,
           processName: row.processName,
-          category: row.categoryCode
+          category: row.category
         }
       })
     },

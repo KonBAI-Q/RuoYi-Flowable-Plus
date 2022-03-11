@@ -86,7 +86,7 @@ public class WfDefinitionServiceImpl extends FlowServiceFactory implements IWfDe
             vo.setProcessKey(processDefinition.getKey());
             vo.setProcessName(processDefinition.getName());
             vo.setVersion(processDefinition.getVersion());
-            vo.setCategoryCode(processDefinition.getCategory());
+            vo.setCategory(processDefinition.getCategory());
             vo.setDeploymentId(processDefinition.getDeploymentId());
             vo.setSuspended(processDefinition.isSuspended());
             WfFormVo formVo = formMapper.selectFormByDeployId(deploymentId);
@@ -95,7 +95,7 @@ public class WfDefinitionServiceImpl extends FlowServiceFactory implements IWfDe
                 vo.setFormName(formVo.getFormName());
             }
             // 流程定义时间
-            vo.setCategoryCode(deployment.getCategory());
+            vo.setCategory(deployment.getCategory());
             vo.setDeploymentTime(deployment.getDeploymentTime());
             definitionVoList.add(vo);
         }
@@ -125,7 +125,7 @@ public class WfDefinitionServiceImpl extends FlowServiceFactory implements IWfDe
             vo.setProcessKey(item.getKey());
             vo.setProcessName(item.getName());
             vo.setVersion(item.getVersion());
-            vo.setCategoryCode(item.getCategory());
+            vo.setCategory(item.getCategory());
             vo.setDeploymentId(item.getDeploymentId());
             vo.setSuspended(item.isSuspended());
             // BeanUtil.copyProperties(item, vo);
