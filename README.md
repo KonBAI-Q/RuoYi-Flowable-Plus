@@ -12,8 +12,8 @@
 
 
 ## 参考文档
-
-项目基于 [RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus) 扩展开发，因此可以直接参考 [RuoYi-Vue-Plus文档](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus/wikis/pages)。
+- 项目文档：[RuoYi-Flowable-Plus开发文档](https://gitee.com/KonBAI-Q/ruoyi-flowable-plus/wikis/%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D)
+- 项目基于 [RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus) 扩展开发，因此可以直接参考 [RuoYi-Vue-Plus文档](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus/wikis/pages)。
 
 ## 贡献代码
 
