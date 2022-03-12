@@ -503,6 +503,7 @@ export default {
     handleForm() {
       this.formData = {
         fields: deepClone(this.drawingList),
+        ...this.formConf
       }
       this.form.content = JSON.stringify(this.formData);
       this.formOpen = true;
