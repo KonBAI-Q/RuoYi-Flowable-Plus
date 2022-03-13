@@ -276,7 +276,7 @@ export default {
     that.drawingList = [];
     const formId =  that.$route.query && that.$route.query.formId;
     if (formId) {
-      getForm(formId).then(res =>{
+      getForm(formId).then(res => {
         that.formConf = JSON.parse(res.data.content);
         that.drawingList = that.formConf.fields;
         that.form = res.data;
@@ -284,6 +284,7 @@ export default {
     } else {
       if (formConfInDB) {
         that.formConf = formConfInDB
+        that.formConf.fields = null
       }
     }
     loadBeautifier(btf => {
@@ -393,8 +394,8 @@ export default {
     },
     AssembleFormData() {
       this.formData = {
-        fields: deepClone(this.drawingList),
-        ...this.formConf
+        ...this.formConf,
+        fields: deepClone(this.drawingList)
       }
     },
     generate(data) {
@@ -502,9 +503,9 @@ export default {
     /** 表单基本信息 */
     handleForm() {
       this.formData = {
-        fields: deepClone(this.drawingList),
-        ...this.formConf
-      }
+        ...this.formConf,
+        fields: deepClone(this.drawingList)
+      };
       this.form.content = JSON.stringify(this.formData);
       this.formOpen = true;
       this.formTitle = "添加表单";
