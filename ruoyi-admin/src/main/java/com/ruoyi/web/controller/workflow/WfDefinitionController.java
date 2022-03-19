@@ -5,8 +5,6 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.system.service.ISysRoleService;
-import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.bo.WfDesignerBo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.service.IWfDefinitionService;
@@ -41,10 +39,6 @@ import java.util.Map;
 public class WfDefinitionController extends BaseController {
 
     private final IWfDefinitionService flowDefinitionService;
-
-    private final ISysUserService userService;
-
-    private final ISysRoleService sysRoleService;
 
     @GetMapping(value = "/list")
     @SaCheckPermission("workflow:definition:list")
