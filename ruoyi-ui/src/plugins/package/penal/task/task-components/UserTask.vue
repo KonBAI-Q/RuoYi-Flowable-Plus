@@ -9,16 +9,16 @@
     </el-form-item>
     <el-form-item label="指定方式" v-if="formData.groupType === 'ASSIGNEE'">
       <el-radio-group v-model="formData.assignType" @change="onAssignTypeChange">
-        <el-radio :label="'1'">固定</el-radio>
-        <el-radio :label="'2'">动态</el-radio>
+        <el-radio :label="'fixed' || '1'">固定</el-radio>
+        <el-radio :label="'dynamic' || '2'">动态</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="处理用户" v-if="formData.groupType === 'ASSIGNEE'">
-      <tag-select v-if="formData.assignType === '1'" v-model="userTaskForm.assignee">
+      <tag-select v-if="formData.assignType === ('fixed' || '1')" v-model="userTaskForm.assignee">
         <el-button slot="append" class="append-add" type="default" icon="el-icon-plus" @click="onSelectAssignee()" />
       </tag-select>
-      <el-select v-if="formData.assignType === '2'" v-model="userTaskForm.assignee" collapse-tags @change="updateElementTask('assignee')">
-        <el-option v-for="item in variableData" :key="item.value" :label="item.label" :value="item.value">
+      <el-select v-if="formData.assignType === ('dynamic' || '2')" v-model="userTaskForm.assignee" collapse-tags @change="updateElementTask('assignee')">
+        <el-option v-for="item in variableData" :key="item.value" :label="item.label" :value="item">
           <span style="float: left">{{ item.label }}</span>
           <span style="float: right; color: #8492a6;">{{ item.value }}</span>
         </el-option>
@@ -140,7 +140,7 @@ export default {
       },
       formData: {
         groupType: 'ASSIGNEE',
-        assignType: '1'
+        assignType: 'fixed'
       },
       userTaskForm: {},
       candidateVisible: false,
@@ -157,7 +157,6 @@ export default {
       userList: [],
       total: 0,
       selectedUserDate: [],
-      userMockDate: [],
       variableData: [{
         label: "流程发起人",
         value: "${INITIATOR}"
@@ -186,7 +185,7 @@ export default {
   },
   created() {
     listUser().then(response => {
-      this.userMockDate = response.rows;
+      this.userList = response.rows;
     })
   },
   methods: {
@@ -211,12 +210,13 @@ export default {
         } else if (key === "assignee") {
           this.formData.groupType = 'ASSIGNEE';
           let val = this.bpmnElement?.businessObject[key] || this.defaultTaskForm[key];
+          // TODO 2022/03/20 根据type判断是否为动态用户
           // 判断是否为动态用户
           if (val && val.startsWith('${') && val.endsWith('}')) {
-            this.formData.assignType = '2';
+            this.formData.assignType = 'dynamic';
             this.$set(this.userTaskForm, key, val);
           } else {
-            this.formData.assignType = '1';
+            this.formData.assignType = 'fixed';
             getUser(val).then(response => {
               let user = response.data.user
               this.$set(this.userTaskForm, key, user);
@@ -227,20 +227,21 @@ export default {
     },
     updateElementTask(key) {
       const taskAttr = Object.create(null);
+      taskAttr.type = this.formData.assignType;
       if (key === "candidateUsers" || key === "candidateGroups") {
         if (this.userTaskForm[key] && this.userTaskForm[key].length > 0) {
-          taskAttr['assignee'] = null;
           taskAttr[key] = this.userTaskForm[key].map(k => k.userId) || null
         }
         // TODO 2022/01/10 添加候选组的设值
         // taskAttr[key] = this.userTaskForm[key] && this.userTaskForm[key].length ? this.userTaskForm[key].join() : null;
       } else {
         if (this.userTaskForm[key]) {
-          taskAttr['candidateUsers'] = null;
-          if (this.formData.assignType === '1') {
+          if (this.formData.assignType === ('fixed' || '1')) {
+            taskAttr['text'] = this.userTaskForm[key].nickName
             taskAttr[key] = this.userTaskForm[key].userId || null;
-          } else if (this.formData.assignType === '2') {
-            taskAttr[key] = this.userTaskForm[key] || null;
+          } else if (this.formData.assignType === ('dynamic' || '2')) {
+            taskAttr['text'] = this.userTaskForm[key].label
+            taskAttr[key] = this.userTaskForm[key].value || null;
           }
         }
       }
@@ -315,7 +316,7 @@ export default {
       this.userTaskForm = {}
       // 清空已选候选人数据
       if (val === 'ASSIGNEE') {
-        this.formData.assignType = '1'
+        this.formData.assignType = 'fixed'
       }
       this.selectedUserDate = []
       this.$refs.multipleTable?.clearSelection();
@@ -324,6 +325,8 @@ export default {
       this.userTaskForm.assignee = null
     },
     onSelectAssignee() {
+      this.selectedUserDate = []
+      this.$refs.multipleTable?.clearSelection();
       this.getDeptTreeSelect();
       this.candidateVisible = true;
     }
