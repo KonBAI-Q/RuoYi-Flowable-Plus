@@ -155,13 +155,11 @@
 <script>
 import {
   getDeployment,
-  delDeployment,
   addDeployment,
   updateDeployment,
   exportDeployment,
-  flowRecord
 } from "@/api/workflow/finished";
-import { myProcessList,stopProcess } from "@/api/workflow/process";
+import { myProcessList, stopProcess, delProcess } from "@/api/workflow/process";
 import {listDefinition} from "@/api/workflow/definition";
 import { listCategory } from '@/api/workflow/category';
 export default {
@@ -344,13 +342,13 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ids = row.id || this.ids;
+      const ids = row.procInsId;
       this.$confirm('是否确认删除流程定义编号为"' + ids + '"的数据项?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function() {
-        return delDeployment(ids);
+        return delProcess(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");

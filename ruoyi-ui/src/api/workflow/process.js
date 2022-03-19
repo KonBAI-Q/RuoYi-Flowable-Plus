@@ -53,45 +53,10 @@ export function deployStart(deployId) {
   })
 }
 
-// 查询流程定义详细
-export function getDeployment(id) {
+// 删除流程实例
+export function delProcess(id) {
   return request({
-    url: '/system/deployment/' + id,
-    method: 'get'
-  })
-}
-
-// 新增流程定义
-export function addDeployment(data) {
-  return request({
-    url: '/system/deployment',
-    method: 'post',
-    data: data
-  })
-}
-
-// 修改流程定义
-export function updateDeployment(data) {
-  return request({
-    url: '/system/deployment',
-    method: 'put',
-    data: data
-  })
-}
-
-// 删除流程定义
-export function delDeployment(id) {
-  return request({
-    url: '/system/deployment/' + id,
+    url: '/workflow/instance/delete/?instanceId=' + id,
     method: 'delete'
-  })
-}
-
-// 导出流程定义
-export function exportDeployment(query) {
-  return request({
-    url: '/system/deployment/export',
-    method: 'get',
-    params: query
   })
 }
