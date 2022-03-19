@@ -5,8 +5,10 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.JsonUtils;
+import com.ruoyi.common.utils.MessageUtils;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.redis.RedisUtils;
@@ -14,6 +16,8 @@ import com.ruoyi.framework.config.properties.RepeatSubmitProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -27,7 +31,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 防止重复提交
+ * 防止重复提交(参考美团GTIS防重系统)
  *
  * @author Lion Li
  */
@@ -36,6 +40,8 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Component
 public class RepeatSubmitAspect {
+
+    private static final ThreadLocal<String> KEY_CACHE = new ThreadLocal<>();
 
     private final RepeatSubmitProperties repeatSubmitProperties;
 
@@ -64,9 +70,43 @@ public class RepeatSubmitAspect {
         String key = RedisUtils.getCacheObject(cacheRepeatKey);
         if (key == null) {
             RedisUtils.setCacheObject(cacheRepeatKey, "", interval, TimeUnit.MILLISECONDS);
+            KEY_CACHE.set(cacheRepeatKey);
         } else {
-            throw new ServiceException(repeatSubmit.message());
+            String message = repeatSubmit.message();
+            if (StringUtils.startsWith(message, "{") && StringUtils.endsWith(message, "}")) {
+                message = MessageUtils.message(StringUtils.substring(message, 1, message.length() - 1));
+            }
+            throw new ServiceException(message);
         }
+    }
+
+    /**
+     * 处理完请求后执行
+     *
+     * @param joinPoint 切点
+     */
+    @AfterReturning(pointcut = "@annotation(repeatSubmit)", returning = "jsonResult")
+    public void doAfterReturning(JoinPoint joinPoint, RepeatSubmit repeatSubmit, Object jsonResult) {
+        if (jsonResult instanceof R) {
+            R<?> r = (R<?>) jsonResult;
+            if (r.getCode() == R.SUCCESS) {
+                return;
+            }
+            RedisUtils.deleteObject(KEY_CACHE.get());
+            KEY_CACHE.remove();
+        }
+    }
+
+    /**
+     * 拦截异常操作
+     *
+     * @param joinPoint 切点
+     * @param e         异常
+     */
+    @AfterThrowing(value = "@annotation(repeatSubmit)", throwing = "e")
+    public void doAfterThrowing(JoinPoint joinPoint, RepeatSubmit repeatSubmit, Exception e) {
+        RedisUtils.deleteObject(KEY_CACHE.get());
+        KEY_CACHE.remove();
     }
 
     /**

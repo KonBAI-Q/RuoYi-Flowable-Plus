@@ -70,6 +70,11 @@ spring:
           url:
           username:
           password:
+#        oracle:
+#          driverClassName: oracle.jdbc.OracleDriver
+#          url: jdbc:oracle:thin:@//172.30.0.36:1521/XE
+#          username: ROOT
+#          password: root
       druid:
         # 初始连接数
         initialSize: 5
