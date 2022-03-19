@@ -14,22 +14,24 @@
 
     <properties>
         <ruoyi-flowable-plus.version>4.0.1</ruoyi-flowable-plus.version>
-        <spring-boot.version>2.6.3</spring-boot.version>
+        <spring-boot.version>2.6.4</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+        <spring-boot.mybatis>2.2.0</spring-boot.mybatis>
         <druid.version>1.2.8</druid.version>
         <knife4j.version>3.0.3</knife4j.version>
         <swagger-annotations.version>1.5.22</swagger-annotations.version>
         <poi.version>4.1.2</poi.version>
+        <commons-compress.version>1.21</commons-compress.version>
         <easyexcel.version>3.0.5</easyexcel.version>
         <cglib.version>3.3.0</cglib.version>
         <velocity.version>2.3</velocity.version>
         <satoken.version>1.29.0</satoken.version>
         <mybatis-plus.version>3.5.1</mybatis-plus.version>
         <p6spy.version>3.9.1</p6spy.version>
-        <hutool.version>5.7.20</hutool.version>
+        <hutool.version>5.7.21</hutool.version>
         <okhttp.version>4.9.2</okhttp.version>
         <spring-boot-admin.version>2.6.2</spring-boot-admin.version>
         <redisson.version>3.16.8</redisson.version>
@@ -108,6 +110,13 @@
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi.version}</version>
+            </dependency>
+
+            <!-- 修复poi漏洞 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
             </dependency>
 
             <dependency>
