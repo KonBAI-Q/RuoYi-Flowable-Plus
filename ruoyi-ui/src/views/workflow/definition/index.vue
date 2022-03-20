@@ -187,7 +187,7 @@
 
     <!-- 流程图 -->
     <el-dialog :title="processView.title" :visible.sync="processView.open" width="70%" append-to-body>
-       <process-viewer :xml="processView.xmlData" :style="{height: '400px'}" />
+       <process-viewer :key="`designer-${processView.index}`" :xml="processView.xmlData" :style="{height: '400px'}" />
     </el-dialog>
 
     <!--  编辑流程  -->
@@ -375,6 +375,7 @@ export default {
       processView: {
         title: '',
         open: false,
+        index: undefined,
         xmlData:"",
       },
       // bpmn.xml 导入
@@ -515,6 +516,7 @@ export default {
     handleProcessView(row) {
       let definitionId = row.definitionId;
       this.processView.title = "流程图";
+      this.processView.index = definitionId;
       // 发送请求，获取xml
       readXml(definitionId).then(res => {
         this.processView.xmlData = res.data;
