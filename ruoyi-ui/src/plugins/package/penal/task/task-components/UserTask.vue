@@ -227,7 +227,7 @@ export default {
     },
     updateElementTask(key) {
       const taskAttr = Object.create(null);
-      taskAttr.type = this.formData.assignType;
+      taskAttr['flowable:assignType'] = this.formData.assignType;
       if (key === "candidateUsers" || key === "candidateGroups") {
         if (this.userTaskForm[key] && this.userTaskForm[key].length > 0) {
           taskAttr[key] = this.userTaskForm[key].map(k => k.userId) || null
@@ -237,10 +237,10 @@ export default {
       } else {
         if (this.userTaskForm[key]) {
           if (this.formData.assignType === ('fixed' || '1')) {
-            taskAttr['text'] = this.userTaskForm[key].nickName
+            taskAttr['flowable:text'] = this.userTaskForm[key].nickName
             taskAttr[key] = this.userTaskForm[key].userId || null;
           } else if (this.formData.assignType === ('dynamic' || '2')) {
-            taskAttr['text'] = this.userTaskForm[key].label
+            taskAttr['flowable:text'] = this.userTaskForm[key].label
             taskAttr[key] = this.userTaskForm[key].value || null;
           }
         }
