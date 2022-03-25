@@ -1,13 +1,22 @@
 <template>
   <div class="process-viewer">
     <div class="process-canvas" style="height: 100%;" ref="processCanvas" v-show="!isLoading" />
-    <!-- 自定义箭头样式，用于已完成状态下流程连线箭头 -->
-    <defs ref="customDefs">
+    <!-- 自定义箭头样式，用于成功状态下流程连线箭头 -->
+    <defs ref="customSuccessDefs">
       <marker id="sequenceflow-end-white-success" viewBox="0 0 20 20" refX="11" refY="10" markerWidth="10" markerHeight="10" orient="auto">
         <path class="success-arrow" d="M 1 5 L 11 10 L 1 15 Z" style="stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000, 1;"></path>
       </marker>
       <marker id="conditional-flow-marker-white-success" viewBox="0 0 20 20" refX="-1" refY="10" markerWidth="10" markerHeight="10" orient="auto">
         <path class="success-conditional" d="M 0 10 L 8 6 L 16 10 L 8 14 Z" style="stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000, 1;"></path>
+      </marker>
+    </defs>
+    <!-- 自定义箭头样式，用于失败状态下流程连线箭头 -->
+    <defs ref="customFailDefs">
+      <marker id="sequenceflow-end-white-fail" viewBox="0 0 20 20" refX="11" refY="10" markerWidth="10" markerHeight="10" orient="auto">
+        <path class="fail-arrow" d="M 1 5 L 11 10 L 1 15 Z" style="stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000, 1;"></path>
+      </marker>
+      <marker id="conditional-flow-marker-white-fail" viewBox="0 0 20 20" refX="-1" refY="10" markerWidth="10" markerHeight="10" orient="auto">
+        <path class="fail-conditional" d="M 0 10 L 8 6 L 16 10 L 8 14 Z" style="stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000, 1;"></path>
       </marker>
     </defs>
     <!-- 已完成节点悬浮弹窗 -->
@@ -138,8 +147,10 @@ export default {
     addCustomDefs() {
       const canvas = this.bpmnViewer.get('canvas');
       const svg = canvas._svg;
-      const customDefs = this.$refs.customDefs;
-      svg.appendChild(customDefs);
+      const customSuccessDefs = this.$refs.customSuccessDefs;
+      const customFailDefs = this.$refs.customFailDefs;
+      svg.appendChild(customSuccessDefs);
+      svg.appendChild(customFailDefs);
     },
     // 任务悬浮弹窗
     onSelectElement(element) {
@@ -186,14 +197,14 @@ export default {
       }
     },
     // 设置流程图元素状态
-    setProcessStatus(processNodeInfo) {
+    setProcessStatus (processNodeInfo) {
       this.processNodeInfo = processNodeInfo;
       if (this.isLoading || this.processNodeInfo == null || this.bpmnViewer == null) return;
-      let { finishedSequenceFlowList, finishedTaskList, unfinishedTaskList } = this.processNodeInfo;
+      let { finishedTaskSet, rejectedTaskSet, unfinishedTaskSet, finishedSequenceFlowSet } = this.processNodeInfo;
       const canvas = this.bpmnViewer.get('canvas');
       const elementRegistry = this.bpmnViewer.get('elementRegistry');
-      if (Array.isArray(finishedSequenceFlowList)) {
-        finishedSequenceFlowList.forEach(item => {
+      if (Array.isArray(finishedSequenceFlowSet)) {
+        finishedSequenceFlowSet.forEach(item => {
           if (item != null) {
             canvas.addMarker(item, 'success');
             let element = elementRegistry.get(item);
@@ -204,15 +215,23 @@ export default {
           }
         });
       }
-      if (Array.isArray(finishedTaskList)) {
-        finishedTaskList.forEach(item => {
-          canvas.addMarker(item, 'success');
-        });
+      if (Array.isArray(finishedTaskSet)) {
+        finishedTaskSet.forEach(item => canvas.addMarker(item, 'success'));
       }
-      if (Array.isArray(unfinishedTaskList)) {
-        unfinishedTaskList.forEach(item => {
-          canvas.addMarker(item, 'current');
-        });
+      if (Array.isArray(unfinishedTaskSet)) {
+        unfinishedTaskSet.forEach(item => canvas.addMarker(item, 'primary'));
+      }
+      if (Array.isArray(rejectedTaskSet)) {
+        rejectedTaskSet.forEach(item => {
+          if (item != null) {
+            let element = elementRegistry.get(item);
+            if (element.type.includes('Task')) {
+              canvas.addMarker(item, 'danger');
+            } else {
+              canvas.addMarker(item, 'warning');
+            }
+          }
+        })
       }
     }
   },
@@ -237,7 +256,4 @@ export default {
 </script>
 
 <style scoped>
-.comment-dialog >>> .el-dialog__body {
-  padding: 0px;
-}
 </style>

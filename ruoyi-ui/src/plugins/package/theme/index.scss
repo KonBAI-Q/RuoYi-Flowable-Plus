@@ -9,13 +9,16 @@
 @import "./process-panel.scss";
 
 $success-color: #4eb819;
-$current-color: #409EFF;
+$primary-color: #409EFF;
+$warning-color: #E6A23C;
+$danger-color: #F56C6C;
+$cancel-color: #909399;
 
 .process-viewer {
   position: relative;
   border: 1px solid #EFEFEF;
   background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgMTBoNDBNMTAgMHY0ME0wIDIwaDQwTTIwIDB2NDBNMCAzMGg0ME0zMCAwdjQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNlMGUwZTAiIG9wYWNpdHk9Ii4yIi8+PHBhdGggZD0iTTQwIDBIMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTBlMGUwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+') repeat!important;
-  
+
   .success-arrow {
     fill: $success-color;
     stroke: $success-color;
@@ -24,6 +27,16 @@ $current-color: #409EFF;
   .success-conditional {
     fill: white;
     stroke: $success-color;
+  }
+
+  .fail-arrow {
+    fill: $warning-color;
+    stroke: $warning-color;
+  }
+
+  .fail-conditional {
+    fill: white;
+    stroke: $warning-color;
   }
 
   .success.djs-connection {
@@ -64,18 +77,90 @@ $current-color: #409EFF;
 
   .current.djs-shape {
     .djs-visual rect {
-      stroke: $current-color!important;
-      fill: $current-color!important;
+      stroke: $primary-color!important;
+      fill: $primary-color!important;
       fill-opacity: 0.15!important;
     }
 
     .djs-visual polygon {
-      stroke: $current-color!important;
+      stroke: $primary-color!important;
     }
 
     .djs-visual circle {
-      stroke: $current-color!important;
-      fill: $current-color!important;
+      stroke: $primary-color!important;
+      fill: $primary-color!important;
+      fill-opacity: 0.15!important;
+    }
+  }
+
+  .warning.djs-connection {
+    .djs-visual path {
+      stroke: $warning-color!important;
+      marker-end: url(#sequenceflow-end-white-fail)!important;
+    }
+  }
+
+  .warning.djs-connection.condition-expression {
+    .djs-visual path {
+      marker-start: url(#conditional-flow-marker-white-fail)!important;
+    }
+  }
+
+  .warning.djs-shape {
+    .djs-visual rect {
+      stroke: $warning-color!important;
+      fill: $warning-color!important;
+      fill-opacity: 0.15!important;
+    }
+
+    .djs-visual polygon {
+      stroke: $warning-color!important;
+    }
+
+    .djs-visual path:nth-child(2) {
+      stroke: $warning-color!important;
+      fill: $warning-color!important;
+    }
+
+    .djs-visual circle {
+      stroke: $warning-color!important;
+      fill: $warning-color!important;
+      fill-opacity: 0.15!important;
+    }
+  }
+
+  .danger.djs-shape {
+    .djs-visual rect {
+      stroke: $danger-color!important;
+      fill: $danger-color!important;
+      fill-opacity: 0.15!important;
+    }
+
+    .djs-visual polygon {
+      stroke: $danger-color!important;
+    }
+
+    .djs-visual circle {
+      stroke: $danger-color!important;
+      fill: $danger-color!important;
+      fill-opacity: 0.15!important;
+    }
+  }
+
+  .cancel.djs-shape {
+    .djs-visual rect {
+      stroke: $cancel-color!important;
+      fill: $cancel-color!important;
+      fill-opacity: 0.15!important;
+    }
+
+    .djs-visual polygon {
+      stroke: $cancel-color!important;
+    }
+
+    .djs-visual circle {
+      stroke: $cancel-color!important;
+      fill: $cancel-color!important;
       fill-opacity: 0.15!important;
     }
   }

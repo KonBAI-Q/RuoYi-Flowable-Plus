@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
-    <el-tabs tab-position="top">
-      <el-tab-pane label="基础信息">
+    <el-tabs tab-position="top" v-model="activeTagName">
+      <el-tab-pane label="基础信息" name="basicInfo">
         <el-card class="box-card">
           <!--流程处理表单模块-->
           <el-col :span="16" :offset="6" v-if="variableOpen">
@@ -25,8 +25,8 @@
             </div>
           </el-col>
         </el-card>
-      </el-tab-pane>
-      <el-tab-pane label="流转记录">
+      </el-tab-pane >
+      <el-tab-pane label="流转记录" name="flowRecord">
         <el-card class="box-card">
           <el-col :span="16" :offset="4">
             <div class="block">
@@ -71,7 +71,7 @@
           </el-col>
         </el-card>
       </el-tab-pane>
-      <el-tab-pane label="流程跟踪">
+      <el-tab-pane label="流程跟踪" name="processTrack">
         <el-card class="box-card">
           <process-viewer :key="`designer-${loadIndex}`" :style="'height:' + height" :xml="xmlData"
                           :finishedInfo="finishedInfo" :allCommentList="null"
@@ -198,13 +198,15 @@ export default {
   data() {
     return {
       height: document.documentElement.clientHeight - 205 + 'px;',
+      activeTagName: 'basicInfo',
       // 模型xml数据
       loadIndex: 0,
       xmlData: undefined,
       finishedInfo: {
-        finishedSequenceFlowList: [],
-        finishedTaskList: [],
-        unfinishedTaskList: []
+        finishedSequenceFlowSet: [],
+        finishedTaskSet: [],
+        unfinishedTaskSet: [],
+        rejectedTaskSet: []
       },
       taskList: [],
       // 部门名称
@@ -267,30 +269,17 @@ export default {
     this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
     this.taskForm.instanceId = this.$route.query && this.$route.query.procInsId;
-    // 回显流程记录
-    this.getFlowViewer(this.taskForm.procInsId);
-    this.getModelDetail(this.taskForm.definitionId);
+    this.finished =  this.$route.query && this.$route.query.finished
     // 流程任务重获取变量表单
     if (this.taskForm.taskId){
       this.processVariables( this.taskForm.taskId)
-      this.getNextFlowNode(this.taskForm.taskId)
+      // this.getNextFlowNode(this.taskForm.taskId)
       this.taskForm.deployId = null
     }
     this.getFlowRecordList( this.taskForm.procInsId, this.taskForm.deployId);
-    this.finished =  this.$route.query && this.$route.query.finished
-  },
-  mounted() {
-    // // 表单数据回填，模拟异步请求场景
-    // setTimeout(() => {
-    //   // 请求回来的表单数据
-    //   const data = {
-    //     field102: '18836662555'
-    //   }
-    //   // 回填数据
-    //   this.fillFormData(this.formConf, data)
-    //   // 更新表单
-    //   this.key = +new Date().getTime()
-    // }, 1000)
+    Promise.all([this.getFlowViewer(this.taskForm.procInsId), this.getModelDetail(this.taskForm.definitionId)]).then(() => {
+      this.loadIndex = this.taskForm.procInsId;
+    });
   },
   methods: {
     /** 查询部门下拉树结构 */
@@ -319,19 +308,26 @@ export default {
     },
     /** xml 文件 */
     getModelDetail(definitionId) {
-      // 发送请求，获取xml
-      readXml(definitionId).then(res => {
-        this.xmlData = res.data
-        this.loadIndex = definitionId
+      return new Promise(resolve => {
+        // 发送请求，获取xml
+        readXml(definitionId).then(res => {
+          this.xmlData = res.data
+          resolve()
+        })
       })
     },
     getFlowViewer(procInsId) {
-      getFlowViewer(procInsId).then(res => {
-        let data = res.data;
-        if (data) {
-          this.finishedInfo.finishedTaskList = data.finishedTaskList;
-          this.finishedInfo.unfinishedTaskList = data.unfinishedTaskList;
-        }
+      return new Promise(resolve => {
+        getFlowViewer(procInsId).then(res => {
+          let data = res.data;
+          if (data) {
+            this.finishedInfo.finishedTaskSet = data.finishedTaskSet;
+            this.finishedInfo.unfinishedTaskSet = data.unfinishedTaskSet;
+            this.finishedInfo.rejectedTaskSet = data.rejectedTaskSet;
+            this.finishedInfo.finishedSequenceFlowSet = data.finishedSequenceFlowSet;
+          }
+          resolve()
+        })
       })
     },
     setIcon(val) {
@@ -405,7 +401,6 @@ export default {
       if (taskId) {
         // 提交流程申请时填写的表单存入了流程变量中后续任务处理时需要展示
         getProcessVariables(taskId).then(res => {
-          // this.variables = res.data.variables;
           this.variablesData = res.data.variables;
           this.variableOpen = true
         });
