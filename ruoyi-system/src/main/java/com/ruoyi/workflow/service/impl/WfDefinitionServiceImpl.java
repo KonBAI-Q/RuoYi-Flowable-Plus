@@ -203,6 +203,7 @@ public class WfDefinitionServiceImpl extends FlowServiceFactory implements IWfDe
      * @param variables 流程变量
      * @return
      */
+    @Deprecated
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void startProcessInstanceById(String procDefId, Map<String, Object> variables) {

@@ -122,7 +122,7 @@ public class WfDefinitionController extends BaseController {
         return R.ok("导入成功");
     }
 
-
+    @Deprecated
     @ApiOperation(value = "根据流程定义id启动流程实例")
     @SaCheckPermission("workflow:definition:start")
     @PostMapping("/start/{procDefId}")

@@ -1,5 +1,24 @@
 import request from '@/utils/request'
 
+// 查询流程列表
+export function listProcess(query) {
+  return request({
+    url: '/workflow/process/list',
+    method: 'get',
+    params: query
+  })
+}
+
+
+// 部署流程实例
+export function startProcess(processDefId, data) {
+  return request({
+    url: '/workflow/process/start/' + processDefId,
+    method: 'post',
+    data: data
+  })
+}
+
 // 我的发起的流程
 export function myProcessList(query) {
   return request({

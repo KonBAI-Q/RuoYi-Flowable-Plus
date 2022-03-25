@@ -88,10 +88,29 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/process',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'start',
+        component: () => import('@/views/workflow/process/start'),
+        name: 'StartProcess',
+        meta: { title: '发起流程', icon: '' }
+      }
+    ]
+  },
+  {
     path: '/task',
     component: Layout,
     hidden: true,
     children: [
+      {
+        path: 'process/index',
+        component: () => import('@/views/workflow/task/process/index'),
+        name: 'Record',
+        meta: { title: '我的流程', icon: '' }
+      },
       {
         path: 'record/index',
         component: () => import('@/views/workflow/task/record/index'),
