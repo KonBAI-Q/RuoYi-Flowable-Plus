@@ -102,8 +102,8 @@ comment on column sys_user.remark       is '备注';
 -- ----------------------------
 -- 初始化-用户信息表数据
 -- ----------------------------
-insert into sys_user values(1,  103, 'admin', '疯狂的狮子Li', 'sys_user', 'crazyLionLi@163.com', '15888888888', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate, 'admin', sysdate, '', null, '管理员');
-insert into sys_user values(2,  105, 'lionli', '疯狂的狮子Li', 'sys_user', 'crazyLionLi@qq.com',  '15666666666', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate, 'admin', sysdate, '', null, '测试员');
+insert into sys_user values(1,  103, 'admin', '若依管理员', 'sys_user', 'crazyLionLi@163.com', '15888888888', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate, 'admin', sysdate, '', null, '管理员');
+insert into sys_user values(2,  105, 'ry',    '若依', 'sys_user', 'crazyLionLi@qq.com',  '15666666666', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate, 'admin', sysdate, '', null, '测试员');
 
 
 -- ----------------------------
@@ -245,7 +245,9 @@ comment on column sys_menu.remark       is '备注';
 insert into sys_menu values('1', '系统管理', '0', '1', 'system',           null, '', 1, 0, 'M', '0', '0', '', 'system',   'admin', sysdate, '', null, '系统管理目录');
 insert into sys_menu values('2', '系统监控', '0', '2', 'monitor',          null, '', 1, 0, 'M', '0', '0', '', 'monitor',  'admin', sysdate, '', null, '系统监控目录');
 insert into sys_menu values('3', '系统工具', '0', '3', 'tool',             null, '', 1, 0, 'M', '0', '0', '', 'tool',     'admin', sysdate, '', null, '系统工具目录');
-insert into sys_menu values('4', 'PLUS官网', '0', '4', 'https://gitee.com/JavaLionLi/RuoYi-Vue-Plus', null, '', 0, 0, 'M', '0', '0', '', 'guide',    'admin', sysdate, '', null, 'RuoYi-Vue-Plus官网地址');
+insert into sys_menu values('5', '流程管理', '0', '4', 'workflow',         null, '', 1, 0, 'M', '0', '0', '', 'skill',    'admin', sysdate, '', null, '流程管理目录');
+insert into sys_menu values('6', '任务管理', '0', '5', 'task',             null, '', 1, 0, 'M', '0', '0', '', 'job',      'admin', sysdate, '', null, '任务管理目录');
+
 -- 二级菜单
 insert into sys_menu values('100',  '用户管理', '1',   '1', 'user',       'system/user/index',        '', 1, 0, 'C', '0', '0', 'system:user:list',        'user',          'admin', sysdate, '', null, '用户管理菜单');
 insert into sys_menu values('101',  '角色管理', '1',   '2', 'role',       'system/role/index',        '', 1, 0, 'C', '0', '0', 'system:role:list',        'peoples',       'admin', sysdate, '', null, '角色管理菜单');
@@ -268,6 +270,13 @@ insert into sys_menu values('117',  'Admin监控', '2',  '5', 'Admin',      'mon
 insert into sys_menu values('118',  '文件管理', '1', '10', 'oss', 'system/oss/index', '', 1, 0, 'C', '0', '0', 'system:oss:list', 'upload', 'admin', sysdate, '', null, '文件管理菜单');
 -- xxl-job-admin控制台
 insert into sys_menu values('120',  '任务调度中心', '2',  '5', 'XxlJob',      'monitor/xxljob/index',      '', 1, 0, 'C', '0', '0', 'monitor:xxljob:list',      'job',     'admin', sysdate, '', null, 'Xxl-Job控制台菜单');
+-- 流程配置
+insert into sys_menu values('121',  '流程分类', '5',   '1', 'category',   'workflow/category/index',      '', 1, 0, 'C', '0', '0', 'workflow:category:list',   'nested', 'admin', sysdate, 'admin', null, '');
+insert into sys_menu values('122',  '流程定义', '5',   '2', 'definition', 'workflow/definition/index',    '', 1, 0, 'C', '0', '0', 'workflow:definition:list', 'example', 'admin', sysdate, 'admin', null, '');
+insert into sys_menu values('123',  '表单配置', '5',   '3', 'form',       'workflow/task/form/index',     '', 1, 0, 'C', '0', '0', 'workflow:form:list',       'form', 'admin', sysdate, 'admin', null, '');
+insert into sys_menu values('124',  '我的流程', '6',   '1', 'process',    'workflow/task/process/index',  '', 1, 0, 'C', '0', '0', null,                       'guide', 'admin', sysdate, 'admin', null, '');
+insert into sys_menu values('125',  '待办任务', '6',   '2', 'todo',       'workflow/task/todo/index',     '', 1, 0, 'C', '0', '0', null,                       'cascader', 'admin', sysdate, 'admin', null, '');
+insert into sys_menu values('126',  '已办任务', '6',   '3', 'finished',   'workflow/task/finished/index', '', 1, 0, 'C', '0', '0', null,                       'checkbox', 'admin', sysdate, 'admin', null, '');
 
 -- 三级菜单
 insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          'admin', sysdate, '', null, '操作日志菜单');
@@ -281,70 +290,87 @@ insert into sys_menu values('1005', '用户导出', '100', '5',  '', '', '', 1, 
 insert into sys_menu values('1006', '用户导入', '100', '6',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:import',         '#', 'admin', sysdate, '', null, '');
 insert into sys_menu values('1007', '重置密码', '100', '7',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:resetPwd',       '#', 'admin', sysdate, '', null, '');
 -- 角色管理按钮
-insert into sys_menu values('1008', '角色查询', '101', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:query',          '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1009', '角色新增', '101', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:add',            '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1010', '角色修改', '101', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:edit',           '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1011', '角色删除', '101', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:remove',         '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1012', '角色导出', '101', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:export',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1010', '角色查询', '101', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:query',          '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1011', '角色新增', '101', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:add',            '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1012', '角色修改', '101', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:edit',           '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1013', '角色删除', '101', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:remove',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1014', '角色导出', '101', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:export',         '#', 'admin', sysdate, '', null, '');
 -- 菜单管理按钮
-insert into sys_menu values('1013', '菜单查询', '102', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:query',          '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1014', '菜单新增', '102', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:add',            '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1015', '菜单修改', '102', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:edit',           '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1016', '菜单删除', '102', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:remove',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1020', '菜单查询', '102', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:query',          '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1021', '菜单新增', '102', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:add',            '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1022', '菜单修改', '102', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:edit',           '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1023', '菜单删除', '102', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:remove',         '#', 'admin', sysdate, '', null, '');
 -- 部门管理按钮
-insert into sys_menu values('1017', '部门查询', '103', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:query',          '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1018', '部门新增', '103', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:add',            '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1019', '部门修改', '103', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:edit',           '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1020', '部门删除', '103', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:remove',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1030', '部门查询', '103', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:query',          '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1031', '部门新增', '103', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:add',            '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1032', '部门修改', '103', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:edit',           '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1033', '部门删除', '103', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:remove',         '#', 'admin', sysdate, '', null, '');
 -- 岗位管理按钮
-insert into sys_menu values('1021', '岗位查询', '104', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:query',          '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1022', '岗位新增', '104', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:add',            '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1023', '岗位修改', '104', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:edit',           '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1024', '岗位删除', '104', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:remove',         '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1025', '岗位导出', '104', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:export',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1040', '岗位查询', '104', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:query',          '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1041', '岗位新增', '104', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:add',            '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1042', '岗位修改', '104', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:edit',           '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1043', '岗位删除', '104', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:remove',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1044', '岗位导出', '104', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:export',         '#', 'admin', sysdate, '', null, '');
 -- 字典管理按钮
-insert into sys_menu values('1026', '字典查询', '105', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:query',          '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1027', '字典新增', '105', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:add',            '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1028', '字典修改', '105', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:edit',           '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1029', '字典删除', '105', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:remove',         '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1030', '字典导出', '105', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:export',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1050', '字典查询', '105', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:query',          '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1051', '字典新增', '105', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:add',            '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1052', '字典修改', '105', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:edit',           '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1053', '字典删除', '105', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:remove',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1054', '字典导出', '105', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:export',         '#', 'admin', sysdate, '', null, '');
 -- 参数设置按钮
-insert into sys_menu values('1031', '参数查询', '106', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:query',        '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1032', '参数新增', '106', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:add',          '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1033', '参数修改', '106', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:edit',         '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1034', '参数删除', '106', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:remove',       '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1035', '参数导出', '106', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:export',       '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1060', '参数查询', '106', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:query',        '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1061', '参数新增', '106', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:add',          '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1062', '参数修改', '106', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:edit',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1063', '参数删除', '106', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:remove',       '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1064', '参数导出', '106', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:export',       '#', 'admin', sysdate, '', null, '');
 -- 通知公告按钮
-insert into sys_menu values('1036', '公告查询', '107', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:query',        '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1037', '公告新增', '107', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:add',          '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1038', '公告修改', '107', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:edit',         '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1039', '公告删除', '107', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:remove',       '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1070', '公告查询', '107', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:query',        '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1071', '公告新增', '107', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:add',          '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1072', '公告修改', '107', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:edit',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1073', '公告删除', '107', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:remove',       '#', 'admin', sysdate, '', null, '');
 -- 操作日志按钮
-insert into sys_menu values('1040', '操作查询', '500', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:query',      '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1041', '操作删除', '500', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:remove',     '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1042', '日志导出', '500', '4', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:export',     '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1080', '操作查询', '500', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:query',      '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1081', '操作删除', '500', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:remove',     '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1082', '日志导出', '500', '4', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:export',     '#', 'admin', sysdate, '', null, '');
 -- 登录日志按钮
-insert into sys_menu values('1043', '登录查询', '501', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:query',   '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1044', '登录删除', '501', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:remove',  '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1045', '日志导出', '501', '3', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:export',  '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1090', '登录查询', '501', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:query',   '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1091', '登录删除', '501', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:remove',  '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1092', '日志导出', '501', '3', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:export',  '#', 'admin', sysdate, '', null, '');
 -- 在线用户按钮
-insert into sys_menu values('1046', '在线查询', '109', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:query',       '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1047', '批量强退', '109', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:batchLogout', '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1048', '单条强退', '109', '3', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:forceLogout', '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1100', '在线查询', '109', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:query',       '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1101', '批量强退', '109', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:batchLogout', '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1102', '单条强退', '109', '3', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:forceLogout', '#', 'admin', sysdate, '', null, '');
 -- 代码生成按钮
-insert into sys_menu values('1055', '生成查询', '115', '1', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:query',             '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1056', '生成修改', '115', '2', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:edit',              '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1057', '生成删除', '115', '3', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:remove',            '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1058', '导入代码', '115', '2', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:import',            '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1059', '预览代码', '115', '4', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview',           '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1060', '生成代码', '115', '5', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code',              '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1120', '生成查询', '115', '1', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:query',             '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1121', '生成修改', '115', '2', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:edit',              '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1122', '生成删除', '115', '3', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:remove',            '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1123', '导入代码', '115', '4', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:import',            '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1124', '预览代码', '115', '5', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview',           '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1125', '生成代码', '115', '6', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code',              '#', 'admin', sysdate, '', null, '');
 -- oss相关按钮
-insert into sys_menu values('1600', '文件查询', '118', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:query',        '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1601', '文件上传', '118', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:upload',       '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1602', '文件下载', '118', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:download',     '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1603', '文件删除', '118', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:remove',       '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1604', '配置添加', '118', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:add',          '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1605', '配置编辑', '118', '6', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:edit',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1130', '文件查询', '118', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:query',        '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1131', '文件上传', '118', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:upload',       '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1132', '文件下载', '118', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:download',     '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1133', '文件删除', '118', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:remove',       '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1134', '配置添加', '118', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:add',          '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1135', '配置编辑', '118', '6', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:edit',         '#', 'admin', sysdate, '', null, '');
+-- 流程分类管理
+insert into sys_menu values('1140', '分类查询', '121', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:category:query',  '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1141', '分类新增', '121', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:category:add',    '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1142', '分类编辑', '121', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:category:edit',   '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1143', '分类删除', '121', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:category:remove', '#', 'admin', sysdate, '', null, '');
+-- 流程定义
+insert into sys_menu values('1150', '查看流程', '122', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:view',     '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1151', '流程设计', '122', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:designer', '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1152', '启动流程', '122', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:start',    '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1153', '更新流程', '122', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:update',   '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1154', '流程删除', '122', '5', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:remove',   '#', 'admin', sysdate, '', null, '');
+-- 表单配置
+insert into sys_menu values('1160', '表单查询', '123', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:query',   '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1161', '表单新增', '123', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:add',     '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1162', '表单修改', '123', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:edit',    '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1163', '表单删除', '123', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:remove',  '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1164', '表单导出', '123', '5', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:export',  '#', 'admin', sysdate, '', null, '');
 
 
 -- ----------------------------
@@ -388,10 +414,11 @@ comment on column sys_role_menu.menu_id      is '菜单ID';
 insert into sys_role_menu values ('2', '1');
 insert into sys_role_menu values ('2', '2');
 insert into sys_role_menu values ('2', '3');
-insert into sys_role_menu values ('2', '4');
+insert into sys_role_menu values ('2', '5');
+insert into sys_role_menu values ('2', '6');
 insert into sys_role_menu values ('2', '100');
-insert into sys_role_menu values ('2', '101');
 insert into sys_role_menu values ('2', '102');
+insert into sys_role_menu values ('2', '101');
 insert into sys_role_menu values ('2', '103');
 insert into sys_role_menu values ('2', '104');
 insert into sys_role_menu values ('2', '105');
@@ -399,16 +426,22 @@ insert into sys_role_menu values ('2', '106');
 insert into sys_role_menu values ('2', '107');
 insert into sys_role_menu values ('2', '108');
 insert into sys_role_menu values ('2', '109');
-insert into sys_role_menu values ('2', '110');
 insert into sys_role_menu values ('2', '111');
-insert into sys_role_menu values ('2', '112');
 insert into sys_role_menu values ('2', '113');
 insert into sys_role_menu values ('2', '114');
 insert into sys_role_menu values ('2', '115');
 insert into sys_role_menu values ('2', '116');
+insert into sys_role_menu values ('2', '117');
+insert into sys_role_menu values ('2', '118');
+insert into sys_role_menu values ('2', '120');
+insert into sys_role_menu values ('2', '121');
+insert into sys_role_menu values ('2', '122');
+insert into sys_role_menu values ('2', '123');
+insert into sys_role_menu values ('2', '124');
+insert into sys_role_menu values ('2', '125');
+insert into sys_role_menu values ('2', '126');
 insert into sys_role_menu values ('2', '500');
 insert into sys_role_menu values ('2', '501');
-insert into sys_role_menu values ('2', '1000');
 insert into sys_role_menu values ('2', '1001');
 insert into sys_role_menu values ('2', '1002');
 insert into sys_role_menu values ('2', '1003');
@@ -416,53 +449,73 @@ insert into sys_role_menu values ('2', '1004');
 insert into sys_role_menu values ('2', '1005');
 insert into sys_role_menu values ('2', '1006');
 insert into sys_role_menu values ('2', '1007');
-insert into sys_role_menu values ('2', '1008');
-insert into sys_role_menu values ('2', '1009');
 insert into sys_role_menu values ('2', '1010');
 insert into sys_role_menu values ('2', '1011');
 insert into sys_role_menu values ('2', '1012');
 insert into sys_role_menu values ('2', '1013');
 insert into sys_role_menu values ('2', '1014');
-insert into sys_role_menu values ('2', '1015');
-insert into sys_role_menu values ('2', '1016');
-insert into sys_role_menu values ('2', '1017');
-insert into sys_role_menu values ('2', '1018');
-insert into sys_role_menu values ('2', '1019');
 insert into sys_role_menu values ('2', '1020');
 insert into sys_role_menu values ('2', '1021');
 insert into sys_role_menu values ('2', '1022');
 insert into sys_role_menu values ('2', '1023');
-insert into sys_role_menu values ('2', '1024');
-insert into sys_role_menu values ('2', '1025');
-insert into sys_role_menu values ('2', '1026');
-insert into sys_role_menu values ('2', '1027');
-insert into sys_role_menu values ('2', '1028');
-insert into sys_role_menu values ('2', '1029');
 insert into sys_role_menu values ('2', '1030');
 insert into sys_role_menu values ('2', '1031');
 insert into sys_role_menu values ('2', '1032');
 insert into sys_role_menu values ('2', '1033');
-insert into sys_role_menu values ('2', '1034');
-insert into sys_role_menu values ('2', '1035');
-insert into sys_role_menu values ('2', '1036');
-insert into sys_role_menu values ('2', '1037');
-insert into sys_role_menu values ('2', '1038');
-insert into sys_role_menu values ('2', '1039');
 insert into sys_role_menu values ('2', '1040');
 insert into sys_role_menu values ('2', '1041');
 insert into sys_role_menu values ('2', '1042');
 insert into sys_role_menu values ('2', '1043');
 insert into sys_role_menu values ('2', '1044');
-insert into sys_role_menu values ('2', '1045');
-insert into sys_role_menu values ('2', '1046');
-insert into sys_role_menu values ('2', '1047');
-insert into sys_role_menu values ('2', '1048');
-insert into sys_role_menu values ('2', '1055');
-insert into sys_role_menu values ('2', '1056');
-insert into sys_role_menu values ('2', '1057');
-insert into sys_role_menu values ('2', '1058');
-insert into sys_role_menu values ('2', '1059');
+insert into sys_role_menu values ('2', '1050');
+insert into sys_role_menu values ('2', '1051');
+insert into sys_role_menu values ('2', '1052');
+insert into sys_role_menu values ('2', '1053');
+insert into sys_role_menu values ('2', '1054');
 insert into sys_role_menu values ('2', '1060');
+insert into sys_role_menu values ('2', '1061');
+insert into sys_role_menu values ('2', '1062');
+insert into sys_role_menu values ('2', '1063');
+insert into sys_role_menu values ('2', '1064');
+insert into sys_role_menu values ('2', '1070');
+insert into sys_role_menu values ('2', '1071');
+insert into sys_role_menu values ('2', '1072');
+insert into sys_role_menu values ('2', '1073');
+insert into sys_role_menu values ('2', '1080');
+insert into sys_role_menu values ('2', '1081');
+insert into sys_role_menu values ('2', '1082');
+insert into sys_role_menu values ('2', '1090');
+insert into sys_role_menu values ('2', '1091');
+insert into sys_role_menu values ('2', '1092');
+insert into sys_role_menu values ('2', '1100');
+insert into sys_role_menu values ('2', '1101');
+insert into sys_role_menu values ('2', '1102');
+insert into sys_role_menu values ('2', '1120');
+insert into sys_role_menu values ('2', '1121');
+insert into sys_role_menu values ('2', '1122');
+insert into sys_role_menu values ('2', '1123');
+insert into sys_role_menu values ('2', '1124');
+insert into sys_role_menu values ('2', '1125');
+insert into sys_role_menu values ('2', '1130');
+insert into sys_role_menu values ('2', '1131');
+insert into sys_role_menu values ('2', '1132');
+insert into sys_role_menu values ('2', '1133');
+insert into sys_role_menu values ('2', '1134');
+insert into sys_role_menu values ('2', '1135');
+insert into sys_role_menu values ('2', '1140');
+insert into sys_role_menu values ('2', '1141');
+insert into sys_role_menu values ('2', '1142');
+insert into sys_role_menu values ('2', '1143');
+insert into sys_role_menu values ('2', '1150');
+insert into sys_role_menu values ('2', '1151');
+insert into sys_role_menu values ('2', '1152');
+insert into sys_role_menu values ('2', '1153');
+insert into sys_role_menu values ('2', '1154');
+insert into sys_role_menu values ('2', '1160');
+insert into sys_role_menu values ('2', '1161');
+insert into sys_role_menu values ('2', '1162');
+insert into sys_role_menu values ('2', '1163');
+insert into sys_role_menu values ('2', '1164');
 
 -- ----------------------------
 -- 8、角色和部门关联表  角色1-N部门
@@ -939,6 +992,76 @@ insert into sys_oss_config values (1, 'minio',  'ruoyi',            'ruoyi123', 
 insert into sys_oss_config values (2, 'qiniu',  'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'http://XXX.XXXX.com',                  'N', 'z0',          '1', '', NULL, 'admin', sysdate, 'admin', sysdate);
 insert into sys_oss_config values (3, 'aliyun', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'http://oss-cn-beijing.aliyuncs.com',   'N', '',            '1', '', NULL, 'admin', sysdate, 'admin', sysdate);
 insert into sys_oss_config values (4, 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1250000000',  '', 'http://cos.ap-beijing.myqcloud.com',   'N', 'ap-beijing',  '1', '', NULL, 'admin', sysdate, 'admin', sysdate);
+
+-- ----------------------------
+-- table structure for wf_form
+-- ----------------------------
+create table wf_form (
+    form_id     number(20)    not null,
+    form_name   varchar(64)   default '',
+    content     nclob,
+    create_by   varchar(64)   default '',
+    create_time date,
+    update_by   varchar(64)   default '',
+    update_time date,
+    remark      varchar(255)  default '',
+    del_flag    char(1)       default '0'
+);
+
+alter table wf_form add constraint pk_wf_form primary key (form_id);
+
+comment on table wf_form is '流程表单信息表';
+comment on column wf_form.form_id is '表单主键';
+comment on column wf_form.form_name is '表单名称';
+comment on column wf_form.content is '表单内容';
+comment on column wf_form.create_by is '创建者';
+comment on column wf_form.create_time is '创建时间';
+comment on column wf_form.update_by is '更新者';
+comment on column wf_form.update_time is '更新时间';
+comment on column wf_form.remark is '备注';
+comment on column wf_form.del_flag is '删除标志（0代表存在 2代表删除）';
+
+-- ----------------------------
+-- table structure for wf_deploy_form
+-- ----------------------------
+create table wf_deploy_form (
+    deploy_id  varchar(64) not null,
+    form_id    number(20)  not null
+);
+
+alter table wf_deploy_form add constraint pk_wf_deploy_form primary key (deploy_id, form_id);
+
+comment on table wf_deploy_form is '流程实例关联表单';
+comment on column wf_deploy_form.deploy_id is '流程实例主键';
+comment on column wf_deploy_form.form_id is '表单主键';
+
+-- ----------------------------
+-- Table structure for wf_category
+-- ----------------------------
+create table wf_category (
+    category_id    number(20)    not null,
+    category_name  varchar(64)   default '',
+    code           varchar(64)   default '',
+    remark         varchar(500)  default '',
+    create_by      varchar(64)   default '',
+    create_time    date,
+    update_by      varchar(64)   default '',
+    update_time    date,
+    del_flag       char(1)       default '0'
+);
+
+alter table wf_category add constraint pk_wf_category primary key (category_id);
+
+comment on table wf_category is '流程分类表';
+comment on column wf_category.category_id is '流程分类id';
+comment on column wf_category.category_name is '流程分类名称';
+comment on column wf_category.code is '分类编码';
+comment on column wf_category.remark is '备注';
+comment on column wf_category.create_by is '创建者';
+comment on column wf_category.create_time is '创建时间';
+comment on column wf_category.update_by is '更新者';
+comment on column wf_category.update_time is '更新时间';
+comment on column wf_category.del_flag is '删除标志（0代表存在 2代表删除）';
 
 -- ----------------------------
 -- 钩子 ，用于session连接之后 自动设置默认的date类型格式化 简化时间查询
