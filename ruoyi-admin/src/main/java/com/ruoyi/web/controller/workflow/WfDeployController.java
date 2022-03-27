@@ -39,7 +39,7 @@ public class WfDeployController extends BaseController {
     @ApiOperation(value = "查询流程部署关联表单信息")
     @GetMapping("/form/{deployId}")
     public R<?> start(@ApiParam(value = "流程部署id") @PathVariable(value = "deployId") String deployId) {
-        WfFormVo formVo = deployFormService.selectSysDeployFormByDeployId(deployId);
+        WfFormVo formVo = deployFormService.selectDeployFormByDeployId(deployId);
         if (Objects.isNull(formVo)) {
             return R.fail("请先配置流程表单");
         }

@@ -25,5 +25,5 @@ public interface IWfDeployFormService {
      * @param deployId
      * @return
      */
-    WfFormVo selectSysDeployFormByDeployId(String deployId);
+    WfFormVo selectDeployFormByDeployId(String deployId);
 }

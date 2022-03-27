@@ -738,7 +738,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         }
         // 第一次申请获取初始化表单
         if (StringUtils.isNotBlank(deployId)) {
-            WfFormVo formVo = deployFormService.selectSysDeployFormByDeployId(deployId);
+            WfFormVo formVo = deployFormService.selectDeployFormByDeployId(deployId);
             if (Objects.isNull(formVo)) {
                 throw new ServiceException("请先配置流程表单");
             }

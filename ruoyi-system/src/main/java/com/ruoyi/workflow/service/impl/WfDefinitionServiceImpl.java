@@ -11,8 +11,8 @@ import com.ruoyi.flowable.common.enums.FlowComment;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
-import com.ruoyi.workflow.mapper.WfFormMapper;
 import com.ruoyi.workflow.service.IWfDefinitionService;
+import com.ruoyi.workflow.service.IWfDeployFormService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WfDefinitionServiceImpl extends FlowServiceFactory implements IWfDefinitionService {
 
-    private final WfFormMapper formMapper;
+    private final IWfDeployFormService deployFormService;
 
     private static final String BPMN_FILE_SUFFIX = ".bpmn";
 
@@ -89,7 +89,7 @@ public class WfDefinitionServiceImpl extends FlowServiceFactory implements IWfDe
             vo.setCategory(processDefinition.getCategory());
             vo.setDeploymentId(processDefinition.getDeploymentId());
             vo.setSuspended(processDefinition.isSuspended());
-            WfFormVo formVo = formMapper.selectFormByDeployId(deploymentId);
+            WfFormVo formVo = deployFormService.selectDeployFormByDeployId(deploymentId);
             if (Objects.nonNull(formVo)) {
                 vo.setFormId(formVo.getFormId());
                 vo.setFormName(formVo.getFormName());

@@ -1,7 +1,12 @@
 package com.ruoyi.workflow.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.workflow.domain.WfDeployForm;
+import com.ruoyi.workflow.domain.WfForm;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.mapper.WfFormMapper;
@@ -9,6 +14,8 @@ import com.ruoyi.workflow.service.IWfDeployFormService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 流程实例关联表单Service业务层处理
@@ -46,7 +53,18 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
      * @return
      */
     @Override
-    public WfFormVo selectSysDeployFormByDeployId(String deployId) {
-        return formMapper.selectFormByDeployId(deployId);
+    public WfFormVo selectDeployFormByDeployId(String deployId) {
+        QueryWrapper<WfForm> wrapper = Wrappers.query();
+        wrapper.eq("t2.deploy_id", deployId);
+        List<WfFormVo> list = formMapper.selectFormVoList(wrapper);
+        if (ObjectUtil.isNotEmpty(list)) {
+            if (list.size() != 1) {
+                throw new ServiceException("表单信息查询错误");
+            } else {
+                return list.get(0);
+            }
+        } else {
+            return null;
+        }
     }
 }
