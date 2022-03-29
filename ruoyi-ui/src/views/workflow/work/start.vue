@@ -20,7 +20,7 @@ import { startProcess } from '@/api/workflow/process'
 import Parser from '@/utils/generator/parser'
 
 export default {
-  name: 'StartProcess',
+  name: 'Start',
   components: {
     Parser
   },
@@ -79,7 +79,7 @@ export default {
           startProcess(this.definitionId, JSON.stringify(variables)).then(res => {
             this.$modal.msgSuccess(res.msg);
             this.$router.push({
-              path: '/task/process/index'
+              path: '/work/own'
             })
           })
         }

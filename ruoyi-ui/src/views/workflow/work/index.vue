@@ -87,7 +87,7 @@ import { readXml } from '@/api/workflow/definition'
 import ProcessViewer from '@/components/ProcessViewer'
 
 export default {
-  name: 'Process',
+  name: 'WorkProcess',
   components: {
     ProcessViewer
   },
@@ -162,7 +162,7 @@ export default {
     },
     handleStart(row) {
       this.$router.push({
-        path: '/process/start',
+        path: '/work/start',
         query: {
           definitionId: row.definitionId,
           deployId: row.deploymentId,

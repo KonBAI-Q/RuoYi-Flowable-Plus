@@ -15,7 +15,7 @@ import { readXml, saveXml } from "@/api/workflow/definition";
 import ProcessDesigner from '@/components/ProcessDesigner';
 
 export default {
-  name: 'index',
+  name: 'Designer',
   components: { ProcessDesigner },
   data () {
     return {

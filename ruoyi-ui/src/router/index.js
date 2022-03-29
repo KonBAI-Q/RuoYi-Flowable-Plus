@@ -82,40 +82,33 @@ export const constantRoutes = [
       {
         path: 'designer',
         component: () => import('@/views/workflow/definition/designer'),
-        name: 'WorkflowDesigner',
+        name: 'Designer',
         meta: { title: '流程设计', icon: '' }
       }
     ]
   },
   {
-    path: '/process',
+    path: '/work',
     component: Layout,
     hidden: true,
     children: [
       {
         path: 'start',
-        component: () => import('@/views/workflow/process/start'),
-        name: 'StartProcess',
+        component: () => import('@/views/workflow/work/start'),
+        name: 'start',
         meta: { title: '发起流程', icon: '' }
-      }
-    ]
-  },
-  {
-    path: '/task',
-    component: Layout,
-    hidden: true,
-    children: [
+      },
       {
-        path: 'process/index',
-        component: () => import('@/views/workflow/task/process/index'),
-        name: 'Record',
+        path: 'own',
+        component: () => import('@/views/workflow/work/own'),
+        name: 'own',
         meta: { title: '我的流程', icon: '' }
       },
       {
-        path: 'record/index',
-        component: () => import('@/views/workflow/task/record/index'),
-        name: 'Record',
-        meta: { title: '流程处理', icon: '' }
+        path: 'detail',
+        component: () => import('@/views/workflow/work/detail'),
+        name: 'Detail',
+        meta: { title: '流程详情', icon: '' }
       }
     ]
   },

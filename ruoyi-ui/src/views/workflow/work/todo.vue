@@ -33,39 +33,36 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:deployment:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="finishedList" border @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
+    <el-table v-loading="loading" :data="todoList" border @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
-      <el-table-column label="任务节点" align="center" prop="taskName" />
+      <el-table-column label="流程名称" align="center" prop="procDefName"/>
+      <el-table-column label="任务节点" align="center" prop="taskName"/>
+      <el-table-column label="流程版本" align="center">
+        <template slot-scope="scope">
+          <el-tag size="medium" >v{{scope.row.procDefVersion}}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="流程发起人" align="center">
         <template slot-scope="scope">
           <label>{{scope.row.startUserName}} <el-tag type="info" size="mini">{{scope.row.startDeptName}}</el-tag></label>
         </template>
       </el-table-column>
       <el-table-column label="接收时间" align="center" prop="createTime" width="180"/>
-      <el-table-column label="审批时间" align="center" prop="finishTime" width="180"/>
-      <el-table-column label="耗时" align="center" prop="duration" width="180"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-tickets"
-            @click="handleFlowRecord(scope.row)"
-          >流转记录</el-button>
-           <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-tickets"
-            @click="handleRevoke(scope.row)"
-          >撤回
+            icon="el-icon-edit-outline"
+            @click="handleProcess(scope.row)"
+          >处理
           </el-button>
         </template>
       </el-table-column>
@@ -82,12 +79,19 @@
 </template>
 
 <script>
-import { finishedList, getDeployment, delDeployment, addDeployment, updateDeployment, exportDeployment, revokeProcess } from "@/api/workflow/finished";
+import {
+  todoList,
+  complete,
+  returnList,
+  returnTask,
+  rejectTask,
+  delDeployment,
+  exportDeployment
+} from "@/api/workflow/todo";
 
 export default {
-  name: "Deploy",
-  components: {
-  },
+  name: "Todo",
+  components: {},
   data() {
     return {
       // 遮罩层
@@ -102,32 +106,23 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 已办任务列表数据
-      finishedList: [],
+      // 流程待办任务表格数据
+      todoList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
-      src: "",
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
         name: null,
-        category: null,
-        key: null,
-        tenantId: null,
-        deployTime: null,
-        derivedFrom: null,
-        derivedFromRoot: null,
-        parentDeploymentId: null,
-        engineVersion: null
+        category: null
       },
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {}
     };
   },
   created() {
@@ -137,11 +132,24 @@ export default {
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
-      finishedList(this.queryParams).then(response => {
-        this.finishedList = response.rows;
+      todoList(this.queryParams).then(response => {
+        this.todoList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
+    },
+    // 跳转到处理页面
+    handleProcess(row) {
+      this.$router.push({
+        path: '/work/detail',
+        query: {
+          definitionId: row.procDefId,
+          procInsId: row.procInsId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+          finished: true
+        }
+      })
     },
     // 取消按钮
     cancel() {
@@ -164,22 +172,6 @@ export default {
       };
       this.resetForm("form");
     },
-    setIcon(val){
-      if (val){
-        return "el-icon-check";
-      }else {
-        return "el-icon-time";
-      }
-
-    },
-    setColor(val){
-      if (val){
-        return "#2bc418";
-      }else {
-        return "#b3bdbb";
-      }
-
-    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -193,7 +185,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -202,57 +194,6 @@ export default {
       this.open = true;
       this.title = "添加流程定义";
     },
-    /** 流程流转记录 */
-    handleFlowRecord(row){
-      this.$router.push({ path: '/task/record/index',
-        query: {
-          definitionId: row.procDefId,
-          procInsId: row.procInsId,
-          deployId: row.deployId,
-          taskId: row.taskId,
-          finished: false
-      }})
-    },
-    /** 撤回任务 */
-    handleRevoke(row){
-      const params = {
-        instanceId: row.procInsId
-      }
-      revokeProcess(params).then( res => {
-        this.$modal.msgSuccess(res.msg);
-        this.getList();
-      });
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getDeployment(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改流程定义";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
@@ -260,7 +201,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then(function() {
+      }).then(function () {
         return delDeployment(ids);
       }).then(() => {
         this.getList();
@@ -274,7 +215,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then(function() {
+      }).then(function () {
         return exportDeployment(queryParams);
       }).then(response => {
         this.download(response.msg);
@@ -283,4 +224,3 @@ export default {
   }
 };
 </script>
-

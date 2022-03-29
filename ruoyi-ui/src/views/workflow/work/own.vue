@@ -27,15 +27,6 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-        >新增流程</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="danger"
           plain
           icon="el-icon-delete"
@@ -115,55 +106,14 @@
       @pagination="getList"
     />
 
-    <!-- 发起流程 -->
-    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
-      <el-table v-loading="processLoading" fit :data="definitionList" border >
-        <el-table-column label="流程名称" align="center" prop="processName" />
-        <el-table-column label="流程版本" align="center">
-          <template slot-scope="scope">
-            <el-tag size="medium" >v{{ scope.row.version }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="流程分类" align="center" prop="category">
-          <template slot-scope="scope">
-            <span>{{ categoryOptions.find(k => k.code === scope.row.category).categoryName }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit-outline"
-              @click="handleStartProcess(scope.row)"
-            >发起流程</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <pagination
-        v-show="processTotal>0"
-        :total="processTotal"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="listDefinition"
-      />
-    </el-dialog>
-
   </div>
 </template>
 
 <script>
-import {
-  getDeployment,
-  addDeployment,
-  updateDeployment,
-  exportDeployment,
-} from "@/api/workflow/finished";
 import { myProcessList, stopProcess, delProcess } from "@/api/workflow/process";
-import {listDefinition} from "@/api/workflow/definition";
 import { listCategory } from '@/api/workflow/category';
 export default {
-  name: "Deploy",
+  name: "Own",
   components: {
   },
   data() {
@@ -265,30 +215,6 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.open = true;
-      this.title = "发起流程";
-      this.listDefinition();
-    },
-    listDefinition(){
-      listDefinition(this.queryParams).then(response => {
-        this.definitionList = response.rows;
-        this.processTotal = response.total;
-        this.processLoading = false;
-      });
-    },
-    /**  发起流程申请 */
-    handleStartProcess(row){
-      this.$router.push({
-        path: '/task/record/index',
-        query: {
-          definitionId: row.definitionId,
-          deployId: row.deploymentId,
-          finished: true
-        }
-      })
-    },
     /**  取消流程申请 */
     handleStop(row){
       const params = {
@@ -301,44 +227,14 @@ export default {
     },
     /** 流程流转记录 */
     handleFlowRecord(row){
-      this.$router.push({ path: '/task/record/index',
+      this.$router.push({ path: '/work/detail',
         query: {
           definitionId: row.procDefId,
           procInsId: row.procInsId,
           deployId: row.deployId,
           taskId: row.taskId,
           finished: false
-      }})
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getDeployment(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改流程定义";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
+        }})
     },
     /** 删除按钮操作 */
     handleDelete(row) {
@@ -362,7 +258,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(function() {
-        return exportDeployment(queryParams);
+        // return exportDeployment(queryParams);
       }).then(response => {
         this.download(response.msg);
       })
@@ -370,4 +266,3 @@ export default {
   }
 };
 </script>
-
