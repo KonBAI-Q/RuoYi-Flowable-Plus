@@ -867,25 +867,22 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
 
         Set<String> rejectedTaskSet = new LinkedHashSet<>();
         Set<String> sourceTaskSet = unfinishedTaskSet;
-        while (true) {
+        while (CollUtil.isNotEmpty(sourceTaskSet)) {
             Set<String> nextIdSet = new HashSet<>();
             for (String previousId : sourceTaskSet) {
                 List<String> nextIdList = sequenceElementMap.get(previousId);
                 if (CollUtil.isEmpty(nextIdList)) {
                     continue;
                 }
-                for (String childId : nextIdList) {
-                    String rejectedSequenceFlow = sequenceFlowMap.get(previousId + childId);
-                    if (finishedTaskSet.contains(childId)) {
-                        nextIdSet.add(childId);
+                nextIdList.forEach(nextId -> {
+                    if (finishedTaskSet.contains(nextId)) {
+                        nextIdSet.add(nextId);
+                        String rejectedSequenceFlow = sequenceFlowMap.get(previousId + nextId);
                         if (finishedSequenceFlowSet.contains(rejectedSequenceFlow)) {
-                            nextIdSet.add(sequenceFlowMap.get(previousId + childId));
+                            nextIdSet.add(rejectedSequenceFlow);
                         }
                     }
-                }
-            }
-            if (CollUtil.isEmpty(nextIdSet)) {
-                break;
+                });
             }
             rejectedTaskSet.addAll(nextIdSet);
             sourceTaskSet = nextIdSet;
