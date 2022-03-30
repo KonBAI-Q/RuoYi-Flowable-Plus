@@ -603,7 +603,7 @@ export default {
       }).then(function() {
         return delDeployment(params);
       }).then(() => {
-        this.getList();
+        this.getPublishList();
         this.$modal.msgSuccess("删除成功");
       })
     },
