@@ -1,8 +1,8 @@
 package com.ruoyi.workflow.service;
 
 import com.ruoyi.common.core.domain.PageQuery;
-import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.workflow.domain.dto.WfNextDto;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.vo.WfViewerVo;
@@ -154,15 +154,15 @@ public interface IWfTaskService {
 
     /**
      * 获取流程变量
-     * @param taskId
-     * @return
+     * @param taskId 任务ID
+     * @return 流程变量
      */
-    R processVariables(String taskId);
+    Map<String, Object> getProcessVariables(String taskId);
 
     /**
      * 获取下一节点
      * @param bo 任务
      * @return
      */
-    R getNextFlowNode(WfTaskBo bo);
+    WfNextDto getNextFlowNode(WfTaskBo bo);
 }

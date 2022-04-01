@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.workflow;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.workflow.domain.dto.WfNextDto;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.service.IWfTaskService;
@@ -77,7 +78,7 @@ public class WfTaskController {
     @ApiOperation(value = "获取流程变量", response = WfTaskVo.class)
     @GetMapping(value = "/processVariables/{taskId}")
     public R processVariables(@ApiParam(value = "流程任务Id") @PathVariable(value = "taskId") String taskId) {
-        return flowTaskService.processVariables(taskId);
+        return R.ok(flowTaskService.getProcessVariables(taskId));
     }
 
     @ApiOperation(value = "审批任务")
@@ -146,7 +147,8 @@ public class WfTaskController {
     @ApiOperation(value = "获取下一节点")
     @PostMapping(value = "/nextFlowNode")
     public R getNextFlowNode(@RequestBody WfTaskBo bo) {
-        return flowTaskService.getNextFlowNode(bo);
+        WfNextDto wfNextDto = flowTaskService.getNextFlowNode(bo);
+        return wfNextDto != null ? R.ok(wfNextDto) : R.ok("流程已完结", null);
     }
 
     /**

@@ -7,7 +7,6 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.ruoyi.common.core.domain.PageQuery;
-import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -596,6 +595,10 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             flowTask.setStartUserId(startUser.getNickName());
             flowTask.setStartUserName(startUser.getNickName());
             flowTask.setStartDeptName(startUser.getDept().getDeptName());
+
+            // 流程变量
+            flowTask.setProcVars(this.getProcessVariables(task.getId()));
+
             flowList.add(flowTask);
         }
 
@@ -652,6 +655,10 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             flowTask.setStartUserId(startUser.getNickName());
             flowTask.setStartUserName(startUser.getNickName());
             flowTask.setStartDeptName(startUser.getDept().getDeptName());
+
+            // 流程变量
+            flowTask.setProcVars(this.getProcessVariables(histTask.getId()));
+
             hisTaskList.add(flowTask);
         }
         page.setTotal(taskInstanceQuery.count());
@@ -893,19 +900,20 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
     /**
      * 获取流程变量
      *
-     * @param taskId
-     * @return
+     * @param taskId 任务ID
+     * @return 流程变量
      */
     @Override
-    public R processVariables(String taskId) {
-        // 流程变量
-        HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().includeProcessVariables().finished().taskId(taskId).singleResult();
+    public Map<String, Object> getProcessVariables(String taskId) {
+        HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
+            .includeProcessVariables()
+            .finished()
+            .taskId(taskId)
+            .singleResult();
         if (Objects.nonNull(historicTaskInstance)) {
-            return R.ok(historicTaskInstance.getProcessVariables());
-        } else {
-            Map<String, Object> variables = taskService.getVariables(taskId);
-            return R.ok(variables);
+            return historicTaskInstance.getProcessVariables();
         }
+        return taskService.getVariables(taskId);
     }
 
     /**
@@ -915,7 +923,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      * @return
      */
     @Override
-    public R getNextFlowNode(WfTaskBo bo) {
+    public WfNextDto getNextFlowNode(WfTaskBo bo) {
         Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
         WfNextDto nextDto = new WfNextDto();
         if (Objects.nonNull(task)) {
@@ -965,10 +973,10 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
                     }
                 }
             } else {
-                return R.ok("流程已完结", null);
+                return null;
             }
         }
-        return R.ok(nextDto);
+        return nextDto;
     }
 
     /**
