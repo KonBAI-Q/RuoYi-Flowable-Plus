@@ -20,9 +20,9 @@ export function startProcess(processDefId, data) {
 }
 
 // 我的发起的流程
-export function myProcessList(query) {
+export function listOwnProcess(query) {
   return request({
-    url: '/workflow/task/myProcess',
+    url: '/workflow/process/own',
     method: 'get',
     params: query
   })

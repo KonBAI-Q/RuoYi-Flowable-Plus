@@ -47,7 +47,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="myProcessList" border @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="ownProcessList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import { myProcessList, stopProcess, delProcess } from "@/api/workflow/process";
+import { listOwnProcess, stopProcess, delProcess } from '@/api/workflow/process';
 import { listCategory } from '@/api/workflow/category';
 export default {
   name: "Own",
@@ -134,7 +134,7 @@ export default {
       categoryOptions: [],
       processTotal:0,
       // 我发起的流程列表数据
-      myProcessList: [],
+      ownProcessList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -172,8 +172,8 @@ export default {
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
-      myProcessList(this.queryParams).then(response => {
-        this.myProcessList = response.rows;
+      listOwnProcess(this.queryParams).then(response => {
+        this.ownProcessList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -226,7 +226,8 @@ export default {
       });
     },
     /** 流程流转记录 */
-    handleFlowRecord(row){
+    handleFlowRecord(row) {
+      console.log("row =========> ", row)
       this.$router.push({ path: '/work/detail',
         query: {
           definitionId: row.procDefId,

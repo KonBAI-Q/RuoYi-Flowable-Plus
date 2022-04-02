@@ -1,24 +1,28 @@
 package com.ruoyi.workflow.service.impl;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
-import com.ruoyi.flowable.common.enums.FlowComment;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
+import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.service.IWfProcessService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
+import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -131,6 +135,54 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             e.printStackTrace();
             throw new ServiceException("流程启动错误");
         }
+    }
+
+    @Override
+    public TableDataInfo<WfTaskVo> queryPageOwnProcessList(PageQuery pageQuery) {
+        Page<WfTaskVo> page = new Page<>();
+        Long userId = LoginHelper.getUserId();
+        HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery()
+            .startedBy(userId.toString())
+            .orderByProcessInstanceStartTime()
+            .desc();
+        int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
+        List<HistoricProcessInstance> historicProcessInstances = historicProcessInstanceQuery
+            .listPage(offset, pageQuery.getPageSize());
+        page.setTotal(historicProcessInstanceQuery.count());
+        List<WfTaskVo> taskVoList = new ArrayList<>();
+        for (HistoricProcessInstance hisIns : historicProcessInstances) {
+            WfTaskVo taskVo = new WfTaskVo();
+            taskVo.setCreateTime(hisIns.getStartTime());
+            taskVo.setFinishTime(hisIns.getEndTime());
+            taskVo.setProcInsId(hisIns.getId());
+
+            // 计算耗时
+            if (Objects.nonNull(hisIns.getEndTime())) {
+                taskVo.setDuration(DateUtils.getDatePoor(hisIns.getEndTime(), hisIns.getStartTime()));
+            } else {
+                taskVo.setDuration(DateUtils.getDatePoor(DateUtils.getNowDate(), hisIns.getStartTime()));
+            }
+            // 流程部署实例信息
+            Deployment deployment = repositoryService.createDeploymentQuery()
+                .deploymentId(hisIns.getDeploymentId()).singleResult();
+            taskVo.setDeployId(hisIns.getDeploymentId());
+            taskVo.setProcDefId(hisIns.getProcessDefinitionId());
+            taskVo.setProcDefName(hisIns.getProcessDefinitionName());
+            taskVo.setProcDefVersion(hisIns.getProcessDefinitionVersion());
+            taskVo.setCategory(deployment.getCategory());
+            // 当前所处流程
+            List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
+            if (CollUtil.isNotEmpty(taskList)) {
+                taskVo.setTaskId(taskList.get(0).getId());
+            } else {
+                List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
+                    .processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
+                taskVo.setTaskId(historicTaskInstance.get(0).getId());
+            }
+            taskVoList.add(taskVo);
+        }
+        page.setRecords(taskVoList);
+        return TableDataInfo.build(page);
     }
 
     /**

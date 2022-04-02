@@ -91,6 +91,7 @@ public interface IWfTaskService {
      *
      * @return
      */
+    @Deprecated
     TableDataInfo<WfTaskVo> myProcess(PageQuery pageQuery);
 
     /**
@@ -129,6 +130,7 @@ public interface IWfTaskService {
      * @param procInsId 流程实例Id
      * @return
      */
+    @Deprecated
     Map<String, Object> flowRecord(String procInsId, String deployId);
 
     /**

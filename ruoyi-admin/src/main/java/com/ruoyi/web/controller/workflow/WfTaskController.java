@@ -36,6 +36,7 @@ public class WfTaskController {
 
     private final IWfTaskService flowTaskService;
 
+    @Deprecated
     @ApiOperation(value = "我发起的流程", response = WfTaskVo.class)
     @GetMapping(value = "/myProcess")
     public TableDataInfo<WfTaskVo> myProcess(PageQuery pageQuery) {
@@ -62,6 +63,7 @@ public class WfTaskController {
         return flowTaskService.todoList(pageQuery);
     }
 
+    @Deprecated
     @ApiOperation(value = "获取已办任务", response = WfTaskVo.class)
     @GetMapping(value = "/finishedList")
     public TableDataInfo<WfTaskVo> finishedList(PageQuery pageQuery) {

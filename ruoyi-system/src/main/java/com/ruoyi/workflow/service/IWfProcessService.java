@@ -3,6 +3,7 @@ package com.ruoyi.workflow.service;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
+import com.ruoyi.workflow.domain.vo.WfTaskVo;
 
 import java.util.Map;
 
@@ -32,4 +33,11 @@ public interface IWfProcessService {
      * @param variables 扩展参数
      */
     void startProcessByDefKey(String procDefKey, Map<String, Object> variables);
+
+    /**
+     * 查询我的流程列表
+     * @param pageQuery 分页参数
+     */
+    TableDataInfo<WfTaskVo> queryPageOwnProcessList(PageQuery pageQuery);
+
 }
