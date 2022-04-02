@@ -25,4 +25,11 @@ public interface IWfProcessService {
      * @param variables 扩展参数
      */
     void startProcess(String procDefId, Map<String, Object> variables);
+
+    /**
+     * 通过DefinitionKey启动流程
+     * @param procDefKey 流程定义Key
+     * @param variables 扩展参数
+     */
+    void startProcessByDefKey(String procDefKey, Map<String, Object> variables);
 }

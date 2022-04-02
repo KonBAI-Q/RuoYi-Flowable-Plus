@@ -7,6 +7,7 @@ import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.vo.WfViewerVo;
 import org.flowable.bpmn.model.UserTask;
+import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 
 import java.io.InputStream;
@@ -165,4 +166,11 @@ public interface IWfTaskService {
      * @return
      */
     WfNextDto getNextFlowNode(WfTaskBo bo);
+
+    /**
+     * 启动第一个任务
+     * @param processInstance 流程实例
+     * @param variables 流程参数
+     */
+    void startFirstTask(ProcessInstance processInstance, Map<String, Object> variables);
 }

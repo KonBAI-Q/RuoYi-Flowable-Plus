@@ -4,6 +4,7 @@ package com.ruoyi.workflow.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.ruoyi.common.core.domain.PageQuery;
@@ -977,6 +978,25 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             }
         }
         return nextDto;
+    }
+
+    /**
+     * 启动第一个任务
+     * @param processInstance 流程实例
+     * @param variables 流程参数
+     */
+    public void startFirstTask(ProcessInstance processInstance, Map<String, Object> variables) {
+        // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题？
+        Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
+        if (Objects.nonNull(task)) {
+            String userIdStr = (String) variables.get(ProcessConstants.PROCESS_INITIATOR);
+            if (!StrUtil.equalsAny(task.getAssignee(), userIdStr)) {
+                throw new ServiceException("数据验证失败，该工作流第一个用户任务的指派人并非当前用户，不能执行该操作！");
+            }
+            taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginHelper.getNickName() + "发起流程申请");
+            // taskService.setAssignee(task.getId(), userIdStr);
+            taskService.complete(task.getId(), variables);
+        }
     }
 
     /**
