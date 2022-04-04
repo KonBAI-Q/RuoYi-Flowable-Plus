@@ -6,9 +6,11 @@ import com.ruoyi.workflow.domain.dto.WfCommentDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.flowable.engine.task.Comment;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 工作流任务视图对象
@@ -83,6 +85,9 @@ public class WfTaskVo implements Serializable {
 
     @ApiModelProperty("任务意见")
     private WfCommentDto comment;
+
+    @ApiModelProperty("任务意见")
+    private List<Comment> commentList;
 
     @ApiModelProperty("候选执行人")
     private String candidate;

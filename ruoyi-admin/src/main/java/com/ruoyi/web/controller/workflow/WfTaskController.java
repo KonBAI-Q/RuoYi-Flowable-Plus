@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.workflow;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -135,14 +136,20 @@ public class WfTaskController {
     @ApiOperation(value = "委派任务")
     @PostMapping(value = "/delegate")
     public R delegate(@RequestBody WfTaskBo bo) {
+        if (ObjectUtil.hasNull(bo.getTaskId(), bo.getUserId())) {
+            return R.fail("参数错误！");
+        }
         flowTaskService.delegateTask(bo);
         return R.ok();
     }
 
     @ApiOperation(value = "转办任务")
-    @PostMapping(value = "/assign")
-    public R assign(@RequestBody WfTaskBo bo) {
-        flowTaskService.assignTask(bo);
+    @PostMapping(value = "/transfer")
+    public R transfer(@RequestBody WfTaskBo bo) {
+        if (ObjectUtil.hasNull(bo.getTaskId(), bo.getUserId())) {
+            return R.fail("参数错误！");
+        }
+        flowTaskService.transferTask(bo);
         return R.ok();
     }
 

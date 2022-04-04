@@ -27,6 +27,15 @@ export function delegate(data) {
   })
 }
 
+// 转办任务
+export function transfer(data) {
+  return request({
+    url: '/workflow/task/transfer',
+    method: 'post',
+    data: data
+  })
+}
+
 // 退回任务
 export function returnTask(data) {
   return request({

@@ -11,12 +11,12 @@ public enum FlowComment {
     /**
      * 说明
      */
-    NORMAL("1", "正常意见"),
-    REBACK("2", "退回意见"),
-    REJECT("3", "驳回意见"),
-    DELEGATE("4", "委派意见"),
-    ASSIGN("5", "转办意见"),
-    STOP("6", "终止流程");
+    NORMAL("1", "正常"),
+    REBACK("2", "退回"),
+    REJECT("3", "驳回"),
+    DELEGATE("4", "委派"),
+    TRANSFER("5", "转办"),
+    STOP("6", "终止");
 
     /**
      * 类型

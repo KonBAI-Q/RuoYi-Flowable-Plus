@@ -84,7 +84,7 @@ public interface IWfTaskService {
      *
      * @param bo 请求实体参数
      */
-    void assignTask(WfTaskBo bo);
+    void transferTask(WfTaskBo bo);
 
     /**
      * 我发起的流程

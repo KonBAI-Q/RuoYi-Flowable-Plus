@@ -14,6 +14,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.JsonUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.enums.FlowComment;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
@@ -33,7 +34,6 @@ import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
 import org.flowable.common.engine.api.FlowableException;
@@ -84,26 +84,26 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
     /**
      * 完成任务
      *
-     * @param taskVo 请求实体参数
+     * @param taskBo 请求实体参数
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void complete(WfTaskBo taskVo) {
-        Task task = taskService.createTaskQuery().taskId(taskVo.getTaskId()).singleResult();
+    public void complete(WfTaskBo taskBo) {
+        Task task = taskService.createTaskQuery().taskId(taskBo.getTaskId()).singleResult();
         if (Objects.isNull(task)) {
             throw new ServiceException("任务不存在");
         }
         if (DelegationState.PENDING.equals(task.getDelegationState())) {
-            taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.DELEGATE.getType(), taskVo.getComment());
-            taskService.resolveTask(taskVo.getTaskId(), taskVo.getValues());
+            taskService.addComment(taskBo.getTaskId(), taskBo.getInstanceId(), FlowComment.DELEGATE.getType(), taskBo.getComment());
+            taskService.resolveTask(taskBo.getTaskId(), taskBo.getValues());
         } else {
-            taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.NORMAL.getType(), taskVo.getComment());
+            taskService.addComment(taskBo.getTaskId(), taskBo.getInstanceId(), FlowComment.NORMAL.getType(), taskBo.getComment());
             Long userId = LoginHelper.getUserId();
-            taskService.setAssignee(taskVo.getTaskId(), userId.toString());
-            if (ObjectUtil.isNotEmpty(taskVo.getValues())) {
-                taskService.complete(taskVo.getTaskId(), taskVo.getValues());
+            taskService.setAssignee(taskBo.getTaskId(), userId.toString());
+            if (ObjectUtil.isNotEmpty(taskBo.getValues())) {
+                taskService.complete(taskBo.getTaskId(), taskBo.getValues());
             } else {
-                taskService.complete(taskVo.getTaskId());
+                taskService.complete(taskBo.getTaskId());
             }
         }
     }
@@ -115,11 +115,14 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      */
     @Override
     public void taskReject(WfTaskBo bo) {
-        if (taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult().isSuspended()) {
-            throw new RuntimeException("任务处于挂起状态");
-        }
         // 当前任务 task
         Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
+        if (ObjectUtil.isNull(task)) {
+            throw new RuntimeException("获取任务信息异常！");
+        }
+        if (task.isSuspended()) {
+            throw new RuntimeException("任务处于挂起状态");
+        }
         // 获取流程定义信息
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
         // 获取所有节点信息
@@ -240,11 +243,14 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void taskReturn(WfTaskBo bo) {
-        if (taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult().isSuspended()) {
-            throw new RuntimeException("任务处于挂起状态");
-        }
         // 当前任务 task
         Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
+        if (ObjectUtil.isNull(task)) {
+            throw new RuntimeException("获取任务信息异常！");
+        }
+        if (task.isSuspended()) {
+            throw new RuntimeException("任务处于挂起状态");
+        }
         // 获取流程定义信息
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
         // 获取所有节点信息
@@ -394,7 +400,28 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delegateTask(WfTaskBo bo) {
-        taskService.delegateTask(bo.getTaskId(), bo.getAssignee());
+        // 当前任务 task
+        Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
+        if (ObjectUtil.isEmpty(task)) {
+            throw new ServiceException("获取任务失败！");
+        }
+        StringBuilder commentBuilder = new StringBuilder(LoginHelper.getNickName())
+            .append("->");
+        SysUser user = sysUserService.selectUserById(Long.parseLong(bo.getUserId()));
+        if (ObjectUtil.isNotNull(user)) {
+            commentBuilder.append(user.getNickName());
+        } else {
+            commentBuilder.append(bo.getUserId());
+        }
+        if (StringUtils.isNotBlank(bo.getComment())) {
+            commentBuilder.append(": ").append(bo.getComment());
+        }
+        // 添加审批意见
+        taskService.addComment(bo.getTaskId(), task.getProcessInstanceId(), FlowComment.DELEGATE.getType(), commentBuilder.toString());
+        // 设置办理人为当前登录人
+        taskService.setOwner(bo.getTaskId(), LoginHelper.getUserId().toString());
+        // 执行委派
+        taskService.delegateTask(bo.getTaskId(), bo.getUserId());
     }
 
 
@@ -405,8 +432,29 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void assignTask(WfTaskBo bo) {
-        taskService.setAssignee(bo.getTaskId(), bo.getComment());
+    public void transferTask(WfTaskBo bo) {
+        // 当前任务 task
+        Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
+        if (ObjectUtil.isEmpty(task)) {
+            throw new ServiceException("获取任务失败！");
+        }
+        StringBuilder commentBuilder = new StringBuilder(LoginHelper.getNickName())
+            .append("->");
+        SysUser user = sysUserService.selectUserById(Long.parseLong(bo.getUserId()));
+        if (ObjectUtil.isNotNull(user)) {
+            commentBuilder.append(user.getNickName());
+        } else {
+            commentBuilder.append(bo.getUserId());
+        }
+        if (StringUtils.isNotBlank(bo.getComment())) {
+            commentBuilder.append(": ").append(bo.getComment());
+        }
+        // 添加审批意见
+        taskService.addComment(bo.getTaskId(), task.getProcessInstanceId(), FlowComment.TRANSFER.getType(), commentBuilder.toString());
+        // 设置拥有者为当前登录人
+        taskService.setOwner(bo.getTaskId(), LoginHelper.getUserId().toString());
+        // 转办任务
+        taskService.setAssignee(bo.getTaskId(), bo.getUserId());
     }
 
     /**
