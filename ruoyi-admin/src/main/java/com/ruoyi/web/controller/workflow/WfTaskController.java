@@ -37,13 +37,6 @@ public class WfTaskController {
 
     private final IWfTaskService flowTaskService;
 
-    @Deprecated
-    @ApiOperation(value = "我发起的流程", response = WfTaskVo.class)
-    @GetMapping(value = "/myProcess")
-    public TableDataInfo<WfTaskVo> myProcess(PageQuery pageQuery) {
-        return flowTaskService.myProcess(pageQuery);
-    }
-
     @ApiOperation(value = "取消申请", response = WfTaskVo.class)
     @PostMapping(value = "/stopProcess")
     public R stopProcess(@RequestBody WfTaskBo bo) {
@@ -58,6 +51,7 @@ public class WfTaskController {
         return R.ok();
     }
 
+    @Deprecated
     @ApiOperation(value = "获取待办列表", response = WfTaskVo.class)
     @GetMapping(value = "/todoList")
     public TableDataInfo<WfTaskVo> todoList(PageQuery pageQuery) {
@@ -69,13 +63,6 @@ public class WfTaskController {
     @GetMapping(value = "/finishedList")
     public TableDataInfo<WfTaskVo> finishedList(PageQuery pageQuery) {
         return flowTaskService.finishedList(pageQuery);
-    }
-
-
-    @ApiOperation(value = "流程历史流转记录", response = WfTaskVo.class)
-    @GetMapping(value = "/flowRecord")
-    public R flowRecord(String procInsId, String deployId) {
-        return R.ok(flowTaskService.flowRecord(procInsId, deployId));
     }
 
     @ApiOperation(value = "获取流程变量", response = WfTaskVo.class)

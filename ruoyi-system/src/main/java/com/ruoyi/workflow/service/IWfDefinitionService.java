@@ -6,7 +6,6 @@ import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 /**
  * @author KonBAI
@@ -47,16 +46,6 @@ public interface IWfDefinitionService {
      * @return
      */
     String readXml(String definitionId) throws IOException;
-
-    /**
-     * 根据流程定义ID启动流程实例
-     *
-     * @param procDefId
-     * @param variables
-     * @return
-     */
-
-    void startProcessInstanceById(String procDefId, Map<String, Object> variables);
 
 
     /**

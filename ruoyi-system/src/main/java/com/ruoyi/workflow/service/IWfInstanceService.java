@@ -2,9 +2,7 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.task.api.Task;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,8 +10,6 @@ import java.util.Map;
  * @createTime 2022/3/10 00:12
  */
 public interface IWfInstanceService {
-
-    List<Task> queryListByInstanceId(String instanceId);
 
     /**
      * 结束流程实例

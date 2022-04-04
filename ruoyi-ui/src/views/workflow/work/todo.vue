@@ -79,12 +79,8 @@
 </template>
 
 <script>
+import { listTodoProcess } from '@/api/workflow/process';
 import {
-  todoList,
-  complete,
-  returnList,
-  returnTask,
-  rejectTask,
   delDeployment,
   exportDeployment
 } from "@/api/workflow/todo";
@@ -132,7 +128,7 @@ export default {
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
-      todoList(this.queryParams).then(response => {
+      listTodoProcess(this.queryParams).then(response => {
         this.todoList = response.rows;
         this.total = response.total;
         this.loading = false;

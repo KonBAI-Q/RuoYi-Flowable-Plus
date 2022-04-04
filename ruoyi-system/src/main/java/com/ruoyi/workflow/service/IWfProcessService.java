@@ -40,4 +40,15 @@ public interface IWfProcessService {
      */
     TableDataInfo<WfTaskVo> queryPageOwnProcessList(PageQuery pageQuery);
 
+    /**
+     * 查询代办任务列表
+     * @param pageQuery 分页参数
+     */
+    TableDataInfo<WfTaskVo> queryPageTodoProcessList(PageQuery pageQuery);
+
+    /**
+     * 查询已办任务列表
+     * @param pageQuery 分页参数
+     */
+    TableDataInfo<WfTaskVo> queryPageFinishedProcessList(PageQuery pageQuery);
 }

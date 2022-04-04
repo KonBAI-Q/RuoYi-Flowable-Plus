@@ -2,13 +2,12 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.dto.WfNextDto;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
-import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.vo.WfViewerVo;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.api.Task;
 
 import java.io.InputStream;
 import java.util.List;
@@ -87,14 +86,6 @@ public interface IWfTaskService {
     void transferTask(WfTaskBo bo);
 
     /**
-     * 我发起的流程
-     *
-     * @return
-     */
-    @Deprecated
-    TableDataInfo<WfTaskVo> myProcess(PageQuery pageQuery);
-
-    /**
      * 取消申请
      * @param bo
      * @return
@@ -123,23 +114,6 @@ public interface IWfTaskService {
      * @return
      */
     TableDataInfo<WfTaskVo> finishedList(PageQuery pageQuery);
-
-    /**
-     * 流程历史流转记录
-     *
-     * @param procInsId 流程实例Id
-     * @return
-     */
-    @Deprecated
-    Map<String, Object> flowRecord(String procInsId, String deployId);
-
-    /**
-     * 根据任务ID查询挂载的表单信息
-     *
-     * @param taskId 任务Id
-     * @return
-     */
-    Task getTaskForm(String taskId);
 
     /**
      * 获取流程过程图

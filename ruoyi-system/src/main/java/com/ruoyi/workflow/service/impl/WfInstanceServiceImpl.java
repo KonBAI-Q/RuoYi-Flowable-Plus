@@ -24,7 +24,6 @@ import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.task.Comment;
 import org.flowable.identitylink.api.history.HistoricIdentityLink;
-import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,11 +44,6 @@ public class WfInstanceServiceImpl extends FlowServiceFactory implements IWfInst
     private final IWfDeployFormService deployFormService;
     private final ISysUserService userService;
     private final ISysRoleService roleService;
-
-    @Override
-    public List<Task> queryListByInstanceId(String instanceId) {
-        return taskService.createTaskQuery().processInstanceId(instanceId).active().list();
-    }
 
     /**
      * 结束流程实例

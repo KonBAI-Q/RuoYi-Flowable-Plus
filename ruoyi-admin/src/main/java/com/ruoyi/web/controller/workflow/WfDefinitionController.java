@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 /**
  * 工作流程定义
@@ -120,17 +119,6 @@ public class WfDefinitionController extends BaseController {
         }
 
         return R.ok("导入成功");
-    }
-
-    @Deprecated
-    @ApiOperation(value = "根据流程定义id启动流程实例")
-    @SaCheckPermission("workflow:definition:start")
-    @PostMapping("/start/{procDefId}")
-    public R<Void> start(@ApiParam(value = "流程定义id") @PathVariable(value = "procDefId") String procDefId,
-                         @ApiParam(value = "变量集合,json对象") @RequestBody Map<String, Object> variables) {
-        flowDefinitionService.startProcessInstanceById(procDefId, variables);
-        return R.ok("流程启动成功");
-
     }
 
     @ApiOperation(value = "激活或挂起流程定义")

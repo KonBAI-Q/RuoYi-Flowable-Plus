@@ -82,7 +82,8 @@
 </template>
 
 <script>
-import { finishedList, delDeployment, revokeProcess } from "@/api/workflow/finished";
+import { listFinishedProcess } from '@/api/workflow/process';
+import { delDeployment, revokeProcess } from "@/api/workflow/finished";
 
 export default {
   name: "Finished",
@@ -137,7 +138,7 @@ export default {
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
-      finishedList(this.queryParams).then(response => {
+      listFinishedProcess(this.queryParams).then(response => {
         this.finishedList = response.rows;
         this.total = response.total;
         this.loading = false;
