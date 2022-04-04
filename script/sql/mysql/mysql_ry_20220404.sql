@@ -190,10 +190,10 @@ insert into sys_menu values('121',  '流程分类', '4',   '1', 'category',   'w
 insert into sys_menu values('122',  '表单配置', '4',   '2', 'form',       'workflow/form/index',          '', 1, 0, 'C', '0', '0', 'workflow:form:list',       'form',    'admin', sysdate(), '', null, '表单配置菜单');
 insert into sys_menu values('123',  '流程定义', '4',   '3', 'definition', 'workflow/definition/index',    '', 1, 0, 'C', '0', '0', 'workflow:definition:list', 'example', 'admin', sysdate(), '', null, '流程定义菜单');
 -- 办公管理
-insert into sys_menu values('124',  '新建流程', '5',   '1', 'start',      'workflow/work/index',       '', 1, 0, 'C', '0', '0', null,                       'guide',      'admin', sysdate(), '', null, '');
-insert into sys_menu values('125',  '我的流程', '5',   '2', 'process',    'workflow/work/own',         '', 1, 0, 'C', '0', '0', null,                       'cascader',   'admin', sysdate(), '', null, '');
-insert into sys_menu values('126',  '待办任务', '5',   '3', 'todo',       'workflow/work/todo',        '', 1, 0, 'C', '0', '0', null,                       'time-range', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('127',  '已办任务', '5',   '4', 'finished',   'workflow/work/finished',    '', 1, 0, 'C', '0', '0', null,                       'checkbox',   'admin', sysdate(), '', null, '');
+insert into sys_menu values('124',  '新建流程', '5',   '1', 'start',      'workflow/work/index',       '', 1, 0, 'C', '0', '0', 'workflow:process:startList',    'guide',      'admin', sysdate(), '', null, '');
+insert into sys_menu values('125',  '我的流程', '5',   '2', 'process',    'workflow/work/own',         '', 1, 0, 'C', '0', '0', 'workflow:process:ownList',      'cascader',   'admin', sysdate(), '', null, '');
+insert into sys_menu values('126',  '待办任务', '5',   '3', 'todo',       'workflow/work/todo',        '', 1, 0, 'C', '0', '0', 'workflow:process:todoList',     'time-range', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('127',  '已办任务', '5',   '4', 'finished',   'workflow/work/finished',    '', 1, 0, 'C', '0', '0', 'workflow:process:finishedList', 'checkbox',   'admin', sysdate(), '', null, '');
 
 -- 三级菜单
 insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          'admin', sysdate(), '', null, '操作日志菜单');
@@ -288,6 +288,8 @@ insert into sys_menu values('1161', '流程设计', '123', '2', '#', '', '', 1, 
 insert into sys_menu values('1162', '启动流程', '123', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:start',    '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1163', '更新流程', '123', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:update',   '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1164', '流程删除', '123', '5', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:remove',   '#', 'admin', sysdate(), '', null, '');
+-- 新建流程
+insert into sys_menu values('1170', '发起流程', '124', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:start',       '#', 'admin', sysdate(), '', null, '');
 
 -- ----------------------------
 -- 6、用户和角色关联表  用户N-1角色
@@ -425,6 +427,7 @@ insert into sys_role_menu values ('2', '1161');
 insert into sys_role_menu values ('2', '1162');
 insert into sys_role_menu values ('2', '1163');
 insert into sys_role_menu values ('2', '1164');
+insert into sys_role_menu values ('2', '1170');
 
 -- ----------------------------
 -- 8、角色和部门关联表  角色1-N部门
