@@ -108,7 +108,7 @@
 <!--                    placeholder="请输入处理意见"-->
 <!--          />-->
 <!--          <el-button @click="completeOpen = false">取 消</el-button>-->
-        </div>
+      </div>
     </el-dialog>
   </div>
 
@@ -228,6 +228,11 @@ export default {
     updateElementTask(key) {
       const taskAttr = Object.create(null);
       taskAttr['flowable:assignType'] = this.formData.assignType;
+      // 修复切换候选类型XML仍保留assignee的问题
+      if ((key === 'candidateUsers' || key === 'assignee') && !this.userTaskForm[key]) {
+        taskAttr[key] = null
+      }
+
       if (key === "candidateUsers" || key === "candidateGroups") {
         if (this.userTaskForm[key] && this.userTaskForm[key].length > 0) {
           taskAttr[key] = this.userTaskForm[key].map(k => k.userId) || null
@@ -302,13 +307,12 @@ export default {
         if (this.formData.groupType === 'ASSIGNEE') {
           val = this.selectedUserDate[0];
           this.userTaskForm.assignee = val;
-          this.updateElementTask('assignee')
         } else {
           val = this.selectedUserDate;
           this.userTaskForm.candidateUsers = val;
-          this.updateElementTask('candidateUsers')
         }
-
+        this.updateElementTask('assignee')
+        this.updateElementTask('candidateUsers')
       }
       this.candidateVisible = false;
     },
