@@ -2,7 +2,6 @@ package com.ruoyi.workflow.service.impl;
 
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -726,26 +725,6 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         // 获取流程发布Id信息
         String processDefinitionId = allActivityInstanceList.get(0).getProcessDefinitionId();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        if (ObjectUtil.isNull(bpmnModel)) {
-            throw new ServiceException("流程模型不存在");
-        }
-        Map<String, List<String>> sequenceElementMap = new HashMap<>();
-        Map<String, String> sequenceFlowMap = new HashMap<>();
-        Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
-        for (FlowElement flowElement : flowElements) {
-            if (flowElement instanceof SequenceFlow) {
-                SequenceFlow sequenceFlow = (SequenceFlow) flowElement;
-                String sourceRef = sequenceFlow.getSourceRef();
-                String targetRef = sequenceFlow.getTargetRef();
-                List<String> targetRefList = sequenceElementMap.get(sourceRef);
-                if (CollUtil.isEmpty(targetRefList)) {
-                    sequenceElementMap.put(sourceRef, ListUtil.toList(targetRef));
-                } else {
-                    targetRefList.add(targetRef);
-                }
-                sequenceFlowMap.put(sourceRef + targetRef, sequenceFlow.getId());
-            }
-        }
         // 查询所有已完成的元素
         List<HistoricActivityInstance> finishedElementList = allActivityInstanceList.stream()
             .filter(item -> ObjectUtil.isNotNull(item.getEndTime())).collect(Collectors.toList());
@@ -765,30 +744,9 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             .filter(item -> ObjectUtil.isNull(item.getEndTime()))
             .map(HistoricActivityInstance::getActivityId)
             .collect(Collectors.toSet());
-
-        Set<String> rejectedTaskSet = new LinkedHashSet<>();
-        Set<String> sourceTaskSet = unfinishedTaskSet;
-        while (CollUtil.isNotEmpty(sourceTaskSet)) {
-            Set<String> nextIdSet = new HashSet<>();
-            for (String previousId : sourceTaskSet) {
-                List<String> nextIdList = sequenceElementMap.get(previousId);
-                if (CollUtil.isEmpty(nextIdList)) {
-                    continue;
-                }
-                nextIdList.forEach(nextId -> {
-                    if (finishedTaskSet.contains(nextId)) {
-                        nextIdSet.add(nextId);
-                        String rejectedSequenceFlow = sequenceFlowMap.get(previousId + nextId);
-                        if (finishedSequenceFlowSet.contains(rejectedSequenceFlow)) {
-                            nextIdSet.add(rejectedSequenceFlow);
-                        }
-                    }
-                });
-            }
-            rejectedTaskSet.addAll(nextIdSet);
-            sourceTaskSet = nextIdSet;
-        }
-        return new WfViewerVo(finishedTaskSet, finishedSequenceFlowSet, unfinishedTaskSet, rejectedTaskSet);
+        // DFS 查询未通过的元素集合
+        Set<String> rejectedSet = FlowableUtils.dfsFindRejects(bpmnModel, unfinishedTaskSet, finishedSequenceFlowSet, finishedTaskSet);
+        return new WfViewerVo(finishedTaskSet, finishedSequenceFlowSet, unfinishedTaskSet, rejectedSet);
     }
 
     /**
