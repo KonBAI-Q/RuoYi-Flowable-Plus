@@ -2,7 +2,7 @@
 -- 1、部门表
 -- ----------------------------
 drop table if exists sys_dept;
-create table sys_dept
+create table if not exists sys_dept
 (
     dept_id     int8,
     parent_id   int8        default 0,
@@ -55,7 +55,7 @@ insert into sys_dept values(109,  102, '0,100,102',  '财务部门',   2, '若�
 -- 2、用户信息表
 -- ----------------------------
 drop table if exists sys_user;
-create table sys_user
+create table if not exists sys_user
 (
     user_id     int8,
     dept_id     int8,
@@ -111,7 +111,7 @@ insert into sys_user values(2,  105, 'ry',    '若依',      'sys_user', 'crazyL
 -- 3、岗位信息表
 -- ----------------------------
 drop table if exists sys_post;
-create table sys_post
+create table if not exists sys_post
 (
     post_id     int8,
     post_code   varchar(64) not null,
@@ -150,15 +150,15 @@ insert into sys_post values(4, 'user', '普通员工',  4, '0', 'admin', now(), 
 -- 4、角色信息表
 -- ----------------------------
 drop table if exists sys_role;
-create table sys_role
+create table if not exists sys_role
 (
     role_id             int8,
     role_name           varchar(30)  not null,
     role_key            varchar(100) not null,
     role_sort           int4         not null,
     data_scope          char         default '1'::bpchar,
-    menu_check_strictly smallint     default 1,
-    dept_check_strictly smallint     default 1,
+    menu_check_strictly bool         default true,
+    dept_check_strictly bool         default true,
     status              char         not null,
     del_flag            char         default '0'::bpchar,
     create_by           varchar(64)  default ''::varchar,
@@ -188,15 +188,15 @@ comment on column sys_role.remark is '备注';
 -- ----------------------------
 -- 初始化-角色信息表数据
 -- ----------------------------
-insert into sys_role values('1', '超级管理员',  'admin',  1, 1, 1, 1, '0', '0', 'admin', now(), '', null, '超级管理员');
-insert into sys_role values('2', '普通角色',    'common', 2, 2, 1, 1, '0', '0', 'admin', now(), '', null, '普通角色');
+insert into sys_role values('1', '超级管理员',  'admin',  1, '1', 't', 't', '0', '0', 'admin', now(), '', null, '超级管理员');
+insert into sys_role values('2', '普通角色',    'common', 2, '2', 't', 't', '0', '0', 'admin', now(), '', null, '普通角色');
 
 
 -- ----------------------------
 -- 5、菜单权限表
 -- ----------------------------
 drop table if exists sys_menu;
-create table sys_menu
+create table if not exists sys_menu
 (
     menu_id     int8,
     menu_name   varchar(50) not null,
@@ -383,7 +383,7 @@ insert into sys_menu values('1170', '发起流程', '124', '1', '#', '', '', 1, 
 -- 6、用户和角色关联表  用户N-1角色
 -- ----------------------------
 drop table if exists sys_user_role;
-create table sys_user_role
+create table if not exists sys_user_role
 (
     user_id int8 not null,
     role_id int8 not null,
@@ -405,7 +405,7 @@ insert into sys_user_role values ('2', '2');
 -- 7、角色和菜单关联表  角色1-N菜单
 -- ----------------------------
 drop table if exists sys_role_menu;
-create table sys_role_menu
+create table if not exists sys_role_menu
 (
     role_id int8 not null,
     menu_id int8 not null,
@@ -531,7 +531,7 @@ insert into sys_role_menu values ('2', '1170');
 -- 8、角色和部门关联表  角色1-N部门
 -- ----------------------------
 drop table if exists sys_role_dept;
-create table sys_role_dept
+create table if not exists sys_role_dept
 (
     role_id int8 not null,
     dept_id int8 not null,
@@ -554,7 +554,7 @@ insert into sys_role_dept values ('2', '105');
 -- 9、用户与岗位关联表  用户1-N岗位
 -- ----------------------------
 drop table if exists sys_user_post;
-create table sys_user_post
+create table if not exists sys_user_post
 (
     user_id int8 not null,
     post_id int8 not null,
@@ -576,7 +576,7 @@ insert into sys_user_post values ('2', '2');
 -- 10、操作日志记录
 -- ----------------------------
 drop table if exists sys_oper_log;
-create table sys_oper_log
+create table if not exists sys_oper_log
 (
     oper_id        int8,
     title          varchar(50)   default ''::varchar,
@@ -619,7 +619,7 @@ comment on column sys_oper_log.oper_time is '操作时间';
 -- 11、字典类型表
 -- ----------------------------
 drop table if exists sys_dict_type;
-create table sys_dict_type
+create table if not exists sys_dict_type
 (
     dict_id     int8,
     dict_name   varchar(100) default ''::varchar,
@@ -658,7 +658,7 @@ insert into sys_dict_type values(10, '系统状态', 'sys_common_status',   '0',
 -- 12、字典数据表
 -- ----------------------------
 drop table if exists sys_dict_data;
-create table sys_dict_data
+create table if not exists sys_dict_data
 (
     dict_code   int8,
     dict_sort   int4         default 0,
@@ -723,7 +723,7 @@ insert into sys_dict_data values(28, 2,  '失败',     '1',       'sys_common_st
 -- 13、参数配置表
 -- ----------------------------
 drop table if exists sys_config;
-create table sys_config
+create table if not exists sys_config
 (
     config_id    int8,
     config_name  varchar(100) default ''::varchar,
@@ -762,7 +762,7 @@ insert into sys_config values(11, 'OSS预览列表资源开关',          'sys.o
 -- 14、系统访问记录
 -- ----------------------------
 drop table if exists sys_logininfor;
-create table sys_logininfor
+create table if not exists sys_logininfor
 (
     info_id        int8,
     user_name      varchar(50)  default ''::varchar,
@@ -791,7 +791,7 @@ comment on column sys_logininfor.login_time is '访问时间';
 -- 17、通知公告表
 -- ----------------------------
 drop table if exists sys_notice;
-create table sys_notice
+create table if not exists sys_notice
 (
     notice_id      int8,
     notice_title   varchar(50) not null,
@@ -829,7 +829,7 @@ insert into sys_notice values('2', '维护通知：2018-07-01 系统凌晨维护
 -- 18、代码生成业务表
 -- ----------------------------
 drop table if exists gen_table;
-create table gen_table
+create table if not exists gen_table
 (
     table_id          int8,
     table_name        varchar(200)  default ''::varchar,
@@ -880,7 +880,7 @@ comment on column gen_table.remark is '备注';
 -- 19、代码生成业务表字段
 -- ----------------------------
 drop table if exists gen_table_column;
-create table gen_table_column
+create table if not exists gen_table_column
 (
     column_id      int8,
     table_id       int8,
@@ -935,7 +935,7 @@ comment on column gen_table_column.update_time is '更新时间';
 -- OSS对象存储表
 -- ----------------------------
 drop table if exists sys_oss;
-create table sys_oss
+create table if not exists sys_oss
 (
     oss_id        int8,
     file_name     varchar(255) default ''::varchar not null,
@@ -966,7 +966,7 @@ comment on column sys_oss.service is '服务商';
 -- OSS对象存储动态配置表
 -- ----------------------------
 drop table if exists sys_oss_config;
-create table sys_oss_config
+create table if not exists sys_oss_config
 (
     oss_config_id int8,
     config_key    varchar(255) default ''::varchar not null,
@@ -1083,4 +1083,3 @@ comment on column wf_category.create_time   is '创建时间';
 comment on column wf_category.update_by     is '更新者';
 comment on column wf_category.update_time   is '更新时间';
 comment on column wf_category.del_flag      is '删除标志（0代表存在 2代表删除）';
-

@@ -1,6 +1,14 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="数据源" prop="dataName">
+        <el-input
+          v-model="queryParams.dataName"
+          placeholder="请输入数据源名称"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="表名称" prop="tableName">
         <el-input
           v-model="queryParams.tableName"
@@ -218,7 +226,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
         tableName: undefined,
-        tableComment: undefined
+        tableComment: undefined,
+        dataName: "master"
       },
       // 预览参数
       preview: {
@@ -230,7 +239,7 @@ export default {
     };
   },
   created() {
-    localStorage.setItem("dataName", "master");
+    localStorage.setItem("dataName", this.queryParams.dataName);
     this.getList();
   },
   activated() {
@@ -254,6 +263,7 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      localStorage.setItem("dataName", this.queryParams.dataName);
       this.queryParams.pageNum = 1;
       this.getList();
     },

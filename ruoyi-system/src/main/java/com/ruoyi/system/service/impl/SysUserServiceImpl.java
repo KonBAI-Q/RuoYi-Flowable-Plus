@@ -115,7 +115,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public TableDataInfo<SysUser> selectUnallocatedList(SysUser user, PageQuery pageQuery) {
-        Long userId = userRoleMapper.selectUserIdByRoleId(user.getRoleId());
+        List<Long> userId = userRoleMapper.selectUserIdsByRoleId(user.getRoleId());
         QueryWrapper<SysUser> wrapper = Wrappers.query();
         wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
             .and(w -> w.ne("r.role_id", user.getRoleId()).or().isNull("r.role_id"))
@@ -135,6 +135,17 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     public SysUser selectUserByUserName(String userName) {
         return baseMapper.selectUserByUserName(userName);
+    }
+
+    /**
+     * 通过手机号查询用户
+     *
+     * @param phonenumber 手机号
+     * @return 用户对象信息
+     */
+    @Override
+    public SysUser selectUserByPhonenumber(String phonenumber) {
+        return baseMapper.selectUserByPhonenumber(phonenumber);
     }
 
     /**
