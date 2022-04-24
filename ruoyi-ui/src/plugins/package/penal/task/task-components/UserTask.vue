@@ -1,54 +1,58 @@
 <template>
   <div style="margin-top: 16px">
-    <el-form-item label="候选类型">
-      <el-select v-model="formData.groupType" placeholder="请选择分组类型" @change="onGroupTypeChange">
-        <el-option label="固定用户" value="ASSIGNEE" />
-        <el-option label="候选用户" value="USERS" />
-<!--        <el-option label="候选组" value="ROLE" />-->
-      </el-select>
-    </el-form-item>
-    <el-form-item label="指定方式" v-if="formData.groupType === 'ASSIGNEE'">
-      <el-radio-group v-model="formData.assignType" @change="onAssignTypeChange">
-        <el-radio :label="'fixed' || '1'">固定</el-radio>
-        <el-radio :label="'dynamic' || '2'">动态</el-radio>
+    <el-row>
+      <el-radio-group v-model="dataType" @change="changeDataType">
+        <el-radio label="USERS">指定用户</el-radio>
+        <el-radio label="ROLES">角色</el-radio>
+        <el-radio label="DEPTS">部门</el-radio>
+        <el-radio label="INITIATOR">发起人</el-radio>
       </el-radio-group>
-    </el-form-item>
-    <el-form-item label="处理用户" v-if="formData.groupType === 'ASSIGNEE'">
-      <tag-select v-if="formData.assignType === ('fixed' || '1')" v-model="userTaskForm.assignee">
-        <el-button slot="append" class="append-add" type="default" icon="el-icon-plus" @click="onSelectAssignee()" />
-      </tag-select>
-      <el-select v-if="formData.assignType === ('dynamic' || '2')" v-model="userTaskForm.assignee" collapse-tags @change="updateElementTask('assignee')">
-        <el-option v-for="item in variableData" :key="item.value" :label="item.label" :value="item">
-          <span style="float: left">{{ item.label }}</span>
-          <span style="float: right; color: #8492a6;">{{ item.value }}</span>
-        </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="候选用户" v-if="formData.groupType === 'USERS'">
-      <tag-select v-model="userTaskForm.candidateUsers">
-        <el-button slot="append" class="append-add" type="default" icon="el-icon-plus" @click="onSelectAssignee()" />
-      </tag-select>
-    </el-form-item>
-<!--    <el-form-item label="候选分组">-->
-<!--      <el-select v-model="userTaskForm.candidateGroups" multiple collapse-tags @change="updateElementTask('candidateGroups')">-->
-<!--        <el-option v-for="gk in mockData" :key="'ass-' + gk" :label="`分组${gk}`" :value="`group${gk}`" />-->
-<!--      </el-select>-->
-<!--    </el-form-item>-->
-    <el-form-item label="到期时间">
-      <el-input v-model="userTaskForm.dueDate" clearable @change="updateElementTask('dueDate')" />
-    </el-form-item>
-    <el-form-item label="跟踪时间">
-      <el-input v-model="userTaskForm.followUpDate" clearable @change="updateElementTask('followUpDate')" />
-    </el-form-item>
-    <el-form-item label="优先级">
-      <el-input v-model="userTaskForm.priority" clearable @change="updateElementTask('priority')" />
-    </el-form-item>
+    </el-row>
+    <el-row>
+      <div v-if="dataType === 'USERS'">
+        <el-tag v-for="userText in selectedUser.text" :key="userText" effect="plain">
+          {{userText}}
+        </el-tag>
+        <div class="element-drawer__button">
+          <el-button size="mini" type="primary" icon="el-icon-plus" @click="onSelectUsers()">添加用户</el-button>
+        </div>
+      </div>
+      <div v-if="dataType === 'ROLES'">
+        <el-select v-model="roleIds" multiple size="mini" placeholder="请选择 角色">
+          <el-option
+            v-for="item in roleOptions"
+            :key="item.roleId"
+            :label="item.roleName"
+            :value="`ROLE${item.roleId}`"
+            :disabled="item.status === 1">
+          </el-option>
+        </el-select>
+        <div class="element-drawer__button">
+          <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleSaveRoles()">保 存</el-button>
+        </div>
+      </div>
+      <div v-if="dataType === 'DEPTS'">
+        <tree-select
+          :width="320"
+          :height="400"
+          size="mini"
+          :data="deptTreeData"
+          :defaultProps="deptProps"
+          multiple
+          clearable
+          checkStrictly
+          nodeKey="id"
+          :checkedKeys="deptIds"
+          @checked-change="checkedDeptChange">
+        </tree-select>
+      </div>
+    </el-row>
 
     <!-- 候选用户弹窗 -->
-    <el-dialog title="候选用户" :visible.sync="candidateVisible" width="60%" append-to-body>
+    <el-dialog title="候选用户" :visible.sync="userOpen" width="60%" append-to-body>
       <el-row type="flex" :gutter="20">
         <!--部门数据-->
-        <el-col :span="5">
+        <el-col :span="7">
           <el-card shadow="never" style="height: 100%">
             <div slot="header">
               <span>部门列表</span>
@@ -74,40 +78,23 @@
             </div>
           </el-card>
         </el-col>
-        <el-col :span="14">
-          <el-table ref="multipleTable" height="600" :data="userList" border @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="50" align="center" :selectable="selectEnable" />
+        <el-col :span="17">
+          <el-table ref="multipleTable" height="600" :data="userTableList" border @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="50" align="center" />
             <el-table-column label="用户名" align="center" prop="nickName" />
             <el-table-column label="部门" align="center" prop="dept.deptName" />
           </el-table>
           <pagination
-            :total="total"
+            :total="userTotal"
             :page.sync="queryParams.pageNum"
             :limit.sync="queryParams.pageSize"
-            @pagination="getList"
+            @pagination="getUserList"
           />
-        </el-col>
-        <el-col :span="5">
-          <el-card shadow="never" style="height: 100%">
-            <div slot="header">
-              <span>已选人员</span>
-            </div>
-            <el-tag
-              v-for="tag in selectedUserDate"
-              :key="tag.nickName"
-              closable
-              @close="handleClose(tag)">
-              {{tag.nickName}} {{tag.dept.deptName}}
-            </el-tag>
-          </el-card>
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleTaskComplete">确 定</el-button>
-<!--          <el-input style="width: 50%;margin-right: 34%" type="textarea" v-model="taskForm.comment"-->
-<!--                    placeholder="请输入处理意见"-->
-<!--          />-->
-<!--          <el-button @click="completeOpen = false">取 消</el-button>-->
+        <el-button type="primary" @click="handleTaskUserComplete">确 定</el-button>
+        <el-button @click="userOpen = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -115,9 +102,21 @@
 </template>
 
 <script>
-import { listUser, getUser } from "@/api/system/user";
+import { listUser } from "@/api/system/user";
+import { listRole } from "@/api/system/role";
 import { treeselect } from '@/api/system/dept'
-import TagSelect from "./TagSelect";
+import TreeSelect from "@/components/TreeSelect";
+
+const userTaskForm = {
+  dataType: '',
+  assignee: '',
+  candidateUsers: '',
+  candidateGroups: '',
+  text: '',
+  // dueDate: '',
+  // followUpDate: '',
+  // priority: ''
+}
 
 export default {
   name: "UserTask",
@@ -125,43 +124,34 @@ export default {
     id: String,
     type: String
   },
-  components: {
-    TagSelect
-  },
+  components: { TreeSelect },
   data() {
     return {
-      defaultTaskForm: {
-        assignee: "",
-        candidateUsers: [],
-        candidateGroups: [],
-        dueDate: "",
-        followUpDate: "",
-        priority: ""
+      loading: false,
+      dataType: 'USERS',
+      selectedUser: {
+        ids: [],
+        text: []
       },
-      formData: {
-        groupType: 'ASSIGNEE',
-        assignType: 'fixed'
-      },
-      userTaskForm: {},
-      candidateVisible: false,
+      userOpen: false,
       deptName: undefined,
       deptOptions: [],
       deptProps: {
         children: "children",
         label: "label"
       },
+      deptTempOptions: [],
+      userTableList: [],
+      userTotal: 0,
+      selectedUserDate: [],
+      roleOptions: [],
+      roleIds: [],
+      deptTreeData: [],
+      deptIds: [],
       // 查询参数
       queryParams: {
         deptId: undefined
-      },
-      userList: [],
-      total: 0,
-      selectedUserDate: [],
-      variableData: [{
-        label: "流程发起人",
-        value: "${INITIATOR}"
-      }],
-      mockData: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      }
     };
   },
   watch: {
@@ -171,113 +161,101 @@ export default {
         this.bpmnElement = window.bpmnInstances.bpmnElement;
         this.$nextTick(() => this.resetTaskForm());
       }
-    },
-    // 'userTaskForm.assignee': {
-    //   handler () {
-    //     this.updateElementTask('assignee');
-    //   }
-    // },
-    // 'userTaskForm.candidateUsers': {
-    //   handler () {
-    //     this.updateElementTask('candidateUsers');
-    //   }
-    // },
+    }
   },
-  created() {
-    listUser().then(response => {
-      this.userList = response.rows;
-    })
+  beforeDestroy() {
+    this.bpmnElement = null;
   },
   methods: {
     resetTaskForm() {
-      for (let key in this.defaultTaskForm) {
-        if (key === "candidateUsers") {
-          const val = this.bpmnElement?.businessObject[key] ? this.bpmnElement.businessObject[key].split(",") : [];
-          if (val && val.length > 0) {
-            this.formData.groupType = 'USERS';
-            let users = [];
-            // TODO 2022/01/28 优化用户信息获取方式
-            val.forEach(k => {
-              getUser(k).then(response => {
-                let user = response.data.user
-                users.push(user)
-              })
-            })
-            this.$set(this.userTaskForm, key, users);
-          }
-        } else if (key === "candidateGroups") {
-          // TODO 2022/01/28 添加候选组的设值 this.$set(this.userTaskForm, key, value);
-        } else if (key === "assignee") {
-          this.formData.groupType = 'ASSIGNEE';
-          let val = this.bpmnElement?.businessObject[key] || this.defaultTaskForm[key];
-          // TODO 2022/03/20 根据type判断是否为动态用户
-          // 判断是否为动态用户
-          if (val && val.startsWith('${') && val.endsWith('}')) {
-            this.formData.assignType = 'dynamic';
-            this.$set(this.userTaskForm, key, val);
-          } else {
-            this.formData.assignType = 'fixed';
-            getUser(val).then(response => {
-              let user = response.data.user
-              this.$set(this.userTaskForm, key, user);
-            })
-          }
+      const bpmnElementObj = this.bpmnElement?.businessObject;
+      if (!bpmnElementObj) {
+        return;
+      }
+      this.dataType = bpmnElementObj['dataType'];
+      if (this.dataType === 'USERS') {
+        let userIdData = bpmnElementObj['assignee'] || bpmnElementObj['candidateUsers'];
+        let userText = bpmnElementObj['text'] || [];
+        this.selectedUser.ids = userIdData?.toString().split(',');
+        this.selectedUser.text = userText?.split(',');
+      } else if (this.dataType === 'ROLES') {
+        this.getRoleOptions();
+        let roleIdData = bpmnElementObj['candidateGroups'] || [];
+        if (roleIdData && roleIdData.length > 0) {
+          this.roleIds = roleIdData.split(',')
         }
+      } else if (this.dataType === 'DEPTS') {
+        this.getDeptTreeData().then(() => {
+          let deptIdData = bpmnElementObj['candidateGroups'] || [];
+          if (deptIdData && deptIdData.length > 0) {
+            this.deptIds = deptIdData.split(',');
+          }
+        });
       }
     },
-    updateElementTask(key) {
+    updateElementTask() {
       const taskAttr = Object.create(null);
-      taskAttr['flowable:assignType'] = this.formData.assignType;
-      // 修复切换候选类型XML仍保留assignee的问题
-      if ((key === 'candidateUsers' || key === 'assignee') && !this.userTaskForm[key]) {
-        taskAttr[key] = null
-      }
-
-      if (key === "candidateUsers" || key === "candidateGroups") {
-        if (this.userTaskForm[key] && this.userTaskForm[key].length > 0) {
-          taskAttr[key] = this.userTaskForm[key].map(k => k.userId) || null
-        }
-        // TODO 2022/01/10 添加候选组的设值
-        // taskAttr[key] = this.userTaskForm[key] && this.userTaskForm[key].length ? this.userTaskForm[key].join() : null;
-      } else {
-        if (this.userTaskForm[key]) {
-          if (this.formData.assignType === ('fixed' || '1')) {
-            taskAttr['flowable:text'] = this.userTaskForm[key].nickName
-            taskAttr[key] = this.userTaskForm[key].userId || null;
-          } else if (this.formData.assignType === ('dynamic' || '2')) {
-            taskAttr['flowable:text'] = this.userTaskForm[key].label
-            taskAttr[key] = this.userTaskForm[key].value || null;
-          }
-        }
+      for (let key in userTaskForm) {
+          taskAttr[key] = userTaskForm[key];
       }
       window.bpmnInstances.modeling.updateProperties(this.bpmnElement, taskAttr);
     },
     /**
      * 查询部门下拉树结构
      */
-    getDeptTreeSelect() {
-      treeselect().then(response => {
-        this.deptOptions = response.data;
+    getDeptOptions() {
+      return new Promise((resolve, reject) => {
+        if (!this.deptOptions || this.deptOptions.length <= 0) {
+          treeselect().then(response => {
+            this.deptTempOptions = response.data;
+            this.deptOptions = response.data;
+            resolve()
+          })
+        } else {
+          reject()
+        }
       });
     },
-    /** 查询用户列表 */
-    getList() {
-      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.rows;
-          this.total = response.total;
-        }
-      );
-    },
-    selectEnable(row, index) {
-      if (this.formData.groupType === 'ASSIGNEE') {
-        if (this.selectedUserDate.length > 0) {
-          return this.selectedUserDate[0].userId === row.userId;
-        } else {
-          return true;
-        }
-      } else {
-        return true;
+    /**
+     * 查询部门下拉树结构（含部门前缀）
+     */
+    getDeptTreeData() {
+      function refactorTree(data) {
+        return data.map(node => {
+          let treeData = { id: `DEPT${node.id}`, label: node.label, parentId: node.parentId, weight: node.weight };
+          if (node.children && node.children.length > 0) {
+            treeData.children = refactorTree(node.children);
+          }
+          return treeData;
+        });
       }
+      return new Promise((resolve, reject) => {
+        if (!this.deptTreeData || this.deptTreeData.length <= 0) {
+          this.getDeptOptions().then(() => {
+            this.deptTreeData = refactorTree(this.deptOptions);
+            resolve()
+          }).catch(() => {
+            reject()
+          })
+        } else {
+          resolve()
+        }
+      })
+    },
+    /**
+     * 查询部门下拉树结构
+     */
+    getRoleOptions() {
+      if (!this.roleOptions || this.roleOptions.length <= 0) {
+        listRole().then(response => this.roleOptions = response.rows);
+      }
+    },
+    /** 查询用户列表 */
+    getUserList() {
+      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+        this.userTableList = response.rows;
+        this.userTotal = response.total;
+      });
     },
     // 筛选节点
     filterNode(value, data) {
@@ -287,7 +265,7 @@ export default {
     // 节点单击事件
     handleNodeClick(data) {
       this.queryParams.deptId = data.id;
-      this.getList();
+      this.getUserList();
     },
     // 关闭标签
     handleClose(tag) {
@@ -298,48 +276,112 @@ export default {
     handleSelectionChange(selection) {
       this.selectedUserDate = selection;
     },
-    handleTaskComplete() {
-      if (!this.selectedUserDate) {
-        this.userTaskForm.assignee = null;
-        this.userTaskForm.candidateUsers = null;
+    onSelectUsers() {
+      this.selectedUserDate = []
+      this.$refs.multipleTable?.clearSelection();
+      this.getDeptOptions();
+      this.userOpen = true;
+    },
+    handleTaskUserComplete() {
+      if (!this.selectedUserDate || this.selectedUserDate.length <= 0) {
+        this.$modal.msgError('请选择用户');
+        return;
+      }
+      this.selectedUser.text = this.selectedUserDate.map(k => k.nickName) || [];
+      if (this.selectedUserDate.length === 1) {
+        let data = this.selectedUserDate[0];
+        userTaskForm.assignee = data.userId;
+        userTaskForm.text = data.nickName;
       } else {
-        let val = null;
-        if (this.formData.groupType === 'ASSIGNEE') {
-          val = this.selectedUserDate[0];
-          this.userTaskForm.assignee = val;
-        } else {
-          val = this.selectedUserDate;
-          this.userTaskForm.candidateUsers = val;
+        userTaskForm.candidateUsers = this.selectedUserDate.map(k => k.userId).join() || null;
+        userTaskForm.text = this.selectedUserDate.map(k => k.nickName).join() || null;
+      }
+      this.updateElementTask()
+      this.userOpen = false;
+    },
+    handleSaveRoles() {
+      if (!this.roleIds || this.roleIds.length <= 0) {
+        this.$modal.msgError('请选择角色');
+        return;
+      }
+      userTaskForm.candidateGroups = this.roleIds.join() || null;
+      let textArr = this.roleOptions.filter(k => this.roleIds.indexOf(`ROLE${k.roleId}`) >= 0);
+      userTaskForm.text = textArr?.map(k => k.roleName).join() || null;
+      this.updateElementTask();
+    },
+    checkedDeptChange(checkedIds, checkedData) {
+      if (checkedIds && checkedIds.length > 0) {
+        this.deptIds = checkedIds;
+      }
+      if (checkedData && checkedData.length > 0) {
+        userTaskForm.candidateGroups = checkedData.map(k => k.id).join() || null
+        userTaskForm.text = checkedData.map(k => k.label).join() || null
+        this.updateElementTask();
+      }
+    },
+    changeDataType(val) {
+      // 清空 userTaskForm 所有属性值
+      Object.keys(userTaskForm).forEach(key => userTaskForm[key] = null);
+      userTaskForm.dataType = val;
+      if (val === 'USERS') {
+        if (this.selectedUser && this.selectedUser.ids && this.selectedUser.ids.length > 0) {
+          if (this.selectedUser.ids.length === 1) {
+            userTaskForm.assignee = this.selectedUser.ids[0];
+          } else {
+            userTaskForm.candidateUsers = this.selectedUser.ids.join()
+          }
+          userTaskForm.text = this.selectedUser.text?.join() || null
         }
-        this.updateElementTask('assignee')
-        this.updateElementTask('candidateUsers')
+      } else if (val === 'ROLES') {
+        this.getRoleOptions();
+        if (this.roleIds && this.roleIds.length > 0) {
+          userTaskForm.candidateGroups = this.roleIds.join() || null;
+          let textArr = this.roleOptions.filter(k => this.roleIds.indexOf(`ROLE${k.roleId}`) >= 0);
+          userTaskForm.text = textArr?.map(k => k.roleName).join() || null;
+        }
+      } else if (val === 'DEPTS') {
+        this.getDeptTreeData();
+        if (this.deptIds && this.deptIds.length > 0) {
+          userTaskForm.candidateGroups = this.deptIds.join() || null;
+          let textArr = []
+          let treeStarkData = JSON.parse(JSON.stringify(this.deptTreeData));
+          this.deptIds.forEach(id => {
+            let stark = []
+            stark = stark.concat(treeStarkData);
+            while(stark.length) {
+              let temp = stark.shift();
+              if(temp.children) {
+                stark = temp.children.concat(stark);
+              }
+              if(id === temp.id) {
+                textArr.push(temp);
+              }
+            }
+          })
+          userTaskForm.text = textArr?.map(k => k.label).join() || null;
+        }
+      } else if (val === 'INITIATOR') {
+        userTaskForm.assignee = "${initiator}";
+        userTaskForm.text = "流程发起人";
       }
-      this.candidateVisible = false;
-    },
-    onGroupTypeChange(val) {
-      this.userTaskForm = {}
-      // 清空已选候选人数据
-      if (val === 'ASSIGNEE') {
-        this.formData.assignType = 'fixed'
-      }
-      this.selectedUserDate = []
-      this.$refs.multipleTable?.clearSelection();
-    },
-    onAssignTypeChange() {
-      this.userTaskForm.assignee = null
-    },
-    onSelectAssignee() {
-      this.selectedUserDate = []
-      this.$refs.multipleTable?.clearSelection();
-      this.getDeptTreeSelect();
-      this.candidateVisible = true;
+      this.updateElementTask();
     }
-  },
-  beforeDestroy() {
-    this.bpmnElement = null;
   }
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.el-row .el-radio-group {
+  margin-bottom: 15px;
+  .el-radio {
+    line-height: 28px;
+  }
+}
+.el-tag {
+  margin-bottom: 10px;
+  + .el-tag {
+    margin-left: 10px;
+  }
+}
+
 </style>

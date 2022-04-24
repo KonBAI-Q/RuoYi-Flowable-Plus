@@ -60,11 +60,6 @@ public class ProcessConstants {
      */
     public static final String PROCESS_CUSTOM_USER_TYPE = "userType";
 
-    /**
-     * 初始化人员
-     */
-    public static final String PROCESS_INITIATOR = "INITIATOR";
-
 
     /**
      * 流程跳过

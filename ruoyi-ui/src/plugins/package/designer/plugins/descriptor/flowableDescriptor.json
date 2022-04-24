@@ -345,6 +345,11 @@
       "extends": [ "bpmn:UserTask" ],
       "properties": [
         {
+          "name": "dataType",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
           "name": "assignee",
           "isAttr": true,
           "type": "String"
@@ -361,6 +366,11 @@
         },
         {
           "name": "candidateGroups",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "text",
           "isAttr": true,
           "type": "String"
         },

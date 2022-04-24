@@ -5,12 +5,15 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
+import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
@@ -44,6 +47,7 @@ public class WfInstanceServiceImpl extends FlowServiceFactory implements IWfInst
     private final IWfDeployFormService deployFormService;
     private final ISysUserService userService;
     private final ISysRoleService roleService;
+    private final ISysDeptService deptService;
 
     /**
      * 结束流程实例
@@ -153,8 +157,15 @@ public class WfInstanceServiceImpl extends FlowServiceFactory implements IWfInst
                             stringBuilder.append(user.getNickName()).append(",");
                         }
                         if (StringUtils.isNotBlank(identityLink.getGroupId())) {
-                            SysRole role = roleService.selectRoleById(Long.parseLong(identityLink.getGroupId()));
-                            stringBuilder.append(role.getRoleName()).append(",");
+                            if (identityLink.getGroupId().startsWith(TaskConstants.ROLE_GROUP_PREFIX)) {
+                                Long roleId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.ROLE_GROUP_PREFIX));
+                                SysRole role = roleService.selectRoleById(roleId);
+                                stringBuilder.append(role.getRoleName()).append(",");
+                            } else if (identityLink.getGroupId().startsWith(TaskConstants.DEPT_GROUP_PREFIX)) {
+                                Long deptId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.DEPT_GROUP_PREFIX));
+                                SysDept dept = deptService.selectDeptById(deptId);
+                                stringBuilder.append(dept.getDeptName()).append(",");
+                            }
                         }
                     }
                 }

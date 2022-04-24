@@ -14,6 +14,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
+import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.common.enums.FlowComment;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
@@ -840,7 +841,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题？
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
         if (Objects.nonNull(task)) {
-            String userIdStr = (String) variables.get(ProcessConstants.PROCESS_INITIATOR);
+            String userIdStr = (String) variables.get(TaskConstants.PROCESS_INITIATOR);
             if (!StrUtil.equalsAny(task.getAssignee(), userIdStr)) {
                 throw new ServiceException("数据验证失败，该工作流第一个用户任务的指派人并非当前用户，不能执行该操作！");
             }

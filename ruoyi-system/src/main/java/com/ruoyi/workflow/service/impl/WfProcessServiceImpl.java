@@ -12,8 +12,9 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.flowable.common.constant.ProcessConstants;
+import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
+import com.ruoyi.flowable.utils.TaskUtils;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
@@ -201,6 +202,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .active()
             .includeProcessVariables()
             .taskCandidateOrAssigned(userId.toString())
+            .taskCandidateGroupIn(TaskUtils.getCandidateGroup())
             .orderByTaskCreateTime().desc();
         page.setTotal(taskQuery.count());
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
@@ -305,7 +307,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     private void buildProcessVariables(Map<String, Object> variables) {
         String userIdStr = LoginHelper.getUserId().toString();
         identityService.setAuthenticatedUserId(userIdStr);
-        variables.put(ProcessConstants.PROCESS_INITIATOR, userIdStr);
+        variables.put(TaskConstants.PROCESS_INITIATOR, userIdStr);
     }
 
 
