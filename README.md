@@ -21,28 +21,81 @@
 
 ### 其他
 
-* 同步升级 [RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus)
+* Ruoyi-Flowable-Plus交流群：[![加入QQ群](https://badg.now.sh/badge/icon/1007207992?icon=qq&label=QQ)](https://jq.qq.com/?_wv=1027&k=PYDZa1tA)
 
 
 ## 演示图例
-<table style="width:100%">
+<table style="width:100%; text-align:center">
 <tbody>
 <tr>
-  <td><img src="https://images.gitee.com/uploads/images/2022/0219/175908_e1d6ee4d_5096840.png" /></td>
-  <td><img src="https://images.gitee.com/uploads/images/2022/0219/180515_85ed02e7_5096840.png" /></td>
+  <td>
+    <span>登录页面</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/164043_74b57010_5096840.png" alt="登录页面"/>
+  </td>
+  <td>
+    <span>用户管理</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/164236_2de3b8da_5096840.png" alt="用户管理"/>
+  </td>
 </tr>
 <tr>
-  <td><img src="https://images.gitee.com/uploads/images/2022/0219/180750_224f9d7b_5096840.png" /></td>
-  <td><img src="https://images.gitee.com/uploads/images/2022/0219/180801_0219bea7_5096840.png" /></td>
+  <td>
+    <span>流程分类</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/164839_ca79b066_5096840.png" alt="流程分类"/>
+  </td>
+  <td>
+    <span>流程表单</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/165118_688209fd_5096840.png" alt="流程表单"/>
+  </td>
 </tr>
 <tr>
-  <td><img src="https://images.gitee.com/uploads/images/2022/0219/182440_7b0720d0_5096840.png" /></td>
-  <td><img src="https://images.gitee.com/uploads/images/2022/0219/182433_fb864324_5096840.png" /></td>
+  <td>
+    <span>流程定义</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/165916_825a85c8_5096840.png" alt="流程定义"/>
+  </td>
+  <td>
+    <span>流程发起</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/171409_ffb0faf3_5096840.png" alt="流程发起"/>
+  </td>
 </tr>
 <tr>
-  <td><img src="https://images.gitee.com/uploads/images/2022/0219/183544_c702a234_5096840.png" /></td>
-  <td><img src="https://images.gitee.com/uploads/images/2022/0219/183553_5aea4899_5096840.png" /></td>
+  <td>
+    <span>表单设计</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/172933_7222c0f2_5096840.png" alt="表单设计"/>
+  </td>
+  <td>
+    <span>流程设计</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/165827_44fa412b_5096840.png" alt="流程设计"/>
+  </td>
+</tr>
+<tr>
+  <td>
+    <span>发起流程</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/171651_4639254b_5096840.png" alt="发起流程"/>
+  </td>
+  <td>
+    <span>代办任务</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/171916_7ba22063_5096840.png" alt="代办任务"/>
+  </td>
+</tr>
+<tr>
+  <td>
+    <span>任务办理</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/172204_04753399_5096840.png" alt="任务办理"/>
+  </td>
+  <td>
+    <span>流转记录</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/172350_179e8341_5096840.png" alt="流转记录"/>
+  </td>
+</tr>
+<tr>
+  <td>
+    <span>流程跟踪</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/172547_fe7414d4_5096840.png" alt="流程跟踪"/>
+  </td>
+  <td>
+    <span>流程完结</span>
+    <img src="https://images.gitee.com/uploads/images/2022/0424/173159_8cc57e74_5096840.png" alt="流程完结"/>
+  </td>
 </tr>
 </tbody>
 </table>
-
