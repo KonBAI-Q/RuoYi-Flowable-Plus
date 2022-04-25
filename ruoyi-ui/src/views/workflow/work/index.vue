@@ -36,11 +36,7 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="流程分类" align="center" prop="categoryName">
-        <template slot-scope="scope">
-          <span>{{ categoryOptions.find(k => k.code === scope.row.category).categoryName }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="流程分类" align="center" prop="categoryName" :formatter="categoryFormat" />
       <el-table-column label="流程版本" align="center">
         <template slot-scope="scope">
           <el-tag size="medium" >v{{ scope.row.version }}</el-tag>
@@ -121,15 +117,13 @@ export default {
     }
   },
   created() {
-    this.getTreeselect();
+    this.getCategoryList();
     this.getList();
   },
   methods: {
     /** 查询流程分类列表 */
-    getTreeselect() {
-      listCategory().then(response => {
-        this.categoryOptions = response.rows;
-      })
+    getCategoryList() {
+      listCategory().then(response => this.categoryOptions = response.rows)
     },
     /** 查询流程定义列表 */
     getList() {
@@ -168,6 +162,9 @@ export default {
           deployId: row.deploymentId,
         }
       })
+    },
+    categoryFormat(row, column) {
+      return this.categoryOptions.find(k => k.code === row.category)?.categoryName ?? '';
     }
   }
 }

@@ -79,11 +79,7 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="流程分类" align="center" prop="categoryName">
-        <template slot-scope="scope">
-          <span>{{ categoryOptions.find(k => k.code === scope.row.category).categoryName }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="流程分类" align="center" prop="categoryName" :formatter="categoryFormat" />
       <el-table-column label="业务表单" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button v-if="scope.row.formId" type="text" @click="handleForm(scope.row.formId)">
@@ -425,12 +421,14 @@ export default {
     };
   },
   created() {
-    listCategory().then(response => {
-      this.categoryOptions = response.rows
-    })
+    this.getCategoryList();
     this.getList();
   },
   methods: {
+    /** 查询流程分类列表 */
+    getCategoryList() {
+      listCategory().then(response => this.categoryOptions = response.rows)
+    },
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
@@ -640,6 +638,9 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit();
+    },
+    categoryFormat(row, column) {
+      return this.categoryOptions.find(k => k.code === row.category)?.categoryName ?? '';
     }
   }
 };

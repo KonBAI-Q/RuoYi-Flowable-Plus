@@ -51,11 +51,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程类别" align="center" prop="category" width="100px">
-        <template slot-scope="scope">
-          <span>{{ categoryOptions.find(k => k.code === scope.row.category).categoryName }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="流程类别" align="center" prop="category" :formatter="categoryFormat" />
       <el-table-column label="流程版本" align="center" width="80px">
         <template slot-scope="scope">
           <el-tag size="medium" >v{{ scope.row.procDefVersion }}</el-tag>
@@ -163,12 +159,14 @@ export default {
     };
   },
   created() {
-    listCategory().then(response => {
-      this.categoryOptions = response.rows
-    })
+    this.getCategoryList();
     this.getList();
   },
   methods: {
+    /** 查询流程分类列表 */
+    getCategoryList() {
+      listCategory().then(response => this.categoryOptions = response.rows)
+    },
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
@@ -263,6 +261,9 @@ export default {
       }).then(response => {
         this.download(response.msg);
       })
+    },
+    categoryFormat(row, column) {
+      return this.categoryOptions.find(k => k.code === row.category)?.categoryName ?? '';
     }
   }
 };
