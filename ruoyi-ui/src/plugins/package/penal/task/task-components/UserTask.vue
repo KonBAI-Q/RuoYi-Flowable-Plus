@@ -176,8 +176,13 @@ export default {
       if (this.dataType === 'USERS') {
         let userIdData = bpmnElementObj['assignee'] || bpmnElementObj['candidateUsers'];
         let userText = bpmnElementObj['text'] || [];
-        this.selectedUser.ids = userIdData?.toString().split(',');
-        this.selectedUser.text = userText?.split(',');
+        if (userIdData && userIdData.length > 0 && userText && userText.length > 0) {
+          this.selectedUser.ids = userIdData?.toString().split(',');
+          this.selectedUser.text = userText?.split(',');
+        } else {
+          this.selectedUser.ids = []
+          this.selectedUser.text = []
+        }
       } else if (this.dataType === 'ROLES') {
         this.getRoleOptions();
         let roleIdData = bpmnElementObj['candidateGroups'] || [];
@@ -292,9 +297,11 @@ export default {
         let data = this.selectedUserDate[0];
         userTaskForm.assignee = data.userId;
         userTaskForm.text = data.nickName;
+        userTaskForm.candidateUsers = null;
       } else {
         userTaskForm.candidateUsers = this.selectedUserDate.map(k => k.userId).join() || null;
         userTaskForm.text = this.selectedUserDate.map(k => k.nickName).join() || null;
+        userTaskForm.assignee = null;
       }
       this.updateElementTask()
       this.userOpen = false;
