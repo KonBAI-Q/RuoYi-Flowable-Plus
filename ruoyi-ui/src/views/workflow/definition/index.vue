@@ -106,9 +106,9 @@
             type="text"
             size="mini"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
+            @click="handleDesigner(scope.row)"
             v-hasPermi="['workflow:definition:designer']"
-          >编辑</el-button>
+          >设计</el-button>
           <el-button
             type="text"
             size="mini"
@@ -117,9 +117,9 @@
             v-hasPermi="['workflow:definition:remove']"
           >删除</el-button>
           <el-dropdown>
-            <span class="el-dropdown-link">
-              <i class="el-icon-d-arrow-right el-icon--right"></i>更多
-            </span>
+          <span class="el-dropdown-link">
+            <i class="el-icon-d-arrow-right el-icon--right"></i>更多
+          </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
                 icon="el-icon-view"
@@ -184,27 +184,6 @@
     <!-- 流程图 -->
     <el-dialog :title="processView.title" :visible.sync="processView.open" width="70%" append-to-body>
        <process-viewer :key="`designer-${processView.index}`" :xml="processView.xmlData" :style="{height: '400px'}" />
-    </el-dialog>
-
-    <!--  编辑流程  -->
-    <el-dialog :title="process.title" :visible.sync="process.open" width="500px" append-to-body>
-      <el-form :model="process.form" size="mini" label-width="80px">
-        <el-form-item label="流程标识">
-          <el-input v-model="process.form.processKey" clearable disabled />
-        </el-form-item>
-        <el-form-item label="流程名称">
-          <el-input v-model="process.form.processName" clearable />
-        </el-form-item>
-        <el-form-item label="流程分类">
-          <el-select v-model="process.form.category" placeholder="请选择" clearable style="width:100%">
-            <el-option v-for="item in categoryOptions" :key="item.categoryId" :label="item.categoryName" :value="item.code" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleLoadXml(process.form)">确 定</el-button>
-        <el-button @click="process.open = false">取 消</el-button>
-      </div>
     </el-dialog>
 
     <!-- 版本管理 -->
@@ -311,6 +290,9 @@
         </el-col>
       </el-row>
     </el-dialog>
+
+    <designer v-if="isDesignerShow" :designerForm="processForm" @save="submitSave()" @close="isDesignerShow = false"></designer>
+
   </div>
 </template>
 
@@ -320,16 +302,19 @@ import { getForm, addDeployForm ,listForm } from "@/api/workflow/form";
 import { listCategory } from '@/api/workflow/category'
 import Parser from '@/utils/generator/parser'
 import ProcessViewer from '@/components/ProcessViewer'
+import Designer from './designer'
 import { getToken } from "@/utils/auth";
 
 export default {
   name: "Definition",
   components: {
     Parser,
-    ProcessViewer
+    ProcessViewer,
+    Designer
   },
   data() {
     return {
+      isDesignerShow: false,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -345,11 +330,7 @@ export default {
       // 流程定义表格数据
       definitionList: [],
       categoryOptions: [],
-      process: {
-        title: '',
-        open: false,
-        form: {}
-      },
+      processForm: {},
       publish: {
         open: false,
         loading: false,
@@ -478,19 +459,6 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    /** 跳转到流程设计页面 */
-    handleLoadXml(row) {
-      this.process.open = false;
-      this.$router.push({
-        path: '/definition/designer',
-        query: {
-          definitionId: row.definitionId,
-          processId: row.processKey,
-          processName: row.processName,
-          category: row.category
-        }
-      })
-    },
     handlePublish(row) {
       this.publishQueryParams.processKey = row.processKey;
       this.publish.open = true;
@@ -575,18 +543,16 @@ export default {
     },
     handleAdd() {
       const dateTime = new Date().getTime();
-      this.process.title = '新增流程';
-      this.process.form = {
+      this.processForm = {
         processKey: `Process_${dateTime}`,
         processName: `业务流程_${dateTime}`
-      };
-      this.process.open = true;
+      }
+      this.isDesignerShow = true;
     },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.process.title = '编辑流程';
-      this.process.form = JSON.parse(JSON.stringify(row));
-      this.process.open = true;
+    /** 设计按钮操作 */
+    handleDesigner(row) {
+      this.processForm = JSON.parse(JSON.stringify(row));
+      this.isDesignerShow = true;
     },
     /** 删除按钮操作 */
     handleDelete(row) {
@@ -641,6 +607,9 @@ export default {
     },
     categoryFormat(row, column) {
       return this.categoryOptions.find(k => k.code === row.category)?.categoryName ?? '';
+    },
+    submitSave() {
+      this.getList();
     }
   }
 };
