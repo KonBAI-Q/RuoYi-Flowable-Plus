@@ -75,10 +75,6 @@ spring:
     restart:
       # 热部署开关
       enabled: true
-  # 与vue整合部署使用
-  thymeleaf:
-    # 将系统模板放置到最前面 否则会与 springboot-admin 页面冲突
-    template-resolver-order: 1
   mvc:
     pathmatch:
       # 适配 boot 2.6 路由与 springfox 兼容
@@ -107,16 +103,12 @@ sa-token:
   is-concurrent: true
   # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
   is-share: false
-  # 是否尝试从请求体里读取token
-  is-read-body: false
   # 是否尝试从header里读取token
   is-read-head: true
   # 是否尝试从cookie里读取token
   is-read-cookie: false
   # token前缀
   token-prefix: "Bearer"
-  # token风格
-  token-style: uuid
   # jwt秘钥
   jwt-secret-key: abcdefghijklmnopqrstuvwxyz
   # 是否输出操作日志
@@ -148,11 +140,6 @@ security:
     # actuator 监控配置
     - /actuator
     - /actuator/**
-
-# 重复提交
-repeat-submit:
-  # 全局间隔时间(毫秒)
-  interval: 5000
 
 # MyBatisPlus配置
 # https://baomidou.com/config/
@@ -256,20 +243,10 @@ xss:
 thread-pool:
   # 是否开启线程池
   enabled: false
-  # 核心线程池大小
-  corePoolSize: 8
-  # 最大可创建的线程数
-  maxPoolSize: 16
   # 队列最大长度
   queueCapacity: 128
   # 线程池维护线程所允许的空闲时间
   keepAliveSeconds: 300
-  # 线程池对拒绝任务(无线程可用)的处理策略
-  # CALLER_RUNS_POLICY 调用方执行
-  # DISCARD_OLDEST_POLICY 放弃最旧的
-  # DISCARD_POLICY 丢弃
-  # ABORT_POLICY 中止
-  rejectedExecutionHandler: CALLER_RUNS_POLICY
 
 --- # redisson 缓存配置
 redisson:
@@ -297,8 +274,6 @@ lock4j:
 management:
   endpoints:
     web:
-      # Actuator 提供的 API 接口的根目录。默认为 /actuator
-      base-path: /actuator
       exposure:
         # 需要开放的端点。默认值只打开 health 和 info 两个端点。通过设置 * ，可以开放所有端点。
         # 生产环境不建议放开所有 根据项目需求放开即可

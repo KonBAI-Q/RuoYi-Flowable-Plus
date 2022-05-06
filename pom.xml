@@ -6,15 +6,15 @@
 
     <groupId>com.ruoyi</groupId>
     <artifactId>ruoyi-flowable-plus</artifactId>
-    <version>4.0.1</version>
+    <version>4.1.0</version>
 
     <name>RuoYi-Flowable-Plus</name>
     <url>https://gitee.com/KonBAI-Q/ruoyi-flowable-plus</url>
     <description>RuoYi-Flowable-Plus后台管理系统</description>
 
     <properties>
-        <ruoyi-flowable-plus.version>4.0.1</ruoyi-flowable-plus.version>
-        <spring-boot.version>2.6.6</spring-boot.version>
+        <ruoyi-flowable-plus.version>4.1.0</ruoyi-flowable-plus.version>
+        <spring-boot.version>2.6.7</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -26,14 +26,13 @@
         <poi.version>4.1.2</poi.version>
         <commons-compress.version>1.21</commons-compress.version>
         <easyexcel.version>3.0.5</easyexcel.version>
-        <cglib.version>3.3.0</cglib.version>
         <velocity.version>2.3</velocity.version>
         <satoken.version>1.29.0</satoken.version>
         <mybatis-plus.version>3.5.1</mybatis-plus.version>
         <p6spy.version>3.9.1</p6spy.version>
         <hutool.version>5.7.22</hutool.version>
-        <okhttp.version>4.9.2</okhttp.version>
-        <spring-boot-admin.version>2.6.5</spring-boot-admin.version>
+        <okhttp.version>4.9.3</okhttp.version>
+        <spring-boot-admin.version>2.6.6</spring-boot-admin.version>
         <redisson.version>3.17.0</redisson.version>
         <lock4j.version>2.2.1</lock4j.version>
         <dynamic-ds.version>3.5.1</dynamic-ds.version>
@@ -43,12 +42,14 @@
 
         <!-- jdk11 缺失依赖 jaxb-->
         <jaxb.version>3.0.1</jaxb.version>
+        <!-- 统一 guava 版本 解决隐式漏洞问题 -->
+        <guava.version>30.0-jre</guava.version>
 
         <!-- OSS 配置 -->
-        <qiniu.version>7.9.3</qiniu.version>
+        <qiniu.version>7.9.5</qiniu.version>
         <aliyun.oss.version>3.14.0</aliyun.oss.version>
-        <qcloud.cos.version>5.6.68</qcloud.cos.version>
-        <minio.version>8.3.7</minio.version>
+        <qcloud.cos.version>5.6.72</qcloud.cos.version>
+        <minio.version>8.3.8</minio.version>
 
         <!-- docker 配置 -->
         <docker.registry.url>localhost</docker.registry.url>
@@ -133,12 +134,6 @@
                         <artifactId>poi-ooxml-schemas</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>cglib</groupId>
-                <artifactId>cglib</artifactId>
-                <version>${cglib.version}</version>
             </dependency>
 
             <!-- velocity代码生成使用模板 -->
@@ -232,12 +227,33 @@
                 <groupId>com.yomahub</groupId>
                 <artifactId>tlog-web-spring-boot-starter</artifactId>
                 <version>${tlog.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>log4j</artifactId>
+                        <groupId>log4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>dom4j</artifactId>
+                        <groupId>dom4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-beanutils</artifactId>
+                        <groupId>commons-beanutils</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
                 <groupId>com.yomahub</groupId>
                 <artifactId>tlog-xxljob-spring-boot-starter</artifactId>
                 <version>${tlog.version}</version>
+            </dependency>
+
+            <!-- 统一 guava 版本 解决隐式漏洞问题 -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
 
             <!-- flowable -->
