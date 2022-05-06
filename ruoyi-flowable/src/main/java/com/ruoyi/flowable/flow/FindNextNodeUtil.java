@@ -1,8 +1,7 @@
 package com.ruoyi.flowable.flow;
 
-import com.greenpineyu.fel.FelEngine;
-import com.greenpineyu.fel.FelEngineImpl;
-import com.greenpineyu.fel.context.FelContext;
+import com.googlecode.aviator.AviatorEvaluator;
+import com.googlecode.aviator.Expression;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
 import org.flowable.engine.RepositoryService;
@@ -65,10 +64,7 @@ public class FindNextNodeUtil {
                 //1.有表达式，且为true
                 //2.无表达式
                 String expression = sequenceFlow.getConditionExpression();
-                if (expression == null ||
-                        Boolean.parseBoolean(
-                                String.valueOf(
-                                        result(map, expression.substring(expression.lastIndexOf("{") + 1, expression.lastIndexOf("}")))))) {
+                if (expression == null || expressionResult(map, expression.substring(expression.lastIndexOf("{") + 1, expression.lastIndexOf("}")))) {
                     //出线的下一节点
                     String nextFlowElementID = sequenceFlow.getTargetRef();
                     if (checkSubProcess(nextFlowElementID, flowElements, nextUser)) {
@@ -211,19 +207,15 @@ public class FindNextNodeUtil {
     }
 
     /**
-     * 校验el表达示例
+     * 校验el表达式
      *
      * @param map
      * @param expression
      * @return
      */
-    public static Object result(Map<String, Object> map, String expression) {
-        FelEngine fel = new FelEngineImpl();
-        FelContext ctx = fel.getContext();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            ctx.set(entry.getKey(), entry.getValue());
-        }
-        Object result = fel.eval(expression);
-        return result;
+    public static boolean expressionResult(Map<String, Object> map, String expression) {
+        Expression exp = AviatorEvaluator.compile(expression);
+        final Object execute = exp.execute(map);
+        return Boolean.parseBoolean(String.valueOf(execute));
     }
 }

@@ -470,11 +470,13 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
                 Authentication.setAuthenticatedUserId(LoginHelper.getUserId().toString());
 //                taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.STOP.getType(),
 //                        StringUtils.isBlank(flowTaskVo.getComment()) ? "取消申请" : flowTaskVo.getComment());
+                // 获取当前流程最后一个节点
                 String endId = endNodes.get(0).getId();
                 List<Execution> executions = runtimeService.createExecutionQuery()
                     .parentId(processInstance.getProcessInstanceId()).list();
                 List<String> executionIds = new ArrayList<>();
                 executions.forEach(execution -> executionIds.add(execution.getId()));
+                // 变更流程为已结束状态
                 runtimeService.createChangeActivityStateBuilder()
                     .moveExecutionsToSingleActivityId(executionIds, endId).changeState();
             }
@@ -777,10 +779,13 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      */
     @Override
     public WfNextDto getNextFlowNode(WfTaskBo bo) {
+        // Step 1. 获取当前节点并找到下一步节点
         Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
         WfNextDto nextDto = new WfNextDto();
         if (Objects.nonNull(task)) {
-            List<UserTask> nextUserTask = FindNextNodeUtil.getNextUserTasks(repositoryService, task, new HashMap<>());
+            // Step 2. 获取当前流程所有流程变量(网关节点时需要校验表达式)
+            Map<String, Object> variables = taskService.getVariables(task.getId());
+            List<UserTask> nextUserTask = FindNextNodeUtil.getNextUserTasks(repositoryService, task, variables);
             if (CollectionUtils.isNotEmpty(nextUserTask)) {
                 for (UserTask userTask : nextUserTask) {
                     MultiInstanceLoopCharacteristics multiInstance = userTask.getLoopCharacteristics();
