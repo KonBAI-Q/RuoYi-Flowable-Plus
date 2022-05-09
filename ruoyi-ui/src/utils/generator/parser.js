@@ -1,5 +1,6 @@
-import { deepClone } from '@/utils/index'
-import render from '@/utils/generator/render'
+import { deepClone } from '@/utils/index';
+import { getToken } from '@/utils/auth';
+import render from '@/utils/generator/render';
 
 const ruleTrigger = {
   'el-input': 'blur',
@@ -10,7 +11,8 @@ const ruleTrigger = {
   'el-cascader': 'change',
   'el-time-picker': 'change',
   'el-date-picker': 'change',
-  'el-rate': 'change'
+  'el-rate': 'change',
+  'el-upload': 'change'
 }
 
 const layouts = {
@@ -138,9 +140,37 @@ export default {
   methods: {
     initFormData(componentList, formData) {
       componentList.forEach(cur => {
-        const config = cur.__config__
-        if (cur.__vModel__) formData[cur.__vModel__] = config.defaultValue
-        if (config.children) this.initFormData(config.children, formData)
+        const config = cur.__config__;
+        if (cur.__vModel__) {
+          formData[cur.__vModel__] = config.defaultValue;
+          // 初始化文件列表
+          if (cur.action && config.defaultValue) {
+            cur['file-list'] = config.defaultValue;
+          }
+        }
+        if (cur.action) {
+          cur['headers'] = {
+            Authorization: "Bearer " + getToken(),
+          }
+          cur['on-success'] = (res, file, fileList) => {
+            formData[cur.__vModel__] = fileList;
+            if (res.code === 200 && fileList) {
+              config.defaultValue = fileList;
+              config.defaultValue.forEach(val => {
+                val.url = file.response.data.url;
+                val.ossId = file.response.data.ossId;
+                val.response = null
+              })
+            }
+          };
+          // 点击文件列表中已上传的文件时的钩子
+          cur['on-preview'] = (file) => {
+            this.$download.oss(file.ossId)
+          }
+        }
+        if (config.children) {
+          this.initFormData(config.children, formData);
+        }
       })
     },
     buildRules(componentList, rules) {
@@ -172,8 +202,6 @@ export default {
     submitForm() {
       this.$refs[this.formConf.formRef].validate(valid => {
         if (!valid) return false
-        // 触发sumit事件
-        // this.$emit('submit', this[this.formConf.formModel])
         const params = {
           formData: this.formConfCopy,
           valData: this[this.formConf.formModel]

@@ -499,7 +499,7 @@ export const selectComponents = [
     __slot__: {
       'list-type': true
     },
-    action: 'https://jsonplaceholder.typicode.com/posts/',
+    action: process.env.VUE_APP_BASE_API + "/system/oss/upload",
     disabled: false,
     accept: '',
     name: 'file',
