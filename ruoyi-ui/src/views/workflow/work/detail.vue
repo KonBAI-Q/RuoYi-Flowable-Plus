@@ -60,7 +60,7 @@
                 <el-timeline-item v-for="(item,index) in flowRecordList" :key="index" :icon="setIcon(item.finishTime)" :color="setColor(item.finishTime)">
                   <p style="font-weight: 700">{{ item.taskName }}</p>
                   <el-card class="box-card" shadow="hover">
-                    <el-descriptions column="5" :labelStyle="{'font-weight': 'bold'}">
+                    <el-descriptions :column="5" :labelStyle="{'font-weight': 'bold'}">
                       <el-descriptions-item label="实际办理">{{ item.assigneeName || '-'}}</el-descriptions-item>
                       <el-descriptions-item label="候选办理">{{ item.candidate || '-'}}</el-descriptions-item>
                       <el-descriptions-item label="接收时间">{{ item.createTime || '-'}}</el-descriptions-item>
