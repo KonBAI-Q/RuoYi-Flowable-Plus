@@ -1,10 +1,7 @@
 package com.ruoyi.workflow.service;
 
-import com.ruoyi.common.core.domain.PageQuery;
-import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.dto.WfNextDto;
-import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.domain.vo.WfViewerVo;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.runtime.ProcessInstance;
@@ -98,22 +95,6 @@ public interface IWfTaskService {
      * @return
      */
     void revokeProcess(WfTaskBo bo);
-
-
-    /**
-     * 代办任务列表
-     *
-     * @return
-     */
-    TableDataInfo<WfTaskVo> todoList(PageQuery pageQuery);
-
-
-    /**
-     * 已办任务列表
-     *
-     * @return
-     */
-    TableDataInfo<WfTaskVo> finishedList(PageQuery pageQuery);
 
     /**
      * 获取流程过程图

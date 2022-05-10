@@ -1,12 +1,10 @@
 package com.ruoyi.web.controller.workflow;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.dto.WfNextDto;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
-import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.service.IWfTaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,20 +47,6 @@ public class WfTaskController {
     public R revokeProcess(@RequestBody WfTaskBo bo) {
         flowTaskService.revokeProcess(bo);
         return R.ok();
-    }
-
-    @Deprecated
-    @ApiOperation(value = "获取待办列表", response = WfTaskVo.class)
-    @GetMapping(value = "/todoList")
-    public TableDataInfo<WfTaskVo> todoList(PageQuery pageQuery) {
-        return flowTaskService.todoList(pageQuery);
-    }
-
-    @Deprecated
-    @ApiOperation(value = "获取已办任务", response = WfTaskVo.class)
-    @GetMapping(value = "/finishedList")
-    public TableDataInfo<WfTaskVo> finishedList(PageQuery pageQuery) {
-        return flowTaskService.finishedList(pageQuery);
     }
 
     @ApiOperation(value = "获取流程变量", response = WfTaskVo.class)

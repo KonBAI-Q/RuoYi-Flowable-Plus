@@ -4,12 +4,8 @@ package com.ruoyi.workflow.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
-import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.StringUtils;
@@ -24,7 +20,6 @@ import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.dto.WfNextDto;
-import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.domain.vo.WfViewerVo;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +40,7 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
-import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
-import org.flowable.task.api.history.HistoricTaskInstanceQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -538,124 +531,6 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         List<SequenceFlow> oriSequenceFlows = new ArrayList<>(flowNode.getOutgoingFlows());
     }
 
-    /**
-     * 代办任务列表
-     *
-     * @return
-     */
-    @Override
-    public TableDataInfo<WfTaskVo> todoList(PageQuery pageQuery) {
-        Page<WfTaskVo> page = new Page<>();
-        Long userId = LoginHelper.getUserId();
-        TaskQuery taskQuery = taskService.createTaskQuery()
-            .active()
-            .includeProcessVariables()
-            .taskCandidateOrAssigned(userId.toString())
-            .orderByTaskCreateTime().desc();
-        page.setTotal(taskQuery.count());
-        int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
-        List<Task> taskList = taskQuery.listPage(offset, pageQuery.getPageSize());
-        List<WfTaskVo> flowList = new ArrayList<>();
-        for (Task task : taskList) {
-            WfTaskVo flowTask = new WfTaskVo();
-            // 当前流程信息
-            flowTask.setTaskId(task.getId());
-            flowTask.setTaskDefKey(task.getTaskDefinitionKey());
-            flowTask.setCreateTime(task.getCreateTime());
-            flowTask.setProcDefId(task.getProcessDefinitionId());
-            flowTask.setTaskName(task.getName());
-            // 流程定义信息
-            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionId(task.getProcessDefinitionId())
-                .singleResult();
-            flowTask.setDeployId(pd.getDeploymentId());
-            flowTask.setProcDefName(pd.getName());
-            flowTask.setProcDefVersion(pd.getVersion());
-            flowTask.setProcInsId(task.getProcessInstanceId());
-
-            // 流程发起人信息
-            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(task.getProcessInstanceId())
-                .singleResult();
-            SysUser startUser = sysUserService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
-//            SysUser startUser = sysUserService.selectUserById(Long.parseLong(task.getAssignee()));
-            flowTask.setStartUserId(startUser.getNickName());
-            flowTask.setStartUserName(startUser.getNickName());
-            flowTask.setStartDeptName(startUser.getDept().getDeptName());
-
-            // 流程变量
-            flowTask.setProcVars(this.getProcessVariables(task.getId()));
-
-            flowList.add(flowTask);
-        }
-
-        page.setRecords(flowList);
-        return TableDataInfo.build(page);
-    }
-
-
-    /**
-     * 已办任务列表
-     *
-     * @return
-     */
-    @Override
-    public TableDataInfo<WfTaskVo> finishedList(PageQuery pageQuery) {
-        Page<WfTaskVo> page = new Page<>();
-        Long userId = LoginHelper.getUserId();
-        HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery()
-            .includeProcessVariables()
-            .finished()
-            .taskAssignee(userId.toString())
-            .orderByHistoricTaskInstanceEndTime()
-            .desc();
-        int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
-        List<HistoricTaskInstance> historicTaskInstanceList = taskInstanceQuery.listPage(offset, pageQuery.getPageSize());
-        List<WfTaskVo> hisTaskList = Lists.newArrayList();
-        for (HistoricTaskInstance histTask : historicTaskInstanceList) {
-            WfTaskVo flowTask = new WfTaskVo();
-            // 当前流程信息
-            flowTask.setTaskId(histTask.getId());
-            // 审批人员信息
-            flowTask.setCreateTime(histTask.getCreateTime());
-            flowTask.setFinishTime(histTask.getEndTime());
-            flowTask.setDuration(getDate(histTask.getDurationInMillis()));
-            flowTask.setProcDefId(histTask.getProcessDefinitionId());
-            flowTask.setTaskDefKey(histTask.getTaskDefinitionKey());
-            flowTask.setTaskName(histTask.getName());
-
-            // 流程定义信息
-            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionId(histTask.getProcessDefinitionId())
-                .singleResult();
-            flowTask.setDeployId(pd.getDeploymentId());
-            flowTask.setProcDefName(pd.getName());
-            flowTask.setProcDefVersion(pd.getVersion());
-            flowTask.setProcInsId(histTask.getProcessInstanceId());
-            flowTask.setHisProcInsId(histTask.getProcessInstanceId());
-
-            // 流程发起人信息
-            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(histTask.getProcessInstanceId())
-                .singleResult();
-            SysUser startUser = sysUserService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
-            flowTask.setStartUserId(startUser.getNickName());
-            flowTask.setStartUserName(startUser.getNickName());
-            flowTask.setStartDeptName(startUser.getDept().getDeptName());
-
-            // 流程变量
-            flowTask.setProcVars(this.getProcessVariables(histTask.getId()));
-
-            hisTaskList.add(flowTask);
-        }
-        page.setTotal(taskInstanceQuery.count());
-        page.setRecords(hisTaskList);
-//        Map<String, Object> result = new HashMap<>();
-//        result.put("result",page);
-//        result.put("finished",true);
-        return TableDataInfo.build(page);
-    }
-
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
         return t -> seen.add(keyExtractor.apply(t));
@@ -853,35 +728,6 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginHelper.getNickName() + "发起流程申请");
             // taskService.setAssignee(task.getId(), userIdStr);
             taskService.complete(task.getId(), variables);
-        }
-    }
-
-    /**
-     * 流程完成时间处理
-     *
-     * @param ms
-     * @return
-     */
-    private String getDate(long ms) {
-
-        long day = ms / (24 * 60 * 60 * 1000);
-        long hour = (ms / (60 * 60 * 1000) - day * 24);
-        long minute = ((ms / (60 * 1000)) - day * 24 * 60 - hour * 60);
-        long second = (ms / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - minute * 60);
-
-        if (day > 0) {
-            return day + "天" + hour + "小时" + minute + "分钟";
-        }
-        if (hour > 0) {
-            return hour + "小时" + minute + "分钟";
-        }
-        if (minute > 0) {
-            return minute + "分钟";
-        }
-        if (second > 0) {
-            return second + "秒";
-        } else {
-            return 0 + "秒";
         }
     }
 }
