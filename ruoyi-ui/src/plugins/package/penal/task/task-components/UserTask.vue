@@ -1,6 +1,7 @@
 <template>
-  <div style="margin-top: 16px">
+  <div>
     <el-row>
+      <h4><b>审批人设置</b></h4>
       <el-radio-group v-model="dataType" @change="changeDataType">
         <el-radio label="USERS">指定用户</el-radio>
         <el-radio label="ROLES">角色</el-radio>
@@ -45,6 +46,17 @@
           :checkedKeys="deptIds"
           @checked-change="checkedDeptChange">
         </tree-select>
+      </div>
+    </el-row>
+    <el-row>
+      <div v-show="showMultiFlog">
+        <el-divider />
+        <h4><b>多实例审批方式</b></h4>
+        <el-radio-group v-model="multiLoopType" @change="changeMultiLoopType">
+          <el-row><el-radio label="Null">无</el-radio></el-row>
+          <el-row><el-radio label="SequentialMultiInstance">会签（需所有审批人同意）</el-radio></el-row>
+          <el-row><el-radio label="ParallelMultiInstance">或签（一名审批人同意即可）</el-radio></el-row>
+        </el-radio-group>
       </div>
     </el-row>
 
@@ -118,6 +130,15 @@ const userTaskForm = {
   // priority: ''
 }
 
+const multiInstanceForm = {
+  completionCondition: "",
+  loopCardinality: "",
+  extensionElements: [],
+  asyncAfter: false,
+  asyncBefore: false,
+  exclusive: false
+}
+
 export default {
   name: "UserTask",
   props: {
@@ -151,7 +172,9 @@ export default {
       // 查询参数
       queryParams: {
         deptId: undefined
-      }
+      },
+      showMultiFlog: false,
+      multiLoopType: 'Null',
     };
   },
   watch: {
@@ -197,6 +220,7 @@ export default {
           }
         });
       }
+      this.getElementLoop(bpmnElementObj);
     },
     updateElementTask() {
       const taskAttr = Object.create(null);
@@ -298,10 +322,14 @@ export default {
         userTaskForm.assignee = data.userId;
         userTaskForm.text = data.nickName;
         userTaskForm.candidateUsers = null;
+        this.showMultiFlog = false;
+        this.multiLoopType = 'Null';
+        this.changeMultiLoopType(this.multiLoopType);
       } else {
         userTaskForm.candidateUsers = this.selectedUserDate.map(k => k.userId).join() || null;
         userTaskForm.text = this.selectedUserDate.map(k => k.nickName).join() || null;
         userTaskForm.assignee = null;
+        this.showMultiFlog = true;
       }
       this.updateElementTask()
       this.userOpen = false;
@@ -372,7 +400,53 @@ export default {
         userTaskForm.text = "流程发起人";
       }
       this.updateElementTask();
-    }
+      if (val === 'ROLES' || val === 'DEPTS' || (val === 'USERS' && userTaskForm.text.indexOf(',') > 0)) {
+        this.showMultiFlog = true;
+      } else {
+        this.showMultiFlog = false;
+      }
+      this.multiLoopType = 'Null';
+      this.changeMultiLoopType(this.multiLoopType);
+    },
+    getElementLoop(businessObject) {
+      if (!businessObject.loopCharacteristics) {
+        this.multiLoopType = "Null";
+        return;
+      }
+      if (businessObject.loopCharacteristics.isSequential) {
+        this.multiLoopType = "SequentialMultiInstance";
+      } else {
+        this.multiLoopType = "ParallelMultiInstance";
+      }
+    },
+    changeMultiLoopType(type) {
+      // 取消多实例配置
+      if (type === "Null") {
+        window.bpmnInstances.modeling.updateProperties(this.bpmnElement, { loopCharacteristics: null });
+        return;
+      }
+      // 完成条件
+      let completionCondition = null;
+      // 会签
+      if (type === "SequentialMultiInstance") {
+        this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: true });
+        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: '${nrOfCompletedInstances >= nrOfInstances}' });
+      }
+      // 或签
+      if (type === "ParallelMultiInstance") {
+        this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics");
+        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: '${nrOfCompletedInstances > 0}' });
+      }
+      // 更新多实例配置
+      window.bpmnInstances.modeling.updateProperties(this.bpmnElement, {
+        loopCharacteristics: this.multiLoopInstance
+      });
+      // 更新模块属性信息
+      window.bpmnInstances.modeling.updateModdleProperties(this.bpmnElement, this.multiLoopInstance, {
+        collection: '${multiInstanceHandler.getUserIds(execution)}',
+        completionCondition
+      });
+    },
   }
 };
 </script>

@@ -21,7 +21,7 @@
         <div slot="title" class="panel-tab__title"><i class="el-icon-s-claim"></i>任务</div>
         <element-task :id="elementId" :type="elementType" />
       </el-collapse-item>
-      <el-collapse-item name="multiInstance" v-if="elementType.indexOf('Task') !== -1" key="multiInstance">
+      <el-collapse-item name="multiInstance" v-if="elementType.indexOf('Task') !== -1 && elementType !== 'UserTask'" key="multiInstance">
         <div slot="title" class="panel-tab__title"><i class="el-icon-s-help"></i>多实例</div>
         <element-multi-instance :business-object="elementBusinessObject" :type="elementType" />
       </el-collapse-item>
