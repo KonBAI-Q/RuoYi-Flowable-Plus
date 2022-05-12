@@ -3,7 +3,6 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>发起流程</span>
-<!--        <el-button style="float: right; padding: 3px 0" type="text">关闭</el-button>-->
       </div>
       <el-col :span="18" :offset="3">
         <div class="form-conf" v-if="formOpen">
@@ -26,19 +25,22 @@ export default {
   },
   data() {
     return {
+      definitionId: null,
+      deployId: null,
       formOpen: false,
-      formData: {}
+      formData: {},
     }
   },
-  created() {
-    this.definitionId = this.$route.query && this.$route.query.definitionId;
-    this.deployId = this.$route.query && this.$route.query.deployId;
-    this.getFormData(this.deployId);
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.initData()
+    })
   },
   methods: {
-    /** 流程流转记录 */
-    getFormData(deployId) {
-      getFormByDeployId(deployId).then(res => {
+    initData() {
+      this.definitionId = this.$route.query && this.$route.query.definitionId;
+      this.deployId = this.$route.query && this.$route.query.deployId;
+      getFormByDeployId(this.deployId).then(res => {
         if (res.data) {
           this.formData = res.data;
           this.formOpen = true
