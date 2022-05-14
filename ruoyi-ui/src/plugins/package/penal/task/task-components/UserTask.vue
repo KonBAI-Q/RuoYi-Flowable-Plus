@@ -19,7 +19,7 @@
         </div>
       </div>
       <div v-if="dataType === 'ROLES'">
-        <el-select v-model="roleIds" multiple size="mini" placeholder="请选择 角色">
+        <el-select v-model="roleIds" multiple size="mini" placeholder="请选择 角色" @change="changeSelectRoles">
           <el-option
             v-for="item in roleOptions"
             :key="item.roleId"
@@ -28,9 +28,6 @@
             :disabled="item.status === 1">
           </el-option>
         </el-select>
-        <div class="element-drawer__button">
-          <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleSaveRoles()">保 存</el-button>
-        </div>
       </div>
       <div v-if="dataType === 'DEPTS'">
         <tree-select
@@ -195,6 +192,7 @@ export default {
       if (!bpmnElementObj) {
         return;
       }
+      this.clearOptionsData()
       this.dataType = bpmnElementObj['dataType'];
       if (this.dataType === 'USERS') {
         let userIdData = bpmnElementObj['assignee'] || bpmnElementObj['candidateUsers'];
@@ -202,9 +200,9 @@ export default {
         if (userIdData && userIdData.length > 0 && userText && userText.length > 0) {
           this.selectedUser.ids = userIdData?.toString().split(',');
           this.selectedUser.text = userText?.split(',');
-        } else {
-          this.selectedUser.ids = []
-          this.selectedUser.text = []
+        }
+        if (this.selectedUser.ids.length > 1) {
+          this.showMultiFlog = true;
         }
       } else if (this.dataType === 'ROLES') {
         this.getRoleOptions();
@@ -212,6 +210,7 @@ export default {
         if (roleIdData && roleIdData.length > 0) {
           this.roleIds = roleIdData.split(',')
         }
+        this.showMultiFlog = true;
       } else if (this.dataType === 'DEPTS') {
         this.getDeptTreeData().then(() => {
           let deptIdData = bpmnElementObj['candidateGroups'] || [];
@@ -219,9 +218,22 @@ export default {
             this.deptIds = deptIdData.split(',');
           }
         });
+        this.showMultiFlog = true;
       }
       this.getElementLoop(bpmnElementObj);
     },
+    /**
+     * 清空选项数据
+     */
+    clearOptionsData() {
+      this.selectedUser.ids = [];
+      this.selectedUser.text = [];
+      this.roleIds = [];
+      this.deptIds = [];
+    },
+    /**
+     * 跟新节点数据
+     */
     updateElementTask() {
       const taskAttr = Object.create(null);
       for (let key in userTaskForm) {
@@ -334,13 +346,9 @@ export default {
       this.updateElementTask()
       this.userOpen = false;
     },
-    handleSaveRoles() {
-      if (!this.roleIds || this.roleIds.length <= 0) {
-        this.$modal.msgError('请选择角色');
-        return;
-      }
-      userTaskForm.candidateGroups = this.roleIds.join() || null;
-      let textArr = this.roleOptions.filter(k => this.roleIds.indexOf(`ROLE${k.roleId}`) >= 0);
+    changeSelectRoles(val) {
+      userTaskForm.candidateGroups = val.join() || null;
+      let textArr = this.roleOptions.filter(k => val.indexOf(`ROLE${k.roleId}`) >= 0);
       userTaskForm.text = textArr?.map(k => k.roleName).join() || null;
       this.updateElementTask();
     },
@@ -400,7 +408,7 @@ export default {
         userTaskForm.text = "流程发起人";
       }
       this.updateElementTask();
-      if (val === 'ROLES' || val === 'DEPTS' || (val === 'USERS' && userTaskForm.text.indexOf(',') > 0)) {
+      if (val === 'ROLES' || val === 'DEPTS' || (val === 'USERS' && this.selectedUser.ids.length > 1)) {
         this.showMultiFlog = true;
       } else {
         this.showMultiFlog = false;
