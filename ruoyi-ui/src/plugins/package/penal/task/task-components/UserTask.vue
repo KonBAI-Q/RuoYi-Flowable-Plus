@@ -437,7 +437,7 @@ export default {
       let completionCondition = null;
       // 会签
       if (type === "SequentialMultiInstance") {
-        this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: true });
+        this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: false });
         completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: '${nrOfCompletedInstances >= nrOfInstances}' });
       }
       // 或签
@@ -447,11 +447,13 @@ export default {
       }
       // 更新多实例配置
       window.bpmnInstances.modeling.updateProperties(this.bpmnElement, {
-        loopCharacteristics: this.multiLoopInstance
+        loopCharacteristics: this.multiLoopInstance,
+        assignee: '${assignee}'
       });
       // 更新模块属性信息
       window.bpmnInstances.modeling.updateModdleProperties(this.bpmnElement, this.multiLoopInstance, {
         collection: '${multiInstanceHandler.getUserIds(execution)}',
+        elementVariable: 'assignee',
         completionCondition
       });
     },
