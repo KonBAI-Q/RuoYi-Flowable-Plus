@@ -1,28 +1,29 @@
 ## 平台简介
+[![star](https://gitee.com/KonBAI-Q/ruoyi-flowable-plus/badge/star.svg?theme=dark)](https://gitee.com/KonBAI-Q/ruoyi-flowable-plus/stargazers)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus/blob/master/LICENSE)
 [![使用IntelliJ IDEA开发维护](https://img.shields.io/badge/IntelliJ%20IDEA-提供支持-blue.svg)](https://www.jetbrains.com)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.5-blue.svg)]()
 [![JDK-8+](https://img.shields.io/badge/JDK-8-green.svg)]()
 [![JDK-11](https://img.shields.io/badge/JDK-11-green.svg)]()
 
-- 本项目基于 [RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus) 进行二次开发扩展，整合了 [RuoYi-flowable](https://gitee.com/tony2y/RuoYi-flowable) 工作流功能（Flowable）并对代码进行修改。流程设计页面采用 [bpmn-process-designer](https://gitee.com/MiyueSC/bpmn-process-designer) 开源项目。
-- 本项目主要针对`Flowable`工作流场景开发，系统其他功能同步升级 [RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus)。
+- 本项目基于 [RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus) 进行二次开发，采用 `Flowable` 扩展工作流应用场景，支持在线表单设计和丰富的工作流程设计能力。
+- 本项目主要针对`Flowable`工作流场景开发，脚手架功能同步更新 [RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus) 项目。
 - 采用`MIT开源协议`，完全免费给个人及企业使用。
-- 项目处于初期开发阶段，基础的工作流流程能够跑通，但存在很多不足。因此，目前仅推荐用于学习、毕设等个人使用。
-
+- 项目处于开发阶段，工作流流程还存在不足。因此，目前仅推荐用于学习、毕业设计等个人使用。
 
 ## 参考文档
-- 项目文档：[RuoYi-Flowable-Plus开发文档](https://gitee.com/KonBAI-Q/ruoyi-flowable-plus/wikis/%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D)
-- 项目基于 [RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus) 扩展开发，因此可以直接参考 [RuoYi-Vue-Plus文档](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus/wikis/pages)。
+- 项目文档：[RuoYi-Flowable-Plus开发文档](http://rfp-doc.konbai.work)
+- 脚手架文档：[RuoYi-Vue-Plus文档](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus/wikis/pages)
 
-## 贡献代码
-
-欢迎各路英雄豪杰 `PR` 代码 请提交到 `develop` 开发分支 统一测试发版
+## 项目地址
+- Gitee：<https://gitee.com/KonBAI-Q/ruoyi-flowable-plus>
+- GitHub：<https://github.com/KonBAI-Q/RuoYi-Flowable-Plus>
 
 ### 其他
-
-* Ruoyi-Flowable-Plus交流群：[![加入QQ群](https://badg.now.sh/badge/icon/1007207992?icon=qq&label=QQ)](https://jq.qq.com/?_wv=1027&k=PYDZa1tA)
-
+- 欢迎提交 `PR` ，注意请提交到 `develop` 开发分支 统一测试发版。
+- 同步升级：[RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus)
+- 特别鸣谢：[RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus) 、[RuoYi-flowable](https://gitee.com/tony2y/RuoYi-flowable) 、[bpmn-process-designer](https://gitee.com/MiyueSC/bpmn-process-designer)
+- 技术交流群：[![加入QQ群](https://badg.now.sh/badge/icon/1007207992?icon=qq\&label=QQ)](https://jq.qq.com/?_wv=1027\&k=PYDZa1tA)
 
 ## 演示图例
 <table style="width:100%; text-align:center">
