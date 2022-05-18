@@ -273,7 +273,7 @@ export default {
       userData:[],
     };
   },
-  created() {
+  activated() {
     this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
     this.taskForm.definitionId = this.$route.query && this.$route.query.definitionId;
     this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
