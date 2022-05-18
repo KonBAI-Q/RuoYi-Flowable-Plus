@@ -90,6 +90,20 @@ export default {
       hoverTimer: null
     }
   },
+  watch: {
+    xml: {
+      handler(newXml) {
+        this.importXML(newXml);
+      },
+      immediate: true
+    },
+    finishedInfo: {
+      handler(newInfo) {
+        this.setProcessStatus(newInfo);
+      },
+      immediate: true
+    }
+  },
   created() {
     this.$nextTick(() => {
       this.importXML(this.xml)
@@ -188,7 +202,6 @@ export default {
           await this.bpmnViewer.importXML(xml);
           this.addCustomDefs();
         } catch (e) {
-          console.error(e);
           this.clearViewer();
         } finally {
           this.isLoading = false;
@@ -237,21 +250,7 @@ export default {
   },
   destroyed() {
     this.clearViewer();
-  },
-  // watch: {
-  //   xml: {
-  //     handler(newXml) {
-  //       this.importXML(newXml);
-  //     },
-  //     immediate: true
-  //   },
-  //   finishedInfo: {
-  //     handler(newInfo) {
-  //       this.setProcessStatus(newInfo);
-  //     },
-  //     immediate: true
-  //   }
-  // }
+  }
 }
 </script>
 

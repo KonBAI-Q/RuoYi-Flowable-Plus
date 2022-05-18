@@ -151,7 +151,7 @@
     />
 
     <!-- bpmn20.xml导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body @close="cancel('uploadForm')">
       <el-upload
         ref="upload"
         :limit="1"
@@ -170,20 +170,29 @@
           <em>点击上传</em>
         </div>
         <div class="el-upload__tip" slot="tip">
-          流程名称：<el-input v-model="upload.name"/>
-          流程分类：<el-input v-model="upload.category"/>
+          <el-form ref="uploadForm" :model="upload" size="mini" :rules="rules" label-width="80px">
+            <el-form-item label="流程名称" prop="name">
+              <el-input v-model="upload.name" clearable/>
+            </el-form-item>
+            <el-form-item label="流程分类" prop="category">
+              <el-select v-model="upload.category" placeholder="请选择" clearable style="width:100%">
+                <el-option v-for="item in categoryOptions" :key="item.categoryId" :label="item.categoryName"
+                           :value="item.code"/>
+              </el-select>
+            </el-form-item>
+          </el-form>
         </div>
         <div class="el-upload__tip" style="color:red" slot="tip">提示：仅允许导入“bpmn20.xml”格式文件！</div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitFileForm">确 定</el-button>
-        <el-button @click="upload.open = false">取 消</el-button>
+        <el-button @click="cancel('uploadForm')">取 消</el-button>
       </div>
     </el-dialog>
 
     <!-- 流程图 -->
     <el-dialog :title="processView.title" :visible.sync="processView.open" width="70%" append-to-body>
-       <process-viewer :key="`designer-${processView.index}`" :xml="processView.xmlData" :style="{height: '400px'}" />
+      <process-viewer :key="`designer-${processView.index}`" :xml="processView.xmlData" :style="{height: '400px'}" />
     </el-dialog>
 
     <!-- 版本管理 -->
@@ -368,7 +377,7 @@ export default {
         // 设置上传的请求头部
         headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/flowable/definition/import"
+        url: process.env.VUE_APP_BASE_API + "/workflow/definition/import"
       },
       // 查询参数
       queryParams: {
@@ -398,6 +407,14 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        name: [
+          { required: true, message: "流程定义名称不能为空", trigger: "blur" }
+        ],
+        category: [{
+          required: true,
+          message: '请选择任意一项',
+          trigger: 'change'
+        }],
       }
     };
   },
@@ -426,6 +443,14 @@ export default {
         this.publishTotal = response.total;
         this.publish.loading = false;
       })
+    },
+    // 点击取消时关闭dialog并且清空form表格的数据
+    cancel (form) {
+      // 重置form表单
+      this.$refs[form].resetFields()
+      this.$refs['upload'].clearFiles()
+      // 关闭dialog
+      this.upload.open = false
     },
     // 表单重置
     reset() {
@@ -486,8 +511,8 @@ export default {
       // 发送请求，获取xml
       readXml(definitionId).then(res => {
         this.processView.xmlData = res.data;
-        this.processView.open = true;
       })
+      this.processView.open = true;
     },
     /** 挂载表单弹框 */
     handleAddForm(row){
@@ -567,6 +592,7 @@ export default {
       }).then(function() {
         return delDeployment(params);
       }).then(() => {
+        this.getList();
         this.getPublishList();
         this.$modal.msgSuccess("删除成功");
       })
@@ -598,12 +624,16 @@ export default {
       this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
-      this.$message(response.msg);
+      this.$message.success(response.msg);
       this.getList();
     },
     // 提交上传文件
     submitFileForm() {
-      this.$refs.upload.submit();
+      this.$refs.uploadForm.validate(valid => {
+        if (valid) {
+          this.$refs.upload.submit();
+        }
+      });
     },
     categoryFormat(row, column) {
       return this.categoryOptions.find(k => k.code === row.category)?.categoryName ?? '';
