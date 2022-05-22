@@ -49,13 +49,10 @@ public class MultiInstanceHandler {
                 } else if ("DEPTS".equals(dataType)) {
                     SysUserMapper userMapper = SpringUtils.getBean(SysUserMapper.class);
                     LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<SysUser>()
-                        .select(SysUser::getUserId);
-                    groups.forEach(item -> {
-                        List<String> userIds = userMapper.selectList(lambdaQueryWrapper.eq(SysUser::getDeptId, Long.parseLong(item)))
-                            .stream().map(k -> String.valueOf(k.getDeptId())).collect(Collectors.toList());
-                        candidateUserIds.addAll(userIds);
-                    });
-
+                        .select(SysUser::getUserId).in(SysUser::getDeptId, groups);
+                    List<String> userIds = userMapper.selectList(lambdaQueryWrapper)
+                        .stream().map(k -> String.valueOf(k.getUserId())).collect(Collectors.toList());
+                    candidateUserIds.addAll(userIds);
                 }
             }
         }
