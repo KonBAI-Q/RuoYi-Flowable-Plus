@@ -19,7 +19,7 @@
           <el-col :offset="1" :span="3">
             <div style="display:flex;justify-content:center;">
               <el-button type="primary" @click="onNext()" :disabled="activeStep >= 1">下一步</el-button>
-              <el-button type="success" @click="onSave()" :disabled="activeStep < 1">保存</el-button>
+              <el-button type="success" @click="onSave()" :disabled="activeStep !== 1">保存</el-button>
             </div>
           </el-col>
         </el-row>
