@@ -151,8 +151,8 @@ export default {
       // 发送请求，获取xml
       readXml(definitionId).then(res => {
         this.processView.xmlData = res.data;
-        this.processView.open = true;
       })
+      this.processView.open = true;
     },
     handleStart(row) {
       this.$router.push({
