@@ -46,6 +46,15 @@ export function listFinishedProcess(query) {
   })
 }
 
+// 查询流程抄送列表
+export function listCopyProcess(query) {
+  return request({
+    url: '/workflow/process/copyList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 完成任务
 export function complete(data) {
   return request({

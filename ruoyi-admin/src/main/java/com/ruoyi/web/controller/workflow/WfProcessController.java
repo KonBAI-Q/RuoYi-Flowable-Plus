@@ -5,8 +5,11 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.workflow.domain.bo.WfCopyBo;
+import com.ruoyi.workflow.domain.vo.WfCopyVo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
+import com.ruoyi.workflow.service.IWfCopyService;
 import com.ruoyi.workflow.service.IWfProcessService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +34,7 @@ import java.util.Map;
 public class WfProcessController extends BaseController {
 
     private final IWfProcessService processService;
+    private final IWfCopyService copyService;
 
     @GetMapping(value = "/list")
     @SaCheckPermission("workflow:process:startList")
@@ -68,5 +72,13 @@ public class WfProcessController extends BaseController {
     @GetMapping(value = "/finishedList")
     public TableDataInfo<WfTaskVo> finishedProcess(PageQuery pageQuery) {
         return processService.queryPageFinishedProcessList(pageQuery);
+    }
+
+    @ApiOperation(value = "获取抄送列表", response = WfTaskVo.class)
+    @SaCheckPermission("workflow:process:copyList")
+    @GetMapping(value = "/copyList")
+    public TableDataInfo<WfCopyVo> copyProcess(WfCopyBo copyBo, PageQuery pageQuery) {
+        copyBo.setUserId(getUserId());
+        return copyService.queryPageList(copyBo, pageQuery);
     }
 }

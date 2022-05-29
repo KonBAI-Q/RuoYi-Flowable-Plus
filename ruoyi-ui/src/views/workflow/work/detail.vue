@@ -1,13 +1,25 @@
 <template>
   <div class="app-container">
-    <el-tabs tab-position="top">
-      <el-tab-pane label="任务办理" v-if="finished === 'true'">
+    <el-tabs tab-position="top" :value="finished === 'true' ? 'approval' : 'form'">
+
+      <el-tab-pane label="任务办理" name="approval" v-if="finished === 'true'">
         <el-card class="box-card" shadow="never">
           <el-row>
             <el-col :span="20" :offset="2">
               <el-form ref="taskForm" :model="taskForm" :rules="rules" label-width="80px">
                 <el-form-item label="审批意见" prop="comment">
                   <el-input type="textarea" :rows="5" v-model="taskForm.comment" placeholder="请输入 审批意见" />
+                </el-form-item>
+                <el-form-item label="抄送人" prop="copyUserIds">
+                  <el-tag
+                    :key="index"
+                    v-for="(item, index) in userData.copyUser"
+                    closable
+                    :disable-transitions="false"
+                    @close="handleClose(item)">
+                    {{ item.label }}
+                  </el-tag>
+                  <el-button class="button-new-tag" type="primary" icon="el-icon-plus" size="mini" circle @click="onSelectUsers" />
                 </el-form-item>
               </el-form>
             </el-col>
@@ -34,7 +46,8 @@
           </el-row>
         </el-card>
       </el-tab-pane>
-      <el-tab-pane label="表单信息">
+
+      <el-tab-pane label="表单信息" name="form">
         <el-card class="box-card" shadow="never">
           <!--流程处理表单模块-->
           <el-col :span="20" :offset="2" v-if="variableOpen">
@@ -52,9 +65,9 @@
         </el-card>
       </el-tab-pane >
 
-      <el-tab-pane label="流转记录">
+      <el-tab-pane label="流转记录" name="record">
         <el-card class="box-card" shadow="never">
-          <el-col :span="18" :offset="3">
+          <el-col :span="20" :offset="2">
             <div class="block">
               <el-timeline>
                 <el-timeline-item v-for="(item,index) in flowRecordList" :key="index" :icon="setIcon(item.finishTime)" :color="setColor(item.finishTime)">
@@ -82,7 +95,7 @@
         </el-card>
       </el-tab-pane>
 
-      <el-tab-pane label="流程跟踪">
+      <el-tab-pane label="流程跟踪" name="track">
         <el-card class="box-card" shadow="never">
           <process-viewer :key="`designer-${loadIndex}`" :style="'height:' + height" :xml="xmlData"
                           :finishedInfo="finishedInfo" :allCommentList="null"
@@ -110,7 +123,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog :title="userDialogTitle" :visible.sync="userOpen" width="60%" append-to-body>
+    <el-dialog :title="userData.title" :visible.sync="userData.open" width="60%" append-to-body>
       <el-row type="flex" :gutter="20">
         <!--部门数据-->
         <el-col :span="5">
@@ -133,8 +146,16 @@
           </el-card>
         </el-col>
         <el-col :span="18">
-          <el-table ref="userTable" height="500" :data="userList" highlight-current-row @current-change="changeCurrentUser">
-            <el-table-column width="30">
+          <el-table ref="userTable"
+                    :key="userData.type"
+                    height="500"
+                    v-loading="userLoading"
+                    :data="userList"
+                    highlight-current-row
+                    @current-change="changeCurrentUser"
+                    @selection-change="handleSelectionChange">
+            <el-table-column v-if="userData.type === 'copy'" width="55" type="selection" />
+            <el-table-column v-else width="30">
               <template slot-scope="scope">
                 <el-radio :label="scope.row.userId" v-model="currentUserId">{{''}}</el-radio>
               </template>
@@ -152,9 +173,8 @@
         </el-col>
       </el-row>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="userOpen = false">取 消</el-button>
-        <el-button type="primary" v-if="userDialogTitle === '委派任务'" @click="submitDelegate">确 定</el-button>
-        <el-button type="primary" v-if="userDialogTitle === '转办任务'" @click="submitTransfer">确 定</el-button>
+        <el-button @click="userData.open = false">取 消</el-button>
+        <el-button type="primary" @click="submitUserData">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -220,6 +240,7 @@ export default {
       deptName: undefined,
       // 部门树选项
       deptOptions: undefined,
+      userLoading: false,
       // 用户表格数据
       userList: null,
       deptProps: {
@@ -248,6 +269,7 @@ export default {
         deployId: "",  // 流程定义编号
         taskId: "" ,// 流程任务编号
         definitionId: "",  // 流程编号
+        copyUserIds: "", // 抄送人Id
         vars: "",
         targetKey:""
       },
@@ -268,9 +290,16 @@ export default {
       returnOpen: false,
       rejectOpen: false,
       rejectTitle: null,
+      userData: {
+        title: '',
+        type: 'copy',
+        open: false,
+        currentUserId: null,
+        copyUser: [],
+      },
+      userMultipleSelection: [],
       userDialogTitle: '',
-      userOpen: false,
-      userData:[],
+      userOpen: false
     };
   },
   activated() {
@@ -300,11 +329,13 @@ export default {
     },
     /** 查询用户列表 */
     getList() {
+      this.userLoading = true;
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.rows;
-          this.total = response.total;
-        }
-      );
+        this.userList = response.rows;
+        this.total = response.total;
+        this.toggleSelection(this.userMultipleSelection);
+        this.userLoading = false;
+      });
     },
     // 筛选节点
     filterNode(value, data) {
@@ -356,21 +387,25 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.userData = selection
-      const val = selection.map(item => item.userId)[0];
-      if (val instanceof Array) {
-        this.taskForm.values = {
-          "approval": val.join(',')
-        }
+      this.userMultipleSelection = selection
+    },
+    toggleSelection(selection) {
+      if (selection && selection.length > 0) {
+        this.$nextTick(()=> {
+          selection.forEach(item => {
+            let row = this.userList.find(k => k.userId === item.userId);
+            this.$refs.userTable.toggleRowSelection(row);
+          })
+        })
       } else {
-        this.taskForm.values = {
-          "approval": val
-        }
+        this.$refs.userTable.clearSelection();
       }
     },
     // 关闭标签
     handleClose(tag) {
-      this.userData.splice(this.userData.indexOf(tag), 1);
+      let userObj = this.userMultipleSelection.find(item => item.userId === tag.id);
+      this.userMultipleSelection.splice(this.userMultipleSelection.indexOf(userObj), 1);
+      this.userData.copyUser.splice(this.userData.copyUser.indexOf(tag), 1);
     },
     /** 流程变量赋值 */
     handleCheckChange(val) {
@@ -389,7 +424,6 @@ export default {
       const params = {procInsId: procInsId, deployId: deployId}
       getDetailInstance(params).then(res => {
         this.flowRecordList = res.data.flowList;
-        console.log("res flowList => ", this.flowRecordList)
         // 流程过程中不存在初始化表单 直接读取的流程变量中存储的表单值
         if (res.data.formData) {
           this.formConf = res.data.formData;
@@ -397,14 +431,6 @@ export default {
         }
       }).catch(res => {
         this.goBack();
-      })
-    },
-    fillFormData(form, data) {
-      form.fields.forEach(item => {
-        const val = data[item.__vModel__]
-        if (val) {
-          item.__config__.defaultValue = val
-        }
       })
     },
     /** 获取流程变量内容 */
@@ -417,50 +443,32 @@ export default {
         });
       }
     },
-    /** 根据当前任务或者流程设计配置的下一步节点 */
-    getNextFlowNode(taskId) {
-      // 根据当前任务或者流程设计配置的下一步节点 todo 暂时未涉及到考虑网关、表达式和多节点情况
-      const params = {taskId: taskId}
-      getNextFlowNode(params).then(res => {
-        const data = res.data;
-        if (data) {
-          if (data.type === 'assignee') {
-            this.userDataList = res.data.userList;
-          } else if (data.type === 'candidateUsers') {
-            this.userDataList = res.data.userList;
-            this.taskForm.multiple = true;
-          } else if (data.type === 'candidateGroups') {
-            res.data.roleList.forEach(role => {
-              role.userId = role.roleId;
-              role.nickName = role.roleName;
-            })
-            this.userDataList = res.data.roleList;
-            this.taskForm.multiple = false;
-          } else if (data.type === 'multiInstance') {
-            this.userDataList = res.data.userList;
-            this.taskForm.multiple = true;
-          }
-          this.taskForm.sendUserShow = true;
-        }
-      })
+    onSelectUsers() {
+      this.userData.title = '添加抄送人';
+      this.userData.type = 'copy';
+      this.getTreeSelect();
+      this.getList()
+      this.userData.open = true;
+      this.$refs.userTable.clearSelection();
     },
     /** 通过任务 */
     handleComplete() {
       this.$refs['taskForm'].validate(valid => {
-          if (valid) {
-            complete(this.taskForm).then(response => {
-              this.$modal.msgSuccess(response.msg);
-              this.goBack();
-            });
-          }
+        if (valid) {
+          complete(this.taskForm).then(response => {
+            this.$modal.msgSuccess(response.msg);
+            this.goBack();
+          });
+        }
       });
     },
     /** 委派任务 */
     handleDelegate() {
       this.$refs["taskForm"].validate(valid => {
         if (valid) {
-          this.userDialogTitle = '委派任务'
-          this.userOpen = true;
+          this.userData.type = 'delegate';
+          this.userData.title = '委派任务'
+          this.userData.open = true;
           this.getTreeSelect();
         }
       })
@@ -469,8 +477,9 @@ export default {
     handleTransfer(){
       this.$refs["taskForm"].validate(valid => {
         if (valid) {
-          this.userDialogTitle = '转办任务'
-          this.userOpen = true;
+          this.userData.type = 'transfer';
+          this.userData.title = '转办任务';
+          this.userData.open = true;
           this.getTreeSelect();
         }
       })
@@ -534,35 +543,48 @@ export default {
         }
       }
     },
-    submitDelegate() {
-      if (!this.taskForm.comment) {
-        this.$modal.msgError("请输入审批意见");
-        return false;
+    submitUserData() {
+      let type = this.userData.type;
+      if (type === 'copy') {
+        if (!this.userMultipleSelection || this.userMultipleSelection.length <= 0) {
+          this.$modal.msgError("请选择用户");
+          return false;
+        }
+        this.userData.copyUser = this.userMultipleSelection.map(k => {
+          return { id: k.userId, label: k.nickName }
+        })
+        this.userData.open = false;
+      } else {
+        if (!this.taskForm.comment) {
+          this.$modal.msgError("请输入审批意见");
+          return false;
+        }
+        if (!this.currentUserId) {
+          this.$modal.msgError("请选择用户");
+          return false;
+        }
+        // 若有选择抄送用户，获取抄送用户ID
+        if (this.userData.copyUser && this.userData.copyUser.length > 0) {
+          const val = this.userData.copyUser.map(item => item.id);
+          this.taskForm.copyUserIds = val instanceof Array ? val.join(',') : val;
+        } else {
+          this.taskForm.copyUserIds = '';
+        }
+        this.taskForm.userId = this.currentUserId;
+        if (type === 'delegate') {
+          delegate(this.taskForm).then(res => {
+            this.$modal.msgSuccess(res.msg);
+            this.goBack();
+          });
+        }
+        if (type === 'transfer') {
+          transfer(this.taskForm).then(res => {
+            this.$modal.msgSuccess(res.msg);
+            this.goBack();
+          });
+        }
       }
-      if (!this.currentUserId) {
-        this.$modal.msgError("请选择委派用户");
-        return false;
-      }
-      this.taskForm.userId = this.currentUserId;
-      delegate(this.taskForm).then(res => {
-        this.$modal.msgSuccess(res.msg);
-        this.goBack();
-      });
-    },
-    submitTransfer() {
-      if (!this.taskForm.comment) {
-        this.$modal.msgError("请输入审批意见");
-        return false;
-      }
-      if (!this.currentUserId) {
-        this.$modal.msgError("请选择受理用户");
-        return false;
-      }
-      this.taskForm.userId = this.currentUserId;
-      transfer(this.taskForm).then(res => {
-        this.$modal.msgSuccess(res.msg);
-        this.goBack();
-      });
+
     },
     /** 可退回任务列表 */
     handleReturn() {
@@ -628,5 +650,9 @@ export default {
 }
 .el-col {
   border-radius: 4px;
+}
+
+.button-new-tag {
+  margin-left: 10px;
 }
 </style>

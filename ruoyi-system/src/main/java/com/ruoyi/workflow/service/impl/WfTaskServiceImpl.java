@@ -21,6 +21,7 @@ import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.dto.WfNextDto;
 import com.ruoyi.workflow.domain.vo.WfViewerVo;
+import com.ruoyi.workflow.service.IWfCopyService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +65,8 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
 
     private final ISysRoleService sysRoleService;
 
+    private final IWfCopyService copyService;
+
     /**
      * 完成任务
      *
@@ -88,6 +91,12 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             } else {
                 taskService.complete(taskBo.getTaskId());
             }
+        }
+        // 设置任务节点名称
+        taskBo.setTaskName(task.getName());
+        // 处理抄送用户
+        if (!copyService.makeCopy(taskBo)) {
+            throw new RuntimeException("抄送任务失败");
         }
     }
 
@@ -215,7 +224,11 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         } catch (FlowableException e) {
             throw new RuntimeException("无法取消或开始活动");
         }
-
+        // 设置任务节点名称
+        bo.setTaskName(task.getName());
+        if (!copyService.makeCopy(bo)) {
+            throw new RuntimeException("抄送任务失败");
+        }
     }
 
     /**
@@ -297,6 +310,12 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             throw new RuntimeException("未找到流程实例，流程可能已发生变化");
         } catch (FlowableException e) {
             throw new RuntimeException("无法取消或开始活动");
+        }
+        // 设置任务节点名称
+        bo.setTaskName(task.getName());
+        // 处理抄送用户
+        if (!copyService.makeCopy(bo)) {
+            throw new RuntimeException("抄送任务失败");
         }
     }
 
@@ -405,6 +424,12 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         taskService.setOwner(bo.getTaskId(), LoginHelper.getUserId().toString());
         // 执行委派
         taskService.delegateTask(bo.getTaskId(), bo.getUserId());
+        // 设置任务节点名称
+        bo.setTaskName(task.getName());
+        // 处理抄送用户
+        if (!copyService.makeCopy(bo)) {
+            throw new RuntimeException("抄送任务失败");
+        }
     }
 
 
@@ -438,6 +463,12 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         taskService.setOwner(bo.getTaskId(), LoginHelper.getUserId().toString());
         // 转办任务
         taskService.setAssignee(bo.getTaskId(), bo.getUserId());
+        // 设置任务节点名称
+        bo.setTaskName(task.getName());
+        // 处理抄送用户
+        if (!copyService.makeCopy(bo)) {
+            throw new RuntimeException("抄送任务失败");
+        }
     }
 
     /**

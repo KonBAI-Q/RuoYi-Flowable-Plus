@@ -20,6 +20,9 @@ public class WfTaskBo {
     @ApiModelProperty("任务Id")
     private String taskId;
 
+    @ApiModelProperty("任务名称")
+    private String taskName;
+
     @ApiModelProperty("用户Id")
     private String userId;
 
@@ -43,4 +46,7 @@ public class WfTaskBo {
 
     @ApiModelProperty("审批组")
     private List<String> candidateGroups;
+
+    @ApiModelProperty("抄送用户Id")
+    private String copyUserIds;
 }
