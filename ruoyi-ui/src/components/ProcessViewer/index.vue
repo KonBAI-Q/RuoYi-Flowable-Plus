@@ -22,21 +22,18 @@
     <!-- 已完成节点悬浮弹窗 -->
     <el-dialog class="comment-dialog" :title="dlgTitle || '审批记录'" :visible.sync="dialogVisible">
       <el-row>
-        <el-table :data="taskCommentList" size="mini" border header-cell-class-name="table-header-gray" height="500px">
+        <el-table :data="taskCommentList" size="mini" border header-cell-class-name="table-header-gray">
           <el-table-column label="序号" header-align="center" align="center" type="index" width="55px" />
-          <el-table-column label="执行人" prop="createUsername" width="150px" />
-          <el-table-column label="操作" width="150px">
+          <el-table-column label="候选办理" prop="candidate" width="150px" align="center"/>
+          <el-table-column label="实际办理" prop="assigneeName" width="100px" align="center"/>
+          <el-table-column label="处理时间" prop="createTime" width="140px" align="center"/>
+          <el-table-column label="办结时间" prop="finishTime" width="140px" align="center" />
+          <el-table-column label="耗时" prop="duration" width="100px" align="center"/>
+          <el-table-column label="审批意见" align="center">
             <template slot-scope="scope">
-              <el-tag size="mini" :type="getOperationTagType(scope.row.approvalType)" effect="dark">{{SysFlowTaskOperationType.getValue(scope.row.approvalType)}}</el-tag>
-              <el-tag v-if="scope.row.delegateAssginee != null" size="mini" type="success" effect="plain" style="margin-left: 10px;">{{scope.row.delegateAssginee}}</el-tag>
+              {{scope.row.commentList&&scope.row.commentList[0]?scope.row.commentList[0].fullMessage:''}}
             </template>
           </el-table-column>
-          <el-table-column label="审批意见">
-            <template slot-scope="scope">
-              <span>{{scope.row.comment ? scope.row.comment : ''}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="处理时间" prop="createTime" width="160px" />
         </el-table>
       </el-row>
     </el-dialog>
@@ -181,7 +178,7 @@ export default {
       this.dlgTitle = element.businessObject ? element.businessObject.name : undefined;
       // 计算当前悬浮任务审批记录，如果记录为空不显示弹窗
       this.taskCommentList = (this.allCommentList || []).filter(item => {
-        return item.taskKey === this.selectTaskId;
+        return item.taskDefKey === this.selectTaskId;
       });
       this.dialogVisible = true;
     },

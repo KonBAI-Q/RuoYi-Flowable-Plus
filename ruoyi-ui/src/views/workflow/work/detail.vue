@@ -98,7 +98,7 @@
       <el-tab-pane label="流程跟踪" name="track">
         <el-card class="box-card" shadow="never">
           <process-viewer :key="`designer-${loadIndex}`" :style="'height:' + height" :xml="xmlData"
-                          :finishedInfo="finishedInfo" :allCommentList="null"
+                          :finishedInfo="finishedInfo" :allCommentList="flowRecordList"
           />
         </el-card>
       </el-tab-pane>
