@@ -138,6 +138,7 @@ public class WfInstanceServiceImpl extends FlowServiceFactory implements IWfInst
                 WfTaskVo taskVo = new WfTaskVo();
                 taskVo.setProcDefId(taskInstance.getProcessDefinitionId());
                 taskVo.setTaskId(taskInstance.getId());
+                taskVo.setTaskDefKey(taskInstance.getTaskDefinitionKey());
                 taskVo.setTaskName(taskInstance.getName());
                 taskVo.setCreateTime(taskInstance.getStartTime());
                 taskVo.setFinishTime(taskInstance.getEndTime());
