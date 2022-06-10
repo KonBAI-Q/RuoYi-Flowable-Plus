@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.workflow.domain.bo.WfCopyBo;
+import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfCopyVo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
@@ -65,6 +66,13 @@ public class WfProcessController extends BaseController {
     @GetMapping(value = "/todoList")
     public TableDataInfo<WfTaskVo> todoProcess(PageQuery pageQuery) {
         return processService.queryPageTodoProcessList(pageQuery);
+    }
+
+    @ApiOperation(value = "获取待签列表", response = WfTaskVo.class)
+    @SaCheckPermission("workflow:process:claimList")
+    @GetMapping(value = "/claimList")
+    public TableDataInfo<WfTaskVo> claimProcess(WfProcessBo processBo, PageQuery pageQuery) {
+        return processService.queryPageClaimProcessList(processBo, pageQuery);
     }
 
     @ApiOperation(value = "获取已办列表", response = WfTaskVo.class)

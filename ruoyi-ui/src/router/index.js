@@ -105,6 +105,12 @@ export const constantRoutes = [
         meta: { title: '我的流程', icon: '' }
       },
       {
+        path: 'todo',
+        component: () => import('@/views/workflow/work/todo'),
+        name: 'todo',
+        meta: { title: '代办任务', icon: '' }
+      },
+      {
         path: 'detail',
         component: () => import('@/views/workflow/work/detail'),
         name: 'Detail',

@@ -37,6 +37,15 @@ export function listTodoProcess(query) {
   })
 }
 
+// 我待签的流程
+export function listClaimProcess(query) {
+  return request({
+    url: '/workflow/process/claimList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 我已办的流程
 export function listFinishedProcess(query) {
   return request({

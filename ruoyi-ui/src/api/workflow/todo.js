@@ -45,6 +45,15 @@ export function rejectTask(data) {
   })
 }
 
+// 签收任务
+export function claimTask(data) {
+  return request({
+    url: '/workflow/task/claim',
+    method: 'post',
+    data: data
+  })
+}
+
 // 可退回任务列表
 export function returnList(data) {
   return request({

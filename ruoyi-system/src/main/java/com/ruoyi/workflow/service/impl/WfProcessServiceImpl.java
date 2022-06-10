@@ -16,6 +16,7 @@ import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.utils.TaskUtils;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.service.IWfProcessService;
@@ -236,6 +237,55 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
 
             // 流程变量
             flowTask.setProcVars(this.getProcessVariables(task.getId()));
+
+            flowList.add(flowTask);
+        }
+        page.setRecords(flowList);
+        return TableDataInfo.build(page);
+    }
+
+    @Override
+    public TableDataInfo<WfTaskVo> queryPageClaimProcessList(WfProcessBo processBo, PageQuery pageQuery) {
+        Page<WfTaskVo> page = new Page<>();
+        Long userId = LoginHelper.getUserId();
+        TaskQuery taskQuery = taskService.createTaskQuery()
+            .active()
+            .includeProcessVariables()
+            .taskCandidateUser(userId.toString())
+            .taskCandidateGroupIn(TaskUtils.getCandidateGroup())
+            .orderByTaskCreateTime().desc();
+        if (StringUtils.isNotBlank(processBo.getProcessName())) {
+            taskQuery.processDefinitionNameLike("%" + processBo.getProcessName() + "%");
+        }
+        page.setTotal(taskQuery.count());
+        int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
+        List<Task> taskList = taskQuery.listPage(offset, pageQuery.getPageSize());
+        List<WfTaskVo> flowList = new ArrayList<>();
+        for (Task task : taskList) {
+            WfTaskVo flowTask = new WfTaskVo();
+            // 当前流程信息
+            flowTask.setTaskId(task.getId());
+            flowTask.setTaskDefKey(task.getTaskDefinitionKey());
+            flowTask.setCreateTime(task.getCreateTime());
+            flowTask.setProcDefId(task.getProcessDefinitionId());
+            flowTask.setTaskName(task.getName());
+            // 流程定义信息
+            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionId(task.getProcessDefinitionId())
+                .singleResult();
+            flowTask.setDeployId(pd.getDeploymentId());
+            flowTask.setProcDefName(pd.getName());
+            flowTask.setProcDefVersion(pd.getVersion());
+            flowTask.setProcInsId(task.getProcessInstanceId());
+
+            // 流程发起人信息
+            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .singleResult();
+            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
+            flowTask.setStartUserId(startUser.getNickName());
+            flowTask.setStartUserName(startUser.getNickName());
+            flowTask.setStartDeptName(startUser.getDept().getDeptName());
 
             flowList.add(flowTask);
         }

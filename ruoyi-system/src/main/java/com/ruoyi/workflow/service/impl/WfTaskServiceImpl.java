@@ -16,6 +16,7 @@ import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
 import com.ruoyi.flowable.flow.FindNextNodeUtil;
 import com.ruoyi.flowable.flow.FlowableUtils;
+import com.ruoyi.flowable.utils.TaskUtils;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
@@ -375,12 +376,16 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
     /**
      * 认领/签收任务
      *
-     * @param bo 请求实体参数
+     * @param taskBo 请求实体参数
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void claim(WfTaskBo bo) {
-        taskService.claim(bo.getTaskId(), bo.getUserId());
+    public void claim(WfTaskBo taskBo) {
+        Task task = taskService.createTaskQuery().taskId(taskBo.getTaskId()).singleResult();
+        if (Objects.isNull(task)) {
+            throw new ServiceException("任务不存在");
+        }
+        taskService.claim(taskBo.getTaskId(), TaskUtils.getUserId());
     }
 
     /**
