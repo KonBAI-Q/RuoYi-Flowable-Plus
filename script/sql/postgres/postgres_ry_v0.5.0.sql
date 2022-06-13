@@ -281,7 +281,9 @@ insert into sys_menu values('123',  '流程定义', '4',   '3', 'definition', 'w
 insert into sys_menu values('124',  '新建流程', '5',   '1', 'start',      'workflow/work/index',       '', 1, 0, 'C', '0', '0', 'workflow:process:startList',    'guide',      'admin', now(), '', null, '');
 insert into sys_menu values('125',  '我的流程', '5',   '2', 'process',    'workflow/work/own',         '', 1, 0, 'C', '0', '0', 'workflow:process:ownList',      'cascader',   'admin', now(), '', null, '');
 insert into sys_menu values('126',  '待办任务', '5',   '3', 'todo',       'workflow/work/todo',        '', 1, 0, 'C', '0', '0', 'workflow:process:todoList',     'time-range', 'admin', now(), '', null, '');
-insert into sys_menu values('127',  '已办任务', '5',   '4', 'finished',   'workflow/work/finished',    '', 1, 0, 'C', '0', '0', 'workflow:process:finishedList', 'checkbox',   'admin', now(), '', null, '');
+insert into sys_menu values('127',  '待签任务', '5',   '4', 'claim',       'workflow/work/claim',      '', 1, 0, 'C', '0', '0', 'workflow:process:claimList',    'checkbox',   'admin', now(), '', null, '');
+insert into sys_menu values('128',  '已办任务', '5',   '5', 'finished',   'workflow/work/finished',    '', 1, 0, 'C', '0', '0', 'workflow:process:finishedList', 'checkbox',   'admin', now(), '', null, '');
+insert into sys_menu values('129',  '抄送我的', '5',   '6', 'copy',       'workflow/work/copy',        '', 1, 0, 'C', '0', '0', 'workflow:process:copyList',     'checkbox',   'admin', now(), '', null, '');
 
 -- 三级菜单
 insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          'admin', now(), '', null, '操作日志菜单');
@@ -449,6 +451,8 @@ insert into sys_role_menu values ('2', '124');
 insert into sys_role_menu values ('2', '125');
 insert into sys_role_menu values ('2', '126');
 insert into sys_role_menu values ('2', '127');
+insert into sys_role_menu values ('2', '128');
+insert into sys_role_menu values ('2', '129');
 insert into sys_role_menu values ('2', '500');
 insert into sys_role_menu values ('2', '501');
 insert into sys_role_menu values ('2', '1001');
@@ -1083,3 +1087,46 @@ comment on column wf_category.create_time   is '创建时间';
 comment on column wf_category.update_by     is '更新者';
 comment on column wf_category.update_time   is '更新时间';
 comment on column wf_category.del_flag      is '删除标志（0代表存在 2代表删除）';
+
+-- ----------------------------
+-- wf_copy流程抄送表
+-- ----------------------------
+drop table if exists wf_copy;
+create table wf_copy
+(
+    copy_id          int8,
+    title            varchar(255),
+    process_id       varchar(64),
+    process_name     varchar(255),
+    category_id      varchar(255),
+    deployment_id    varchar(64),
+    instance_id      varchar(64),
+    task_id          varchar(64),
+    user_id          int8,
+    originator_id    int8,
+    originator_name  varchar(64),
+    create_by        varchar(64),
+    create_time      timestamp,
+    update_by        varchar(64),
+    update_time      timestamp,
+    del_flag         char(1),
+    constraint wf_copy_pk primary key (copy_id)
+);
+
+comment on table wf_copy is '流程分类表';
+comment on column wf_copy.copy_id         is '抄送主键';
+comment on column wf_copy.title           is '抄送标题';
+comment on column wf_copy.process_id      is '流程主键';
+comment on column wf_copy.process_name    is '流程名称';
+comment on column wf_copy.category_id     is '流程分类主键';
+comment on column wf_copy.deployment_id   is '部署主键';
+comment on column wf_copy.instance_id     is '流程实例主键';
+comment on column wf_copy.task_id         is '任务主键';
+comment on column wf_copy.user_id         is '用户主键';
+comment on column wf_copy.originator_id   is '发起人主键';
+comment on column wf_copy.originator_name is '发起人名称';
+comment on column wf_copy.create_by       is '创建者';
+comment on column wf_copy.create_time     is '创建时间';
+comment on column wf_copy.update_by       is '更新者';
+comment on column wf_copy.update_time     is '更新时间';
+comment on column wf_copy.del_flag        is '删除标志（0代表存在 2代表删除）';

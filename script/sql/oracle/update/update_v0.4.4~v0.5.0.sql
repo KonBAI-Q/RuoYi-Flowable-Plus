@@ -1,3 +1,5 @@
+update sys_menu set menu_id = 128 where menu_name = '已办任务'
+
 create table wf_copy (
    copy_id         number(20)     not null,
    title           varchar(255)   default '',
@@ -37,6 +39,8 @@ comment on column wf_copy.update_by is '更新者';
 comment on column wf_copy.update_time is '更新时间';
 comment on column wf_copy.del_flag is '删除标志（0代表存在 2代表删除）';
 
-insert into sys_menu values('128',  '抄送我的', '5',   '5', 'copy',       'workflow/work/copy',        '', 1, 0, 'C', '0', '0', 'workflow:process:copyList',     'checkbox',   'admin', sysdate, '', null, '');
+insert into sys_menu values('127',  '待签任务', '5',   '4', 'claim',       'workflow/work/claim',       '', 1, 0, 'C', '0', '0', 'workflow:process:claimList',    'checkbox',   'admin', sysdate, '', null, '');
+insert into sys_menu values('129',  '抄送我的', '5',   '6', 'copy',        'workflow/work/copy',        '', 1, 0, 'C', '0', '0', 'workflow:process:copyList',     'checkbox',   'admin', sysdate, '', null, '');
 
-insert into sys_role_menu values ('2', '128');
+insert into sys_role_menu values ('2', '127');
+insert into sys_role_menu values ('2', '129');

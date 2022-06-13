@@ -1,3 +1,5 @@
+update sys_menu set menu_id = 128 where menu_name = '已办任务'
+
 drop table if exists `wf_copy`;
 create table `wf_copy` (
    `copy_id`         bigint        not null  auto_increment   comment '抄送主键',
@@ -19,6 +21,8 @@ create table `wf_copy` (
    primary key (`copy_id`)
 ) engine=innodb comment='流程抄送表';
 
-insert into sys_menu values('128',  '抄送我的', '5',   '5', 'copy',       'workflow/work/copy',        '', 1, 0, 'C', '0', '0', 'workflow:process:copyList',     'checkbox',   'admin', sysdate(), '', null, '');
+insert into sys_menu values('127',  '待签任务', '5',   '4', 'claim',       'workflow/work/claim',       '', 1, 0, 'C', '0', '0', 'workflow:process:claimList',    'checkbox',   'admin', sysdate(), '', null, '');
+insert into sys_menu values('129',  '抄送我的', '5',   '6', 'copy',        'workflow/work/copy',        '', 1, 0, 'C', '0', '0', 'workflow:process:copyList',     'checkbox',   'admin', sysdate(), '', null, '');
 
-insert into sys_role_menu values ('2', '128');
+insert into sys_role_menu values ('2', '127');
+insert into sys_role_menu values ('2', '129');

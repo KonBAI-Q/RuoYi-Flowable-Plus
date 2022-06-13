@@ -193,7 +193,9 @@ insert into sys_menu values('123',  '流程定义', '4',   '3', 'definition', 'w
 insert into sys_menu values('124',  '新建流程', '5',   '1', 'start',      'workflow/work/index',       '', 1, 0, 'C', '0', '0', 'workflow:process:startList',    'guide',      'admin', sysdate(), '', null, '');
 insert into sys_menu values('125',  '我的流程', '5',   '2', 'process',    'workflow/work/own',         '', 1, 0, 'C', '0', '0', 'workflow:process:ownList',      'cascader',   'admin', sysdate(), '', null, '');
 insert into sys_menu values('126',  '待办任务', '5',   '3', 'todo',       'workflow/work/todo',        '', 1, 0, 'C', '0', '0', 'workflow:process:todoList',     'time-range', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('127',  '已办任务', '5',   '4', 'finished',   'workflow/work/finished',    '', 1, 0, 'C', '0', '0', 'workflow:process:finishedList', 'checkbox',   'admin', sysdate(), '', null, '');
+insert into sys_menu values('127',  '待签任务', '5',   '4', 'claim',       'workflow/work/claim',      '', 1, 0, 'C', '0', '0', 'workflow:process:claimList',    'checkbox',   'admin', sysdate(), '', null, '');
+insert into sys_menu values('128',  '已办任务', '5',   '5', 'finished',   'workflow/work/finished',    '', 1, 0, 'C', '0', '0', 'workflow:process:finishedList', 'checkbox',   'admin', sysdate(), '', null, '');
+insert into sys_menu values('129',  '抄送我的', '5',   '6', 'copy',       'workflow/work/copy',        '', 1, 0, 'C', '0', '0', 'workflow:process:copyList',     'checkbox',   'admin', sysdate(), '', null, '');
 
 -- 三级菜单
 insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          'admin', sysdate(), '', null, '操作日志菜单');
@@ -351,6 +353,8 @@ insert into sys_role_menu values ('2', '124');
 insert into sys_role_menu values ('2', '125');
 insert into sys_role_menu values ('2', '126');
 insert into sys_role_menu values ('2', '127');
+insert into sys_role_menu values ('2', '128');
+insert into sys_role_menu values ('2', '129');
 insert into sys_role_menu values ('2', '500');
 insert into sys_role_menu values ('2', '501');
 insert into sys_role_menu values ('2', '1001');
@@ -787,3 +791,27 @@ create table `wf_category` (
     del_flag      char(1)                default '0'    comment '删除标志（0代表存在 2代表删除）',
     primary key (category_id)
 ) engine=innodb comment = '流程分类表';
+
+-- ----------------------------
+-- wf_copy流程抄送表
+-- ----------------------------
+drop table if exists `wf_copy`;
+create table `wf_copy` (
+   copy_id         bigint        not null  auto_increment   comment '抄送主键',
+   title           varchar(255)            default ''       comment '抄送标题',
+   process_id      varchar(64)             default ''       comment '流程主键',
+   process_name    varchar(255)            default ''       comment '流程名称',
+   category_id     varchar(255)            default ''       comment '流程分类主键',
+   deployment_id   varchar(64)             default ''       comment '部署主键',
+   instance_id     varchar(64)             default ''       comment '流程实例主键',
+   task_id         varchar(64)             default ''       comment '任务主键',
+   user_id         bigint                  default null     comment '用户主键',
+   originator_id   bigint                  default null     comment '发起人主键',
+   originator_name varchar(64)             default ''       comment '发起人名称',
+   create_by       varchar(64)             default ''       comment '创建者',
+   create_time     datetime                default null     comment '创建时间',
+   update_by       varchar(64)             default ''       comment '更新者',
+   update_time     datetime                default null     comment '更新时间',
+   del_flag        char(1)                 default '0'      comment '删除标志（0代表存在 2代表删除）',
+   primary key (`copy_id`)
+) engine=innodb comment='流程抄送表';
