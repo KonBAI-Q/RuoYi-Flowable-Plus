@@ -197,7 +197,7 @@ export default {
       if (this.dataType === 'USERS') {
         let userIdData = bpmnElementObj['assignee'] || bpmnElementObj['candidateUsers'];
         let userText = bpmnElementObj['text'] || [];
-        if (userIdData && userIdData.length > 0 && userText && userText.length > 0) {
+        if (userIdData && userIdData.toString().length > 0 && userText && userText.length > 0) {
           this.selectedUser.ids = userIdData?.toString().split(',');
           this.selectedUser.text = userText?.split(',');
         }
