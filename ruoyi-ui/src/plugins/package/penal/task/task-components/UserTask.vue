@@ -195,7 +195,7 @@ export default {
       this.clearOptionsData()
       this.dataType = bpmnElementObj['dataType'];
       if (this.dataType === 'USERS') {
-        let userIdData = bpmnElementObj['assignee'] || bpmnElementObj['candidateUsers'];
+        let userIdData = bpmnElementObj['candidateUsers'] || bpmnElementObj['assignee'];
         let userText = bpmnElementObj['text'] || [];
         if (userIdData && userIdData.toString().length > 0 && userText && userText.length > 0) {
           this.selectedUser.ids = userIdData?.toString().split(',');
@@ -437,7 +437,7 @@ export default {
       let completionCondition = null;
       // 会签
       if (type === "SequentialMultiInstance") {
-        this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: false });
+        this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: true });
         completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: '${nrOfCompletedInstances >= nrOfInstances}' });
       }
       // 或签
