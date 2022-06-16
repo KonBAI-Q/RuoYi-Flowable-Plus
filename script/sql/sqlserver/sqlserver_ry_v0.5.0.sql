@@ -1,4 +1,3 @@
-
 CREATE TABLE [gen_table]
 (
     [table_id]          bigint                         NOT NULL,
@@ -21,11 +20,10 @@ CREATE TABLE [gen_table]
     [update_by]         nvarchar(64)  DEFAULT ''       NULL,
     [update_time]       datetime2(7)                   NULL,
     [remark]            nvarchar(500)                  NULL,
-    CONSTRAINT [PK__gen_tabl__B21E8F2427725F8A] PRIMARY KEY CLUSTERED ([table_id])
+    CONSTRAINT [PK__gen_table] PRIMARY KEY CLUSTERED ([table_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -178,11 +176,10 @@ CREATE TABLE [gen_table_column]
     [create_time]    datetime2(7)                 NULL,
     [update_by]      nvarchar(64)  DEFAULT ''     NULL,
     [update_time]    datetime2(7)                 NULL,
-    CONSTRAINT [PK__gen_tabl__E301851F2E68B4E8] PRIMARY KEY CLUSTERED ([column_id])
+    CONSTRAINT [PK__gen_table_column] PRIMARY KEY CLUSTERED ([column_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -335,11 +332,10 @@ CREATE TABLE [sys_config]
     [update_by]    nvarchar(64)  DEFAULT ''    NULL,
     [update_time]  datetime2(7)                NULL,
     [remark]       nvarchar(500)               NULL,
-    CONSTRAINT [PK__sys_conf__4AD1BFF182643682] PRIMARY KEY CLUSTERED ([config_id])
+    CONSTRAINT [PK__sys_config] PRIMARY KEY CLUSTERED ([config_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -437,11 +433,10 @@ CREATE TABLE [sys_dept]
     [create_time] datetime2(7)               NULL,
     [update_by]   nvarchar(64) DEFAULT ''    NULL,
     [update_time] datetime2(7)               NULL,
-    CONSTRAINT [PK__sys_dept__DCA659747DE13804] PRIMARY KEY CLUSTERED ([dept_id])
+    CONSTRAINT [PK__sys_dept] PRIMARY KEY CLUSTERED ([dept_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -571,11 +566,10 @@ CREATE TABLE [sys_dict_data]
     [update_by]   nvarchar(64)  DEFAULT ''    NULL,
     [update_time] datetime2(7)                NULL,
     [remark]      nvarchar(500)               NULL,
-    CONSTRAINT [PK__sys_dict__19CBC34B661AF3B3] PRIMARY KEY CLUSTERED ([dict_code])
+    CONSTRAINT [PK__sys_dict_data] PRIMARY KEY CLUSTERED ([dict_code])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -736,11 +730,10 @@ CREATE TABLE [sys_dict_type]
     [update_by]   nvarchar(64)  DEFAULT ''    NULL,
     [update_time] datetime2(7)                NULL,
     [remark]      nvarchar(500)               NULL,
-    CONSTRAINT [PK__sys_dict__3BD4186C409C5391] PRIMARY KEY CLUSTERED ([dict_id])
+    CONSTRAINT [PK__sys_dict_type] PRIMARY KEY CLUSTERED ([dict_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -835,11 +828,10 @@ CREATE TABLE [sys_logininfor]
     [status]         nchar(1)      DEFAULT ('0') NULL,
     [msg]            nvarchar(255) DEFAULT ''    NULL,
     [login_time]     datetime2(7)                NULL,
-    CONSTRAINT [PK__sys_logi__3D8A9C1A1854AE10] PRIMARY KEY CLUSTERED ([info_id])
+    CONSTRAINT [PK__sys_logininfor] PRIMARY KEY CLUSTERED ([info_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -923,11 +915,10 @@ CREATE TABLE [sys_menu]
     [update_by]   nvarchar(64)  DEFAULT ''    NULL,
     [update_time] datetime2(7)                NULL,
     [remark]      nvarchar(500) DEFAULT ''    NULL,
-    CONSTRAINT [PK__sys_menu__4CA0FADCF8545C58] PRIMARY KEY CLUSTERED ([menu_id])
+    CONSTRAINT [PK__sys_menu] PRIMARY KEY CLUSTERED ([menu_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -1050,48 +1041,80 @@ EXEC sys.sp_addextendedproperty
     'TABLE', N'sys_menu'
 GO
 
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1, N'系统管理', 0, 1, N'system', NULL, N'', 1, 0, N'M', N'0', N'0', N'', N'system', N'admin', getdate(), N'', NULL, N'系统管理目录')
+-- 一级菜单
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1, N'系统管理', 0, 1, N'system',   NULL, N'', 1, 0, N'M', N'0', N'0', N'', N'system',  N'admin', getdate(), N'', NULL, N'系统管理目录')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (2, N'系统监控', 0, 2, N'monitor', NULL, N'', 1, 0, N'M', N'0', N'0', N'', N'monitor', N'admin', getdate(), N'', NULL, N'系统监控目录')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (2, N'系统监控', 0, 2, N'monitor',  NULL, N'', 1, 0, N'M', N'0', N'0', N'', N'monitor', N'admin', getdate(), N'', NULL, N'系统监控目录')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (3, N'系统工具', 0, 3, N'tool', NULL, N'', 1, 0, N'M', N'0', N'0', N'', N'tool', N'admin', getdate(), N'', NULL, N'系统工具目录')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (3, N'系统工具', 0, 3, N'tool',     NULL, N'', 1, 0, N'M', N'0', N'0', N'', N'tool',    N'admin', getdate(), N'', NULL, N'系统工具目录')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (100, N'用户管理', 1, 1, N'user', N'system/user/index', N'', 1, 0, N'C', N'0', N'0', N'system:user:list', N'user', N'admin', getdate(), N'', NULL, N'用户管理菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (4, N'流程管理', 0, 4, N'workflow', NULL, N'', 1, 0, N'M', N'0', N'0', N'', N'skill',   N'admin', getdate(), N'', NULL, '流程管理目录')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (101, N'角色管理', 1, 2, N'role', N'system/role/index', N'', 1, 0, N'C', N'0', N'0', N'system:role:list', N'peoples', N'admin', getdate(), N'', NULL, N'角色管理菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (5, N'办公管理', 0, 5, N'task',     NULL, N'', 1, 0, N'M', N'0', N'0', N'', N'job',     N'admin', getdate(), N'', NULL, '办公管理目录')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (102, N'菜单管理', 1, 3, N'menu', N'system/menu/index', N'', 1, 0, N'C', N'0', N'0', N'system:menu:list', N'tree-table', N'admin', getdate(), N'', NULL, N'菜单管理菜单')
+
+-- 二级菜单
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (100, N'用户管理',    1, 1, N'user', N'system/user/index', N'', 1, 0, N'C', N'0', N'0', N'system:user:list', N'user', N'admin', getdate(), N'', NULL, N'用户管理菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (103, N'部门管理', 1, 4, N'dept', N'system/dept/index', N'', 1, 0, N'C', N'0', N'0', N'system:dept:list', N'tree', N'admin', getdate(), N'', NULL, N'部门管理菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (101, N'角色管理',    1, 2, N'role', N'system/role/index', N'', 1, 0, N'C', N'0', N'0', N'system:role:list', N'peoples', N'admin', getdate(), N'', NULL, N'角色管理菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (104, N'岗位管理', 1, 5, N'post', N'system/post/index', N'', 1, 0, N'C', N'0', N'0', N'system:post:list', N'post', N'admin', getdate(), N'', NULL, N'岗位管理菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (102, N'菜单管理',    1, 3, N'menu', N'system/menu/index', N'', 1, 0, N'C', N'0', N'0', N'system:menu:list', N'tree-table', N'admin', getdate(), N'', NULL, N'菜单管理菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (105, N'字典管理', 1, 6, N'dict', N'system/dict/index', N'', 1, 0, N'C', N'0', N'0', N'system:dict:list', N'dict', N'admin', getdate(), N'', NULL, N'字典管理菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (103, N'部门管理',    1, 4, N'dept', N'system/dept/index', N'', 1, 0, N'C', N'0', N'0', N'system:dept:list', N'tree', N'admin', getdate(), N'', NULL, N'部门管理菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (106, N'参数设置', 1, 7, N'config', N'system/config/index', N'', 1, 0, N'C', N'0', N'0', N'system:config:list', N'edit', N'admin', getdate(), N'', NULL, N'参数设置菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (104, N'岗位管理',    1, 5, N'post', N'system/post/index', N'', 1, 0, N'C', N'0', N'0', N'system:post:list', N'post', N'admin', getdate(), N'', NULL, N'岗位管理菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (107, N'通知公告', 1, 8, N'notice', N'system/notice/index', N'', 1, 0, N'C', N'0', N'0', N'system:notice:list', N'message', N'admin', getdate(), N'', NULL, N'通知公告菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (105, N'字典管理',    1, 6, N'dict', N'system/dict/index', N'', 1, 0, N'C', N'0', N'0', N'system:dict:list', N'dict', N'admin', getdate(), N'', NULL, N'字典管理菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (108, N'日志管理', 1, 9, N'log', N'', N'', 1, 0, N'M', N'0', N'0', N'', N'log', N'admin', getdate(), N'', NULL, N'日志管理菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (106, N'参数设置',    1, 7, N'config', N'system/config/index', N'', 1, 0, N'C', N'0', N'0', N'system:config:list', N'edit', N'admin', getdate(), N'', NULL, N'参数设置菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (109, N'在线用户', 2, 1, N'online', N'monitor/online/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:online:list', N'online', N'admin', getdate(), N'', NULL, N'在线用户菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (107, N'通知公告',    1, 8, N'notice', N'system/notice/index', N'', 1, 0, N'C', N'0', N'0', N'system:notice:list', N'message', N'admin', getdate(), N'', NULL, N'通知公告菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (111, N'数据监控', 2, 3, N'druid', N'monitor/druid/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:druid:list', N'druid', N'admin', getdate(), N'', NULL, N'数据监控菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (108, N'日志管理',    1, 9, N'log', N'', N'', 1, 0, N'M', N'0', N'0', N'', N'log', N'admin', getdate(), N'', NULL, N'日志管理菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (113, N'缓存监控', 2, 5, N'cache', N'monitor/cache/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:cache:list', N'redis', N'admin', getdate(), N'', NULL, N'缓存监控菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (109, N'在线用户',    2, 1, N'online', N'monitor/online/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:online:list', N'online', N'admin', getdate(), N'', NULL, N'在线用户菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (114, N'表单构建', 3, 1, N'build', N'tool/build/index', N'', 1, 0, N'C', N'0', N'0', N'tool:build:list', N'build', N'admin', getdate(), N'', NULL, N'表单构建菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (111, N'数据监控',    2, 3, N'druid', N'monitor/druid/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:druid:list', N'druid', N'admin', getdate(), N'', NULL, N'数据监控菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (115, N'代码生成', 3, 2, N'gen', N'tool/gen/index', N'', 1, 0, N'C', N'0', N'0', N'tool:gen:list', N'code', N'admin', getdate(), N'', NULL, N'代码生成菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (113, N'缓存监控',    2, 5, N'cache', N'monitor/cache/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:cache:list', N'redis', N'admin', getdate(), N'', NULL, N'缓存监控菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (116, N'系统接口', 3, 3, N'swagger', N'tool/swagger/index', N'', 1, 0, N'C', N'0', N'0', N'tool:swagger:list', N'swagger', N'admin', getdate(), N'', NULL, N'系统接口菜单')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (114, N'表单构建',    3, 1, N'build', N'tool/build/index', N'', 1, 0, N'C', N'0', N'0', N'tool:build:list', N'build', N'admin', getdate(), N'', NULL, N'表单构建菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (117, N'Admin监控', 2, 5, N'Admin', N'monitor/admin/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:admin:list', N'dashboard', N'admin', getdate(), N'', NULL, N'Admin监控菜单');
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (115, N'代码生成',    3, 2, N'gen', N'tool/gen/index', N'', 1, 0, N'C', N'0', N'0', N'tool:gen:list', N'code', N'admin', getdate(), N'', NULL, N'代码生成菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (118, N'文件管理', 1, 10, N'oss', N'system/oss/index', N'', 1, 0, N'C', '0', N'0', N'system:oss:list', N'upload', N'admin', getdate(), N'', NULL, N'文件管理菜单');
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (116, N'系统接口',    3, 3, N'swagger', N'tool/swagger/index', N'', 1, 0, N'C', N'0', N'0', N'tool:swagger:list', N'swagger', N'admin', getdate(), N'', NULL, N'系统接口菜单')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (120, N'任务调度中心', 2, 5, N'XxlJob', N'monitor/xxljob/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:xxljob:list', N'job', N'admin', getdate(), N'', NULL, N'Xxl-Job控制台菜单');
+-- springboot-admin监控
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (117, N'Admin监控',  2, 5, N'Admin', N'monitor/admin/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:admin:list', N'dashboard', N'admin', getdate(), N'', NULL, N'Admin监控菜单')
 GO
+-- oss菜单
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (118, N'文件管理',    1, 10, N'oss', N'system/oss/index', N'', 1, 0, N'C', '0', N'0', N'system:oss:list', N'upload', N'admin', getdate(), N'', NULL, N'文件管理菜单');
+GO
+-- xxl-job-admin控制台
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (120, N'任务调度中心', 2, 5, N'XxlJob', N'monitor/xxljob/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:xxljob:list', N'job', N'admin', getdate(), N'', NULL, N'Xxl-Job控制台菜单')
+GO
+-- 流程管理
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (121,  N'流程分类',   4, 1, N'category',   N'workflow/category/index',      N'', 1, 0, N'C', N'0', N'0', N'workflow:category:list',   N'nested',  N'admin', getdate(), N'', NULL, N'流程分类菜单')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (122,  N'表单配置',   4, 2, N'form',       N'workflow/form/index',          N'', 1, 0, N'C', N'0', N'0', N'workflow:form:list',       N'form',    N'admin', getdate(), N'', NULL, N'表单配置菜单')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (123,  N'流程定义',   4, 3, N'definition', N'workflow/definition/index',    N'', 1, 0, N'C', N'0', N'0', N'workflow:definition:list', N'example', N'admin', getdate(), N'', NULL, N'流程定义菜单')
+GO
+-- 办公管理
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (124,  N'新建流程',   5, 1, N'start',      N'workflow/work/index',      N'', 1, 0, N'C', N'0', N'0', N'workflow:process:startList',    N'guide',      N'admin', getdate(), N'', NULL, N'新建流程菜单')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (125,  N'我的流程',   5, 2, N'process',    N'workflow/work/own',        N'', 1, 0, N'C', N'0', N'0', N'workflow:process:ownList',      N'cascader',   N'admin', getdate(), N'', NULL, N'我的流程菜单')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (126,  N'待办任务',   5, 3, N'todo',       N'workflow/work/todo',       N'', 1, 0, N'C', N'0', N'0', N'workflow:process:todoList',     N'time-range', N'admin', getdate(), N'', NULL, N'待办任务菜单')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (127,  N'待签任务',   5, 4, N'claim',      N'workflow/work/claim',      N'', 1, 0, N'C', N'0', N'0', N'workflow:process:claimList',    N'checkbox',   N'admin', getdate(), N'', NULL, N'待签任务菜单')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (128,  N'已办任务',   5, 5, N'finished',   N'workflow/work/finished',   N'', 1, 0, N'C', N'0', N'0', N'workflow:process:finishedList', N'checkbox',   N'admin', getdate(), N'', NULL, N'已办任务菜单')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (129,  N'抄送我的',   5, 6, N'copy',       N'workflow/work/copy',       N'', 1, 0, N'C', N'0', N'0', N'workflow:process:copyList',     N'checkbox',   N'admin', getdate(), N'', NULL, N'抄送我的菜单')
+GO
+
+-- 三级菜单
 INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (500, N'操作日志', 108, 1, N'operlog', N'monitor/operlog/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:operlog:list', N'form', N'admin', getdate(), N'', NULL, N'操作日志菜单')
 GO
 INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (501, N'登录日志', 108, 2, N'logininfor', N'monitor/logininfor/index', N'', 1, 0, N'C', N'0', N'0', N'monitor:logininfor:list', N'logininfor', N'admin', getdate(), N'', NULL, N'登录日志菜单')
@@ -1110,112 +1133,146 @@ INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [co
 GO
 INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1007, N'重置密码', 100, 7, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:user:resetPwd', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1008, N'角色查询', 101, 1, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1010, N'角色查询', 101, 1, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1009, N'角色新增', 101, 2, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:add', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1011, N'角色新增', 101, 2, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:add', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1010, N'角色修改', 101, 3, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:edit', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1012, N'角色修改', 101, 3, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:edit', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1011, N'角色删除', 101, 4, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1013, N'角色删除', 101, 4, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1012, N'角色导出', 101, 5, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:export', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1014, N'角色导出', 101, 5, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:role:export', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1013, N'菜单查询', 102, 1, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:menu:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1020, N'菜单查询', 102, 1, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:menu:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1014, N'菜单新增', 102, 2, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:menu:add', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1021, N'菜单新增', 102, 2, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:menu:add', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1015, N'菜单修改', 102, 3, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:menu:edit', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1022, N'菜单修改', 102, 3, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:menu:edit', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1016, N'菜单删除', 102, 4, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:menu:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1023, N'菜单删除', 102, 4, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:menu:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1017, N'部门查询', 103, 1, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dept:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1030, N'部门查询', 103, 1, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dept:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1018, N'部门新增', 103, 2, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dept:add', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1031, N'部门新增', 103, 2, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dept:add', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1019, N'部门修改', 103, 3, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dept:edit', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1032, N'部门修改', 103, 3, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dept:edit', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1020, N'部门删除', 103, 4, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dept:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1033, N'部门删除', 103, 4, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dept:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1021, N'岗位查询', 104, 1, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1040, N'岗位查询', 104, 1, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1022, N'岗位新增', 104, 2, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:add', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1041, N'岗位新增', 104, 2, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:add', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1023, N'岗位修改', 104, 3, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:edit', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1042, N'岗位修改', 104, 3, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:edit', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1024, N'岗位删除', 104, 4, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1043, N'岗位删除', 104, 4, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1025, N'岗位导出', 104, 5, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:export', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1044, N'岗位导出', 104, 5, N'', N'', N'', 1, 0, N'F', N'0', N'0', N'system:post:export', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1026, N'字典查询', 105, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1050, N'字典查询', 105, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1027, N'字典新增', 105, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:add', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1051, N'字典新增', 105, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:add', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1028, N'字典修改', 105, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:edit', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1052, N'字典修改', 105, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:edit', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1029, N'字典删除', 105, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1053, N'字典删除', 105, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1030, N'字典导出', 105, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:export', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1054, N'字典导出', 105, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:dict:export', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1031, N'参数查询', 106, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1060, N'参数查询', 106, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1032, N'参数新增', 106, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:add', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1061, N'参数新增', 106, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:add', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1033, N'参数修改', 106, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:edit', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1062, N'参数修改', 106, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:edit', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1034, N'参数删除', 106, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1063, N'参数删除', 106, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1035, N'参数导出', 106, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:export', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1064, N'参数导出', 106, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:config:export', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1036, N'公告查询', 107, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:notice:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1070, N'公告查询', 107, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:notice:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1037, N'公告新增', 107, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:notice:add', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1071, N'公告新增', 107, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:notice:add', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1038, N'公告修改', 107, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:notice:edit', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1072, N'公告修改', 107, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:notice:edit', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1039, N'公告删除', 107, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:notice:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1073, N'公告删除', 107, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:notice:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1040, N'操作查询', 500, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:operlog:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1080, N'操作查询', 500, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:operlog:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1041, N'操作删除', 500, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:operlog:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1081, N'操作删除', 500, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:operlog:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1042, N'日志导出', 500, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:operlog:export', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1082, N'日志导出', 500, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:operlog:export', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1043, N'登录查询', 501, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:logininfor:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1090, N'登录查询', 501, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:logininfor:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1044, N'登录删除', 501, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:logininfor:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1091, N'登录删除', 501, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:logininfor:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1045, N'日志导出', 501, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:logininfor:export', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1092, N'日志导出', 501, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:logininfor:export', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1046, N'在线查询', 109, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:online:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1100, N'在线查询', 109, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:online:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1047, N'批量强退', 109, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:online:batchLogout', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1101, N'批量强退', 109, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:online:batchLogout', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1048, N'单条强退', 109, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:online:forceLogout', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1102, N'单条强退', 109, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'monitor:online:forceLogout', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1055, N'生成查询', 115, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:query', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1120, N'生成查询', 115, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1056, N'生成修改', 115, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:edit', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1121, N'生成修改', 115, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:edit', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1057, N'生成删除', 115, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1122, N'生成删除', 115, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1058, N'导入代码', 115, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:import', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1123, N'导入代码', 115, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:import', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1059, N'预览代码', 115, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:preview', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1124, N'预览代码', 115, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:preview', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1060, N'生成代码', 115, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:code', N'#', N'admin', getdate(), N'', NULL, N'')
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1125, N'生成代码', 115, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'tool:gen:code', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
 -- oss相关按钮
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1600, N'文件查询', 118, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:query', N'#', N'admin', getdate(), N'', NULL, N'');
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1130, N'文件查询', 118, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:query', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1601, N'文件上传', 118, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:upload', N'#', N'admin', getdate(), N'', NULL, N'');
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1131, N'文件上传', 118, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:upload', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1602, N'文件下载', 118, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:download', N'#', N'admin', getdate(), N'', NULL, N'');
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1132, N'文件下载', 118, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:download', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1603, N'文件删除', 118, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:remove', N'#', N'admin', getdate(), N'', NULL, N'');
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1133, N'文件删除', 118, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:remove', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1604, N'配置添加', 118, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:add', N'#', N'admin', getdate(), N'', NULL, N'');
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1134, N'配置添加', 118, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:add', N'#', N'admin', getdate(), N'', NULL, N'')
 GO
-INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1605, N'配置编辑', 118, 6, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:edit', N'#', N'admin', getdate(), N'', NULL, N'');
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1135, N'配置编辑', 118, 6, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'system:oss:edit', N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+-- 流程分类管理
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1140, N'分类查询', 121, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:category:query',  N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1141, N'分类新增', 121, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:category:add',    N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1142, N'分类编辑', 121, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:category:edit',   N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1143, N'分类删除', 121, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:category:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+-- 表单配置
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1150, N'表单查询', 122, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:form:query',  N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1151, N'表单新增', 122, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:form:add',    N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1152, N'表单修改', 122, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:form:edit',   N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1153, N'表单删除', 122, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:form:remove', N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1154, N'表单导出', 122, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:form:export', N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+-- 流程定义
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1160, N'查看流程', 123, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:definition:view',     N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1161, N'流程设计', 123, 2, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:definition:designer', N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1162, N'启动流程', 123, 3, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:definition:start',    N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1163, N'更新流程', 123, 4, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:definition:update',   N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1164, N'流程删除', 123, 5, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:definition:remove',   N'#', N'admin', getdate(), N'', NULL, N'')
+GO
+-- 新建流程
+INSERT [sys_menu] ([menu_id], [menu_name], [parent_id], [order_num], [path], [component], [query_param], [is_frame], [is_cache], [menu_type], [visible], [status], [perms], [icon], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1170, N'发起流程', 124, 1, N'#', N'', N'', 1, 0, N'F', N'0', N'0', N'workflow:process:start',       N'#', N'admin', getdate(), N'', NULL, N'')
 GO
 
 CREATE TABLE [sys_notice]
@@ -1230,12 +1287,10 @@ CREATE TABLE [sys_notice]
     [update_by]      nvarchar(64) DEFAULT ''    NULL,
     [update_time]    datetime2(7)               NULL,
     [remark]         nvarchar(255)              NULL,
-    CONSTRAINT [PK__sys_noti__3E82A5DB0EC94801] PRIMARY KEY CLUSTERED ([notice_id])
+    CONSTRAINT [PK__sys_notice] PRIMARY KEY CLUSTERED ([notice_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
-TEXTIMAGE_ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -1327,11 +1382,10 @@ CREATE TABLE [sys_oper_log]
     [status]         int            DEFAULT ((0)) NULL,
     [error_msg]      nvarchar(2000) DEFAULT ''    NULL,
     [oper_time]      datetime2(7)                 NULL,
-    CONSTRAINT [PK__sys_oper__34723BF9BD954573] PRIMARY KEY CLUSTERED ([oper_id])
+    CONSTRAINT [PK__sys_oper_log] PRIMARY KEY CLUSTERED ([oper_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -1448,11 +1502,10 @@ CREATE TABLE [sys_post]
     [update_by]   nvarchar(64) DEFAULT '' NULL,
     [update_time] datetime2(7)            NULL,
     [remark]      nvarchar(500)           NULL,
-    CONSTRAINT [PK__sys_post__3ED7876668E2D081] PRIMARY KEY CLUSTERED ([post_id])
+    CONSTRAINT [PK__sys_post] PRIMARY KEY CLUSTERED ([post_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -1546,11 +1599,10 @@ CREATE TABLE [sys_role]
     [update_by]           nvarchar(64) DEFAULT ''    NULL,
     [update_time]         datetime2(7)               NULL,
     [remark]              nvarchar(500)              NULL,
-    CONSTRAINT [PK__sys_role__760965CCF9383145] PRIMARY KEY CLUSTERED ([role_id])
+    CONSTRAINT [PK__sys_role] PRIMARY KEY CLUSTERED ([role_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -1652,11 +1704,10 @@ CREATE TABLE [sys_role_dept]
 (
     [role_id] bigint NOT NULL,
     [dept_id] bigint NOT NULL,
-    CONSTRAINT [PK__sys_role__2BC3005BABBCA08A] PRIMARY KEY CLUSTERED ([role_id], [dept_id])
+    CONSTRAINT [PK__sys_role_dept] PRIMARY KEY CLUSTERED ([role_id], [dept_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -1688,11 +1739,10 @@ CREATE TABLE [sys_role_menu]
 (
     [role_id] bigint NOT NULL,
     [menu_id] bigint NOT NULL,
-    CONSTRAINT [PK__sys_role__A2C36A6187BA4B17] PRIMARY KEY CLUSTERED ([role_id], [menu_id])
+    CONSTRAINT [PK__sys_role_menu] PRIMARY KEY CLUSTERED ([role_id], [menu_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -1718,6 +1768,10 @@ GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 2)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 3)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 5)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 6)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 100)
 GO
@@ -1753,6 +1807,28 @@ INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 115)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 116)
 GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 117)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 118)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 120)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 122)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 123)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 124)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 125)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 126)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 127)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 128)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 129)
+GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 500)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 501)
@@ -1771,10 +1847,6 @@ INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1006)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1007)
 GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1008)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1009)
-GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1010)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1011)
@@ -1785,16 +1857,6 @@ INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1013)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1014)
 GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1015)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1016)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1017)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1018)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1019)
-GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1020)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1021)
@@ -1803,18 +1865,6 @@ INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1022)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1023)
 GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1024)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1025)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1026)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1027)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1028)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1029)
-GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1030)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1031)
@@ -1822,18 +1872,6 @@ GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1032)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1033)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1034)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1035)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1036)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1037)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1038)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1039)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1040)
 GO
@@ -1845,16 +1883,6 @@ INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1043)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1044)
 GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1045)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1046)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1047)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1048)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1049)
-GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1050)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1051)
@@ -1865,17 +1893,95 @@ INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1053)
 GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1054)
 GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1055)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1056)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1057)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1058)
-GO
-INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1059)
-GO
 INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1060)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1061)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1062)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1063)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1064)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1070)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1071)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1072)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1073)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1080)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1081)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1082)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1090)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1091)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1092)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1100)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1101)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1102)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1120)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1121)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1122)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1123)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1124)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1125)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1130)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1131)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1132)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1133)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1134)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1135)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1140)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1141)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1142)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1143)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1150)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1151)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1152)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1153)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1154)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1160)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1161)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1162)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1163)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1164)
+GO
+INSERT [sys_role_menu] ([role_id], [menu_id]) VALUES (2, 1170)
 GO
 
 CREATE TABLE [sys_user]
@@ -1899,11 +2005,10 @@ CREATE TABLE [sys_user]
     [update_by]   nvarchar(64)  DEFAULT ''           NULL,
     [update_time] datetime2(7)                       NULL,
     [remark]      nvarchar(500)                      NULL,
-    CONSTRAINT [PK__sys_user__B9BE370F79170B6A] PRIMARY KEY CLUSTERED ([user_id])
+    CONSTRAINT [PK__sys_user] PRIMARY KEY CLUSTERED ([user_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -2026,20 +2131,19 @@ EXEC sys.sp_addextendedproperty
     'TABLE', N'sys_user'
 GO
 
-INSERT [sys_user] ([user_id], [dept_id], [user_name], [nick_name], [user_type], [email], [phonenumber], [sex], [avatar], [password], [status], [del_flag], [login_ip], [login_date], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1, 103, N'admin', N'疯狂的狮子Li', N'sys_user', N'crazyLionLi@163.com', N'15888888888', N'1', N'', N'$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', N'0', N'0', N'127.0.0.1', getdate(), N'admin', getdate(), N'', getdate(), N'管理员')
+INSERT [sys_user] ([user_id], [dept_id], [user_name], [nick_name], [user_type], [email], [phonenumber], [sex], [avatar], [password], [status], [del_flag], [login_ip], [login_date], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (1, 103, N'admin', N'若依管理员', N'sys_user', N'crazyLionLi@163.com', N'15888888888', N'1', N'', N'$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', N'0', N'0', N'127.0.0.1', getdate(), N'admin', getdate(), N'', getdate(), N'管理员')
 GO
-INSERT [sys_user] ([user_id], [dept_id], [user_name], [nick_name], [user_type], [email], [phonenumber], [sex], [avatar], [password], [status], [del_flag], [login_ip], [login_date], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (2, 105, N'ry', N'疯狂的狮子Li', N'sys_user', N'crazyLionLi@qq.com', N'15666666666', N'1', N'', N'$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', N'0', N'0', N'127.0.0.1', getdate(), N'admin', getdate(), N'admin', getdate(), N'测试员')
+INSERT [sys_user] ([user_id], [dept_id], [user_name], [nick_name], [user_type], [email], [phonenumber], [sex], [avatar], [password], [status], [del_flag], [login_ip], [login_date], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (2, 105, N'ry', N'若依', N'sys_user', N'crazyLionLi@qq.com', N'15666666666', N'1', N'', N'$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', N'0', N'0', N'127.0.0.1', getdate(), N'admin', getdate(), N'admin', getdate(), N'测试员')
 GO
 
 CREATE TABLE [sys_user_post]
 (
     [user_id] bigint NOT NULL,
     [post_id] bigint NOT NULL,
-    CONSTRAINT [PK__sys_user__CA534F799C04589B] PRIMARY KEY CLUSTERED ([user_id], [post_id])
+    CONSTRAINT [PK__sys_user_post] PRIMARY KEY CLUSTERED ([user_id], [post_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -2069,11 +2173,10 @@ CREATE TABLE [sys_user_role]
 (
     [user_id] bigint NOT NULL,
     [role_id] bigint NOT NULL,
-    CONSTRAINT [PK__sys_user__6EDEA153FB34D8F0] PRIMARY KEY CLUSTERED ([user_id], [role_id])
+    CONSTRAINT [PK__sys_user_role] PRIMARY KEY CLUSTERED ([user_id], [role_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sys.sp_addextendedproperty
@@ -2111,11 +2214,10 @@ CREATE TABLE [sys_oss]
     [update_time]   datetime2(7)                    NULL,
     [update_by]     nvarchar(64)  DEFAULT ''        NULL,
     [service]       nvarchar(10)  DEFAULT ('minio') NOT NULL,
-    CONSTRAINT [PK__sys_oss__91241EA442389F0D] PRIMARY KEY CLUSTERED ([oss_id])
+    CONSTRAINT [PK__sys_oss] PRIMARY KEY CLUSTERED ([oss_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sp_addextendedproperty
@@ -2202,11 +2304,10 @@ CREATE TABLE [sys_oss_config]
     [update_by]     nvarchar(64)  DEFAULT ''    NULL,
     [update_time]   datetime2(7)                NULL,
     [remark]        nvarchar(500)               NULL,
-    CONSTRAINT [PK__sys_oss___BFBDE87009ED2882] PRIMARY KEY CLUSTERED ([oss_config_id])
+    CONSTRAINT [PK__sys_oss_config] PRIMARY KEY CLUSTERED ([oss_config_id])
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
 )
-ON [PRIMARY]
 GO
 
 EXEC sp_addextendedproperty
@@ -2318,4 +2419,312 @@ GO
 INSERT INTO [sys_oss_config] ([oss_config_id], [config_key], [access_key], [secret_key], [bucket_name], [prefix], [endpoint], [is_https], [region], [status], [ext1], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (N'3', N'aliyun', N'XXXXXXXXXXXXXXX', N'XXXXXXXXXXXXXXX', N'ruoyi', N'', N'http://oss-cn-beijing.aliyuncs.com', N'N', N'', N'1', N'', N'admin', getdate(), N'admin', getdate(), NULL)
 GO
 INSERT INTO [sys_oss_config] ([oss_config_id], [config_key], [access_key], [secret_key], [bucket_name], [prefix], [endpoint], [is_https], [region], [status], [ext1], [create_by], [create_time], [update_by], [update_time], [remark]) VALUES (N'4', N'qcloud', N'XXXXXXXXXXXXXXX', N'XXXXXXXXXXXXXXX', N'ruoyi-1250000000', N'', N'http://cos.ap-beijing.myqcloud.com', N'N', N'ap-beijing', N'1', N'', N'admin', getdate(), N'admin', getdate(), NULL)
+GO
+
+CREATE TABLE [wf_category]
+(
+    [category_id]      bigint                        NOT NULL,
+    [category_name]    nvarchar(64)   DEFAULT ''     NULL,
+    [code]             nvarchar(64)   DEFAULT ''     NULL,
+    [remark]           nvarchar(500)                 NULL,
+    [create_by]        nvarchar(64)   DEFAULT ''     NULL,
+    [create_time]      datetime2(7)                  NULL,
+    [update_by]        nvarchar(64)   DEFAULT ''     NULL,
+    [update_time]      datetime2(7)                  NULL,
+    [del_flag]         nchar(1)       DEFAULT ('0')  NULL,
+    CONSTRAINT [PK__wf_category] PRIMARY KEY CLUSTERED ([category_id])
+    WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+    ON [PRIMARY]
+)
+GO
+
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程分类id',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'category_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程分类名称',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'category_name'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'分类编码',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'code'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'备注',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'remark'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'创建者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'create_by'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'创建时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'create_time'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'更新者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'update_by'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'更新时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'update_time'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'删除标志（0代表存在 2代表删除）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'del_flag'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程分类表',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category'
+GO
+
+CREATE TABLE [wf_form]
+(
+    [form_id]        bigint                          NOT NULL,
+    [form_name]      nvarchar(64)    DEFAULT ''      NULL,
+    [content]        nvarchar(max)                   NULL,
+    [create_by]      nvarchar(64)    DEFAULT ''      NULL,
+    [create_time]    datetime2(7)                    NULL,
+    [update_by]      nvarchar(64)    DEFAULT ''      NULL,
+    [update_time]    datetime2(7)                    NULL,
+    [remark]         nvarchar(255)                   NULL,
+    [del_flag]       nchar(1)        DEFAULT ('0')   NULL,
+    CONSTRAINT [PK__wf_form] PRIMARY KEY CLUSTERED ([form_id])
+    WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+    ON [PRIMARY]
+)
+GO
+
+EXEC sp_addextendedproperty
+    'MS_Description', N'表单主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'form_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'表单名称',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'form_name'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'表单内容',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'content'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'创建者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'create_by'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'创建时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'create_time'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'更新者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'update_by'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'更新时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'update_time'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'备注',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'remark'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'删除标志（0代表存在 2代表删除）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'del_flag'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程表单信息表',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form'
+GO
+
+CREATE TABLE [wf_deploy_form]
+(
+    [deploy_id]  nvarchar(64)   NOT NULL,
+    [form_id]    bigint         NOT NULL,
+    CONSTRAINT [PK__wf_deploy_form] PRIMARY KEY CLUSTERED ([deploy_id], [form_id])
+    WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+    ON [PRIMARY]
+)
+GO
+
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程实例主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_deploy_form',
+    'COLUMN', N'deploy_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'表单主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_deploy_form',
+    'COLUMN', N'form_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程实例关联表单',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_deploy_form'
+GO
+
+CREATE TABLE [wf_copy]
+(
+    [copy_id]          bigint                        NOT NULL,
+    [title]            nvarchar(255)  DEFAULT ''     NULL,
+    [process_id]       nvarchar(64)   DEFAULT ''     NULL,
+    [process_name]     nvarchar(255)  DEFAULT ''     NULL,
+    [category_id]      nvarchar(255)  DEFAULT ''     NULL,
+    [deployment_id]    nvarchar(64)   DEFAULT ''     NULL,
+    [instance_id]      nvarchar(64)   DEFAULT ''     NULL,
+    [task_id]          nvarchar(64)   DEFAULT ''     NULL,
+    [user_id]          bigint                        NULL,
+    [originator_id]    bigint                        NULL,
+    [originator_name]  nvarchar(64)   DEFAULT ''     NULL,
+    [create_by]        nvarchar(64)   DEFAULT ''     NULL,
+    [create_time]      datetime2(7)                  NULL,
+    [update_by]        nvarchar(64)   DEFAULT ''     NULL,
+    [update_time]      datetime2(7)                  NULL,
+    [del_flag]         nchar(1)       DEFAULT ('0')  NULL,
+    CONSTRAINT [PK__wf_copy] PRIMARY KEY CLUSTERED ([copy_id])
+    WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+    ON [PRIMARY]
+)
+GO
+
+EXEC sp_addextendedproperty
+    'MS_Description', N'抄送主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'copy_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'抄送标题',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'title'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'process_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程名称',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'process_name'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程分类主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'category_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'部署主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'deployment_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程实例主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'instance_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'任务主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'task_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'用户主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'user_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'发起人主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'originator_id'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'发起人名称',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'originator_name'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'创建者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'create_by'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'创建时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'create_time'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'更新者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'update_by'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'更新时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'update_time'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'删除标志（0代表存在 2代表删除）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'del_flag'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'流程抄送表',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy'
 GO
