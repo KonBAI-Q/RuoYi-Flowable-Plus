@@ -23,7 +23,7 @@
 - 欢迎提交 `PR` ，注意请提交到 `develop` 开发分支 统一测试发版。
 - 同步升级：[RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus)
 - 特别鸣谢：[RuoYi-Vue-Plus](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus) 、[RuoYi-flowable](https://gitee.com/tony2y/RuoYi-flowable) 、[bpmn-process-designer](https://gitee.com/MiyueSC/bpmn-process-designer)
-- 技术交流群：[![加入QQ群](https://badg.now.sh/badge/icon/1007207992?icon=qq\&label=QQ)](https://jq.qq.com/?_wv=1027\&k=PYDZa1tA)
+- 技术交流群：[![加入QQ群](https://img.shields.io/badge/QQ群-1007207992-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACKklEQVQ4T31Tz2sTURCetxuTFNs0lVSNBrtGAsVeVg9VvNiTIJTiigcRQhIQchBJeggBPSQec8ofYGCD0INeGsxdqx6KXmpORQW7gj+xsklkbdJm9zmzsmG7xH4w7Hsz831v3rxZBgcjjOH2QSnsP8E0+nNoEhqJNNCW0TRv/iiBMiaVJEkCTdMgHCY+loHAzzmviFeATtygU1utFqiqCv1+H4rFIpAgoo6WcVfhFchjsEoJzWYTKpWKnZtMJiGbzTq8KSrI2XgFVAykl+YFWJoXYeYog47BoW0APH1jolnEo2u8HSlwTBRXfpjmLQreXRTh8pxg57W2ODxaM6GzzTpty7qGrrWRAj9jiecAbOHzYO/1DufGLud+nZtmwucXJwRxeoyx4wKH1ciX98M+DK9wPhBYLIYi9y+MT0YP7w1m3I2itQXsd9cyt1/0jU+3f31TnD64e0DNy5fLZcit40ME/GDcvMH5dISPn4gKk7GTcD2VgkaDRsJ+iTot3AJbuJeq1SokH64A73bhyPozEJDoIJPJQL1u80iFqtgnoFMAK0jfu3LV5vjmZoGFQkMBRVGoggfoSKGd9grI5JBleQPhbQFNIsTj8Y6u63YeQvMKOKQqVpEvlUpDESIXCoU/tVrtDjrtOzjYN0i7Tw7J4BPUx6/49+bHSxPRU2fPcGDW1w8vN3ML72IXE2xzILDlMaVnnz6ygp3VoOQEg9CzR7YHwX9/FMJNpv1fzj+7EatnFrYAAAAASUVORK5CYII=)](https://jq.qq.com/?_wv=1027\&k=PYDZa1tA)
 
 ## 演示图例
 <table style="width:100%; text-align:center">
