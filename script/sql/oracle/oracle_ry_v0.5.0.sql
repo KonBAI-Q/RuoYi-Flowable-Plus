@@ -419,11 +419,11 @@ comment on column sys_role_menu.menu_id      is '菜单ID';
 insert into sys_role_menu values ('2', '1');
 insert into sys_role_menu values ('2', '2');
 insert into sys_role_menu values ('2', '3');
+insert into sys_role_menu values ('2', '4');
 insert into sys_role_menu values ('2', '5');
-insert into sys_role_menu values ('2', '6');
 insert into sys_role_menu values ('2', '100');
-insert into sys_role_menu values ('2', '102');
 insert into sys_role_menu values ('2', '101');
+insert into sys_role_menu values ('2', '102');
 insert into sys_role_menu values ('2', '103');
 insert into sys_role_menu values ('2', '104');
 insert into sys_role_menu values ('2', '105');
@@ -1091,7 +1091,7 @@ create table wf_copy (
     create_time     date,
     update_by       varchar(64)    default '',
     update_time     date,
-    del_flag        nchar(1)
+    del_flag        nchar(1)       default '0'
 );
 
 alter table wf_copy add constraint pk_wf_copy primary key (copy_id);

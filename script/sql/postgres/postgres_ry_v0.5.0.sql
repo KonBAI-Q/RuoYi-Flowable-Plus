@@ -281,7 +281,7 @@ insert into sys_menu values('123',  '流程定义', '4',   '3', 'definition', 'w
 insert into sys_menu values('124',  '新建流程', '5',   '1', 'start',      'workflow/work/index',       '', 1, 0, 'C', '0', '0', 'workflow:process:startList',    'guide',      'admin', now(), '', null, '');
 insert into sys_menu values('125',  '我的流程', '5',   '2', 'process',    'workflow/work/own',         '', 1, 0, 'C', '0', '0', 'workflow:process:ownList',      'cascader',   'admin', now(), '', null, '');
 insert into sys_menu values('126',  '待办任务', '5',   '3', 'todo',       'workflow/work/todo',        '', 1, 0, 'C', '0', '0', 'workflow:process:todoList',     'time-range', 'admin', now(), '', null, '');
-insert into sys_menu values('127',  '待签任务', '5',   '4', 'claim',       'workflow/work/claim',      '', 1, 0, 'C', '0', '0', 'workflow:process:claimList',    'checkbox',   'admin', now(), '', null, '');
+insert into sys_menu values('127',  '待签任务', '5',   '4', 'claim',      'workflow/work/claim',       '', 1, 0, 'C', '0', '0', 'workflow:process:claimList',    'checkbox',   'admin', now(), '', null, '');
 insert into sys_menu values('128',  '已办任务', '5',   '5', 'finished',   'workflow/work/finished',    '', 1, 0, 'C', '0', '0', 'workflow:process:finishedList', 'checkbox',   'admin', now(), '', null, '');
 insert into sys_menu values('129',  '抄送我的', '5',   '6', 'copy',       'workflow/work/copy',        '', 1, 0, 'C', '0', '0', 'workflow:process:copyList',     'checkbox',   'admin', now(), '', null, '');
 
@@ -424,11 +424,11 @@ comment on column sys_role_menu.menu_id is '菜单ID';
 insert into sys_role_menu values ('2', '1');
 insert into sys_role_menu values ('2', '2');
 insert into sys_role_menu values ('2', '3');
+insert into sys_role_menu values ('2', '4');
 insert into sys_role_menu values ('2', '5');
-insert into sys_role_menu values ('2', '6');
 insert into sys_role_menu values ('2', '100');
-insert into sys_role_menu values ('2', '102');
 insert into sys_role_menu values ('2', '101');
+insert into sys_role_menu values ('2', '102');
 insert into sys_role_menu values ('2', '103');
 insert into sys_role_menu values ('2', '104');
 insert into sys_role_menu values ('2', '105');
@@ -1020,15 +1020,15 @@ insert into sys_oss_config values (4, 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXX
 drop table if exists wf_form;
 create table wf_form
 (
-    form_id       int8,
-    form_name     varchar(64),
+    form_id       int8          default ''::varchar not null,
+    form_name     varchar(64)   default ''::varchar,
     content       text,
-    create_by     varchar(64),
+    create_by     varchar(64)   default ''::varchar,
     create_time   timestamp,
-    update_by     varchar(64),
+    update_by     varchar(64)   default ''::varchar,
     update_time   timestamp,
     remark        varchar(255),
-    del_flag      char(1),
+    del_flag      char(1)       default '0'::bpchar,
     constraint wf_form_pk primary key (form_id)
 );
 
@@ -1065,15 +1065,15 @@ comment on column wf_deploy_form.form_id   is '表单主键';
 drop table if exists wf_category;
 create table wf_category
 (
-    category_id    int8,
-    category_name  varchar(64),
-    code           varchar(64),
-    remark         varchar(500),
-    create_by      varchar(64),
+    category_id    int8          default ''::varchar not null,
+    category_name  varchar(64)   default ''::varchar,
+    code           varchar(64)   default ''::varchar,
+    remark         varchar(500)  default ''::varchar,
+    create_by      varchar(64)   default ''::varchar,
     create_time    timestamp,
-    update_by      varchar(64),
+    update_by      varchar(64)   default ''::varchar,
     update_time    timestamp,
-    del_flag       char(1),
+    del_flag       char(1)       default '0'::bpchar,
     constraint wf_category_pk primary key (category_id)
 );
 
@@ -1094,22 +1094,22 @@ comment on column wf_category.del_flag      is '删除标志（0代表存在 2�
 drop table if exists wf_copy;
 create table wf_copy
 (
-    copy_id          int8,
-    title            varchar(255),
-    process_id       varchar(64),
-    process_name     varchar(255),
-    category_id      varchar(255),
-    deployment_id    varchar(64),
-    instance_id      varchar(64),
-    task_id          varchar(64),
+    copy_id          int8          default ''::varchar not null,,
+    title            varchar(255)  default ''::varchar,
+    process_id       varchar(64)   default ''::varchar,
+    process_name     varchar(255)  default ''::varchar,
+    category_id      varchar(255)  default ''::varchar,
+    deployment_id    varchar(64)   default ''::varchar,
+    instance_id      varchar(64)   default ''::varchar,
+    task_id          varchar(64)   default ''::varchar,
     user_id          int8,
     originator_id    int8,
-    originator_name  varchar(64),
-    create_by        varchar(64),
+    originator_name  varchar(64)   default ''::varchar,
+    create_by        varchar(64)   default ''::varchar,
     create_time      timestamp,
-    update_by        varchar(64),
+    update_by        varchar(64)   default ''::varchar,
     update_time      timestamp,
-    del_flag         char(1),
+    del_flag         char(1)       default '0'::bpchar,
     constraint wf_copy_pk primary key (copy_id)
 );
 

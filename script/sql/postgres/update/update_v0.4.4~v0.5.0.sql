@@ -1,24 +1,25 @@
 update sys_menu set menu_id = 128 where menu_name = '已办任务'
 
 drop table if exists wf_copy;
-create table wf_copy (
-   copy_id          int8 not null,
-   title            varchar(255)  default ''::varchar,
-   process_id       varchar(64)   default ''::varchar,
-   process_name     varchar(255)  default ''::varchar,
-   category_id      varchar(255)  default ''::varchar,
-   deployment_id    varchar(64)   default ''::varchar,
-   instance_id      varchar(64)   default ''::varchar,
-   task_id          varchar(64)   default ''::varchar,
-   user_id          int8,
-   originator_id    int8,
-   originator_name  varchar(64)   default ''::varchar,
-   create_by        varchar(64)   default ''::varchar,
-   create_time      timestamp,
-   update_by        varchar(64)   default ''::varchar,
-   update_time      timestamp,
-   del_flag         char(1),
-   constraint "wf_copy_pk" primary key (copy_id)
+create table wf_copy
+(
+    copy_id          int8          default ''::varchar not null,,
+    title            varchar(255)  default ''::varchar,
+    process_id       varchar(64)   default ''::varchar,
+    process_name     varchar(255)  default ''::varchar,
+    category_id      varchar(255)  default ''::varchar,
+    deployment_id    varchar(64)   default ''::varchar,
+    instance_id      varchar(64)   default ''::varchar,
+    task_id          varchar(64)   default ''::varchar,
+    user_id          int8,
+    originator_id    int8,
+    originator_name  varchar(64)   default ''::varchar,
+    create_by        varchar(64)   default ''::varchar,
+    create_time      timestamp,
+    update_by        varchar(64)   default ''::varchar,
+    update_time      timestamp,
+    del_flag         char(1)       default '0'::bpchar,
+    constraint wf_copy_pk primary key (copy_id)
 );
 
 comment on table wf_copy is '流程抄送表';

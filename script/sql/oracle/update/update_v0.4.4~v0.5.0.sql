@@ -16,7 +16,7 @@ create table wf_copy (
    create_time     date,
    update_by       varchar(64)    default '',
    update_time     date,
-   del_flag        nchar(1)
+   del_flag        nchar(1)       default '0'
 );
 
 alter table wf_copy add constraint pk_wf_copy primary key (copy_id);
