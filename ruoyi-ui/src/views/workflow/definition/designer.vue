@@ -25,7 +25,7 @@
         </el-row>
       </el-header>
       <el-main>
-        <div v-show="activeStep === 0">
+        <div v-if="activeStep === 0">
           <div class="app-container">
             <el-form size="small" label-width="80px">
               <el-form-item label="流程标识">
@@ -48,16 +48,15 @@
             </el-form>
           </div>
         </div>
-        <div v-show="activeStep === 1">
+        <div v-if="activeStep === 1">
           <process-designer
             ref="modelDesigner"
             v-loading="loading"
-            :key="`designer-${loadIndex}`"
             :bpmnXml="bpmnXml"
             :designerForm="designerForm"
           />
         </div>
-        <div v-show="activeStep === 2">
+        <div v-if="activeStep === 2">
           <el-result :icon="result.icon" :title="result.title" :subTitle="result.describe">
             <template slot="extra">
               <el-button type="primary" size="medium" @click="onClose()">关闭</el-button>

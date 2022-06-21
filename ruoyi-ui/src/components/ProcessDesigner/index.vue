@@ -1,7 +1,6 @@
 <template>
   <div class="process-design" :style="'display: flex; height:' + height">
     <bpmn-process-designer
-      :key="`designer-${reloadIndex}`"
       v-model="xmlString"
       v-bind="controlForm"
       keyboard
@@ -17,7 +16,7 @@
       @event="handlerEvent"
       @save="onSaveProcess"
     />
-    <bmpn-process-penal :key="`penal-${reloadIndex}`" :bpmn-modeler="modeler" :prefix="controlForm.prefix" class="process-panel" />
+    <bmpn-process-penal :bpmn-modeler="modeler" :prefix="controlForm.prefix" class="process-panel" />
   </div>
 </template>
 
@@ -52,11 +51,10 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight - 94.5 + "px;",
-      reloadIndex: 0,
       xmlString: this.bpmnXml,
       modeler: null,
       controlForm: {
-        processId: this.designerForm.processId || '',
+        processId: this.designerForm.processKey || '',
         processName: this.designerForm.processName || '',
         simulation: false,
         labelEditing: false,
