@@ -398,7 +398,9 @@ export default {
           })
         })
       } else {
-        this.$refs.userTable.clearSelection();
+        this.$nextTick(() => {
+          this.$refs.userTable.clearSelection();
+        });
       }
     },
     // 关闭标签
@@ -449,7 +451,9 @@ export default {
       this.getTreeSelect();
       this.getList()
       this.userData.open = true;
-      this.$refs.userTable.clearSelection();
+      this.$nextTick(() => {
+        this.$refs.userTable.clearSelection();
+      });
     },
     /** 通过任务 */
     handleComplete() {
