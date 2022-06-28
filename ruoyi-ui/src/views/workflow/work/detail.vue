@@ -189,7 +189,7 @@ import { treeselect } from '@/api/system/dept'
 import ProcessViewer from '@/components/ProcessViewer'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import Treeselect from '@riophae/vue-treeselect'
-import { listUser } from '@/api/system/user'
+import { selectUser } from '@/api/system/user'
 
 export default {
   name: "Detail",
@@ -330,7 +330,7 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.userLoading = true;
-      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      selectUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.userList = response.rows;
         this.total = response.total;
         this.toggleSelection(this.userMultipleSelection);

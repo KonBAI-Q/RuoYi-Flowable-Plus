@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.workflow;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.annotation.RepeatSubmit;
@@ -51,6 +52,16 @@ public class WfCategoryController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo<WfCategoryVo> list(@Validated(QueryGroup.class) WfCategoryBo bo, PageQuery pageQuery) {
         return flowCategoryService.queryPageList(bo, pageQuery);
+    }
+
+    /**
+     * 查询全部的流程分类列表
+     */
+    @ApiOperation("查询全部流程分类列表")
+    @SaCheckLogin
+    @GetMapping("/listAll")
+    public R<List<WfCategoryVo>> listAll(@Validated(QueryGroup.class) WfCategoryBo bo) {
+        return R.ok(flowCategoryService.queryList(bo));
     }
 
     /**
