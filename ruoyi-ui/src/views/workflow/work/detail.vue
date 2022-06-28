@@ -557,6 +557,13 @@ export default {
         this.userData.copyUser = this.userMultipleSelection.map(k => {
           return { id: k.userId, label: k.nickName }
         })
+        // 设置抄送人ID
+        if (this.userData.copyUser && this.userData.copyUser.length > 0) {
+          const val = this.userData.copyUser.map(item => item.id);
+          this.taskForm.copyUserIds = val instanceof Array ? val.join(',') : val;
+        } else {
+          this.taskForm.copyUserIds = '';
+        }
         this.userData.open = false;
       } else {
         if (!this.taskForm.comment) {
