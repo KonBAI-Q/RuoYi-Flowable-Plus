@@ -165,7 +165,7 @@ export default {
   methods: {
     /** 查询流程分类列表 */
     getCategoryList() {
-      listAllCategory().then(response => this.categoryOptions = response.rows)
+      listAllCategory().then(response => this.categoryOptions = response.data)
     },
     /** 查询流程定义列表 */
     getList() {
