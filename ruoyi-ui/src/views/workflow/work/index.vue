@@ -56,7 +56,7 @@
             size="mini"
             icon="el-icon-video-play"
             @click="handleStart(scope.row)"
-            v-hasPermi="['workflow:definition:designer']"
+            v-hasPermi="['workflow:process:start']"
           >发起</el-button>
         </template>
       </el-table-column>

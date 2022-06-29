@@ -189,7 +189,7 @@ import { treeselect } from '@/api/system/dept'
 import ProcessViewer from '@/components/ProcessViewer'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import Treeselect from '@riophae/vue-treeselect'
-import { listUser } from '@/api/system/user'
+import { selectUser } from '@/api/system/user'
 
 export default {
   name: "Detail",
@@ -330,7 +330,7 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.userLoading = true;
-      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      selectUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.userList = response.rows;
         this.total = response.total;
         this.toggleSelection(this.userMultipleSelection);
@@ -398,7 +398,9 @@ export default {
           })
         })
       } else {
-        this.$refs.userTable.clearSelection();
+        this.$nextTick(() => {
+          this.$refs.userTable.clearSelection();
+        });
       }
     },
     // 关闭标签
@@ -449,7 +451,9 @@ export default {
       this.getTreeSelect();
       this.getList()
       this.userData.open = true;
-      this.$refs.userTable.clearSelection();
+      this.$nextTick(() => {
+        this.$refs.userTable.clearSelection();
+      });
     },
     /** 通过任务 */
     handleComplete() {
@@ -553,6 +557,13 @@ export default {
         this.userData.copyUser = this.userMultipleSelection.map(k => {
           return { id: k.userId, label: k.nickName }
         })
+        // 设置抄送人ID
+        if (this.userData.copyUser && this.userData.copyUser.length > 0) {
+          const val = this.userData.copyUser.map(item => item.id);
+          this.taskForm.copyUserIds = val instanceof Array ? val.join(',') : val;
+        } else {
+          this.taskForm.copyUserIds = '';
+        }
         this.userData.open = false;
       } else {
         if (!this.taskForm.comment) {

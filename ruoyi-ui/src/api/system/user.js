@@ -10,6 +10,15 @@ export function listUser(query) {
   })
 }
 
+// 查询用户列表，用于流程里的用户选择
+export function selectUser(query) {
+  return request({
+    url: '/system/user/selectUser',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询用户详细
 export function getUser(userId) {
   return request({

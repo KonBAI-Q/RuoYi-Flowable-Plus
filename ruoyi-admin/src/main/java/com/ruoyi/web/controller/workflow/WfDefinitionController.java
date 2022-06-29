@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.workflow;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
@@ -79,7 +80,7 @@ public class WfDefinitionController extends BaseController {
 
 
     @ApiOperation(value = "读取xml文件")
-    @SaCheckPermission("workflow:definition:view")
+    @SaCheckLogin
     @GetMapping("/readXml/{definitionId}")
     public R<String> readXml(@ApiParam(value = "流程定义ID") @PathVariable(value = "definitionId") String definitionId) {
         try {

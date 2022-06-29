@@ -76,6 +76,7 @@ public class WfCopyServiceImpl implements IWfCopyService {
     private LambdaQueryWrapper<WfCopy> buildQueryWrapper(WfCopyBo bo) {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<WfCopy> lqw = Wrappers.lambdaQuery();
+        lqw.eq(bo.getUserId() != null, WfCopy::getUserId, bo.getUserId());
         lqw.like(StringUtils.isNotBlank(bo.getProcessName()), WfCopy::getProcessName, bo.getProcessName());
         lqw.like(StringUtils.isNotBlank(bo.getOriginatorName()), WfCopy::getOriginatorName, bo.getOriginatorName());
         return lqw;
