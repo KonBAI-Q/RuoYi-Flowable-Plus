@@ -54,7 +54,7 @@
 <script>
 import '@/plugins/package/theme/index.scss';
 import BpmnViewer from 'bpmn-js/lib/Viewer';
-// import BpmnModeler from 'bpmn-js/lib/Modeler';
+import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 
 export default {
   props: {
@@ -188,7 +188,11 @@ export default {
       if (xml != null && xml !== '') {
         try {
           this.bpmnViewer = new BpmnViewer({
-            container: this.$refs.processCanvas
+            additionalModules: [
+              // 移动整个画布
+              MoveCanvasModule
+            ],
+            container: this.$refs.processCanvas,
           });
           // 任务节点悬浮事件
           this.bpmnViewer.on('element.click', ({ element }) => {
