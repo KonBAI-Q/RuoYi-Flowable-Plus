@@ -14,8 +14,8 @@ import com.ruoyi.workflow.domain.vo.WfCopyVo;
 import com.ruoyi.workflow.mapper.WfCopyMapper;
 import com.ruoyi.workflow.service.IWfCopyService;
 import lombok.RequiredArgsConstructor;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.history.HistoricProcessInstance;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class WfCopyServiceImpl implements IWfCopyService {
 
     private final WfCopyMapper baseMapper;
 
-    private final RuntimeService runtimeService;
+    private final HistoryService historyService;
 
     /**
      * 查询流程抄送
@@ -88,20 +88,20 @@ public class WfCopyServiceImpl implements IWfCopyService {
             // 若抄送用户为空，则不需要处理，返回成功
             return true;
         }
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
             .processInstanceId(taskBo.getInstanceId()).singleResult();
         String[] ids = taskBo.getCopyUserIds().split(",");
         List<WfCopy> copyList = new ArrayList<>(ids.length);
         Long originatorId = LoginHelper.getUserId();
         String originatorName = LoginHelper.getNickName();
-        String title = processInstance.getProcessDefinitionName() + "-" + taskBo.getTaskName();
+        String title = historicProcessInstance.getProcessDefinitionName() + "-" + taskBo.getTaskName();
         for (String id : ids) {
             Long userId = Long.valueOf(id);
             WfCopy copy = new WfCopy();
             copy.setTitle(title);
-            copy.setProcessId(processInstance.getProcessDefinitionId());
-            copy.setProcessName(processInstance.getProcessDefinitionName());
-            copy.setDeploymentId(processInstance.getDeploymentId());
+            copy.setProcessId(historicProcessInstance.getProcessDefinitionId());
+            copy.setProcessName(historicProcessInstance.getProcessDefinitionName());
+            copy.setDeploymentId(historicProcessInstance.getDeploymentId());
             copy.setInstanceId(taskBo.getInstanceId());
             copy.setTaskId(taskBo.getTaskId());
             copy.setUserId(userId);

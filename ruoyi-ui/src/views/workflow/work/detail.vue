@@ -408,6 +408,13 @@ export default {
       let userObj = this.userMultipleSelection.find(item => item.userId === tag.id);
       this.userMultipleSelection.splice(this.userMultipleSelection.indexOf(userObj), 1);
       this.userData.copyUser.splice(this.userData.copyUser.indexOf(tag), 1);
+      // 设置抄送人ID
+      if (this.userData.copyUser && this.userData.copyUser.length > 0) {
+        const val = this.userData.copyUser.map(item => item.id);
+        this.taskForm.copyUserIds = val instanceof Array ? val.join(',') : val;
+      } else {
+        this.taskForm.copyUserIds = '';
+      }
     },
     /** 流程变量赋值 */
     handleCheckChange(val) {
@@ -573,13 +580,6 @@ export default {
         if (!this.currentUserId) {
           this.$modal.msgError("请选择用户");
           return false;
-        }
-        // 若有选择抄送用户，获取抄送用户ID
-        if (this.userData.copyUser && this.userData.copyUser.length > 0) {
-          const val = this.userData.copyUser.map(item => item.id);
-          this.taskForm.copyUserIds = val instanceof Array ? val.join(',') : val;
-        } else {
-          this.taskForm.copyUserIds = '';
         }
         this.taskForm.userId = this.currentUserId;
         if (type === 'delegate') {
