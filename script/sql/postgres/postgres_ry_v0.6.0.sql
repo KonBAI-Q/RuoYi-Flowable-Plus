@@ -205,8 +205,8 @@ create table if not exists sys_menu
     path        varchar(200) default ''::varchar,
     component   varchar(255) default null::varchar,
     query_param varchar(255) default null::varchar,
-    is_frame    int4         default 1,
-    is_cache    int4         default 0,
+    is_frame    char         default '1'::bpchar,
+    is_cache    char         default '0'::bpchar,
     menu_type   char         default ''::bpchar,
     visible     char         default '0'::bpchar,
     status      char         default '0'::bpchar,
@@ -999,6 +999,7 @@ comment on column sys_oss_config.secret_key is '秘钥';
 comment on column sys_oss_config.bucket_name is '桶名称';
 comment on column sys_oss_config.prefix is '前缀';
 comment on column sys_oss_config.endpoint is '访问站点';
+comment on column sys_oss_config.domain is '自定义域名';
 comment on column sys_oss_config.is_https is '是否https（Y=是,N=否）';
 comment on column sys_oss_config.region is '域';
 comment on column sys_oss_config.status is '状态（0=正常,1=停用）';
@@ -1009,10 +1010,12 @@ comment on column sys_oss_config.update_by is '更新者';
 comment on column sys_oss_config.update_time is '更新时间';
 comment on column sys_oss_config.remark is '备注';
 
-insert into sys_oss_config values (1, 'minio',  'ruoyi',            'ruoyi123',        'ruoyi',             '', 'http://localhost:9000',                'N', '',            '0', '', 'admin', now(), 'admin', now(), null);
-insert into sys_oss_config values (2, 'qiniu',  'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'http://XXX.XXXX.com',                  'N', 'z0',          '1', '', 'admin', now(), 'admin', now(), null);
-insert into sys_oss_config values (3, 'aliyun', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'http://oss-cn-beijing.aliyuncs.com',   'N', '',            '1', '', 'admin', now(), 'admin', now(), null);
-insert into sys_oss_config values (4, 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1250000000',  '', 'http://cos.ap-beijing.myqcloud.com',   'N', 'ap-beijing',  '1', '', 'admin', now(), 'admin', now(), null);
+insert into sys_oss_config values (1, 'minio',  'ruoyi',            'ruoyi123',        'ruoyi',             '', '127.0.0.1:9000',                      '','N', '',            '0', '', 'admin', now(), 'admin', now(), null);
+insert into sys_oss_config values (2, 'qiniu',  'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 's3-cn-north-1.qiniucs.com',           '','N', '',            '1', '', 'admin', now(), 'admin', now(), null);
+insert into sys_oss_config values (3, 'aliyun', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'oss-cn-beijing.aliyuncs.com',         '','N', '',            '1', '', 'admin', now(), 'admin', now(), null);
+insert into sys_oss_config values (4, 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1250000000',  '', 'cos.ap-beijing.myqcloud.com',         '','N', 'ap-beijing',  '1', '', 'admin', now(), 'admin', now(), null);
+insert into sys_oss_config values (5, 'image',  'ruoyi',            'ruoyi123',        'ruoyi',             'image', '127.0.0.1:9000',                 '','N', '',            '1', '', 'admin', now(), 'admin', now(), NULL);
+
 
 -- ----------------------------
 -- wf_form流程表单信息表
