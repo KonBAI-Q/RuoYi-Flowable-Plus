@@ -20,6 +20,14 @@ public interface IWfDeployFormService {
     int insertWfDeployForm(WfDeployForm wfDeployForm);
 
     /**
+     * 保存流程实例关联表单
+     * @param deployId
+     * @param formId
+     * @return
+     */
+    int saveInternalDeployForm(String deployId, Long formId);
+
+    /**
      * 查询流程挂着的表单
      *
      * @param deployId

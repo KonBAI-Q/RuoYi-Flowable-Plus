@@ -46,6 +46,20 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
         return baseMapper.insert(deployForm);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int saveInternalDeployForm(String deployId, Long formId) {
+        WfDeployForm deployForm = new WfDeployForm();
+        deployForm.setDeployId(deployId);
+        deployForm.setFormId(formId);
+        WfForm wfForm = formMapper.selectById(formId);
+        if (ObjectUtil.isNotNull(wfForm)) {
+            deployForm.setContent(wfForm.getContent());
+        }
+        // 新增部署流程和表单关系
+        return baseMapper.insert(deployForm);
+    }
+
     /**
      * 查询流程挂着的表单
      *

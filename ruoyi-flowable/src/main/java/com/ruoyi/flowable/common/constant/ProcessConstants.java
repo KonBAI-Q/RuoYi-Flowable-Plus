@@ -8,6 +8,8 @@ package com.ruoyi.flowable.common.constant;
  */
 public class ProcessConstants {
 
+    public static final String SUFFIX = ".bpmn";
+
     /**
      * 动态数据
      */

@@ -1,8 +1,5 @@
 package com.ruoyi.workflow.domain;
 
-import com.alibaba.excel.annotation.ExcelProperty;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -22,13 +19,25 @@ public class WfDeployForm {
     /**
      * 流程定义主键
      */
-    @TableId(type = IdType.INPUT)
-    @ExcelProperty(value = "流程定义主键")
     private String deployId;
 
     /**
      * 表单主键
      */
-    @ExcelProperty(value = "表单主键")
     private Long formId;
+
+    /**
+     * 节点Key
+     */
+    private String nodeKey;
+
+    /**
+     * 节点名称
+     */
+    private String nodeName;
+
+    /**
+     * 表单内容
+     */
+    private String content;
 }
