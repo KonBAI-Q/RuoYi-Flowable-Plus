@@ -80,7 +80,7 @@ export default {
           // 启动流程并将表单数据加入流程变量
           startProcess(this.definitionId, JSON.stringify(variables)).then(res => {
             this.$modal.msgSuccess(res.msg);
-            this.$router.push({
+            this.$tab.closeOpenPage({
               path: '/work/own'
             })
           })
