@@ -160,6 +160,8 @@ export default {
   },
   created() {
     this.getCategoryList();
+  },
+  activated() {
     this.getList();
   },
   methods: {
@@ -225,15 +227,16 @@ export default {
     },
     /** 流程流转记录 */
     handleFlowRecord(row) {
-      console.log("row =========> ", row)
-      this.$router.push({ path: '/work/detail',
+      this.$router.push({
+        path: '/work/detail',
         query: {
           definitionId: row.procDefId,
           procInsId: row.procInsId,
           deployId: row.deployId,
           taskId: row.taskId,
           finished: false
-        }})
+        }
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {

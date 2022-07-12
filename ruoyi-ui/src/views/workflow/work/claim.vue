@@ -100,7 +100,7 @@ export default {
       rules: {}
     };
   },
-  created() {
+  activated() {
     this.getList();
   },
   methods: {
@@ -127,7 +127,6 @@ export default {
     handleClaim(row) {
       claimTask({taskId: row.taskId}).then(response => {
         this.$modal.msgSuccess(response.msg);
-        this.getList();
         this.$router.push({
           path: '/work/todo'
         })
