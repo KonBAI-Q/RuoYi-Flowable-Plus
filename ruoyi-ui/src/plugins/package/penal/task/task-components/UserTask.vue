@@ -328,6 +328,7 @@ export default {
         this.$modal.msgError('请选择用户');
         return;
       }
+      userTaskForm.dataType = 'USERS';
       this.selectedUser.text = this.selectedUserDate.map(k => k.nickName) || [];
       if (this.selectedUserDate.length === 1) {
         let data = this.selectedUserDate[0];
@@ -347,12 +348,14 @@ export default {
       this.userOpen = false;
     },
     changeSelectRoles(val) {
+      userTaskForm.dataType = 'ROLES';
       userTaskForm.candidateGroups = val.join() || null;
       let textArr = this.roleOptions.filter(k => val.indexOf(`ROLE${k.roleId}`) >= 0);
       userTaskForm.text = textArr?.map(k => k.roleName).join() || null;
       this.updateElementTask();
     },
     checkedDeptChange(checkedIds, checkedData) {
+      userTaskForm.dataType = 'DEPTS';
       if (checkedIds && checkedIds.length > 0) {
         this.deptIds = checkedIds;
       }
