@@ -28,6 +28,16 @@ public class ModelUtils {
     }
 
     /**
+     * bpmnModel转xml对象
+     *
+     * @param bpmnModel bpmnModel对象
+     * @return xml
+     */
+    public static byte[] getBpmnXml(BpmnModel bpmnModel) {
+        return bpmnXMLConverter.convertToXML(bpmnModel);
+    }
+
+    /**
      * 获取开始节点
      *
      * @param model bpmnModel对象

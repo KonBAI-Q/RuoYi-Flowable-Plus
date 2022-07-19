@@ -10,6 +10,11 @@ import lombok.Data;
 public class WfMetaInfoDto {
 
     /**
+     * 创建者（username）
+     */
+    private String createUser;
+
+    /**
      * 流程描述
      */
     private String description;

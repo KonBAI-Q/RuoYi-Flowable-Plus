@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
@@ -21,6 +22,7 @@ import com.ruoyi.workflow.service.IWfModelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.StartEvent;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.Model;
 import org.flowable.engine.repository.ModelQuery;
@@ -156,36 +158,75 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
     @Override
     public String queryBpmnXmlById(String modelId) {
         byte[] bpmnBytes = repositoryService.getModelEditorSource(modelId);
-        if (ObjectUtil.isNull(bpmnBytes)) {
-            throw new RuntimeException("流程图不存在！");
-        }
         return StrUtil.utf8Str(bpmnBytes);
+    }
+
+    @Override
+    public void insertModel(WfModelBo modelBo) {
+        Model model = repositoryService.newModel();
+        model.setName(modelBo.getModelName());
+        model.setKey(modelBo.getModelKey());
+        model.setCategory(modelBo.getCategory());
+        String metaInfo = buildMetaInfo(new WfMetaInfoDto(), modelBo.getDescription());
+        model.setMetaInfo(metaInfo);
+        // 保存流程模型
+        repositoryService.saveModel(model);
+    }
+
+    @Override
+    public void updateModel(WfModelBo modelBo) {
+        // 根据模型Key查询模型信息
+        Model model = repositoryService.getModel(modelBo.getModelId());
+        if (ObjectUtil.isNull(model)) {
+            throw new RuntimeException("流程模型不存在！");
+        }
+        model.setCategory(modelBo.getCategory());
+        WfMetaInfoDto metaInfoDto = JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
+        String metaInfo = buildMetaInfo(metaInfoDto, modelBo.getDescription());
+        model.setMetaInfo(metaInfo);
+        // 保存流程模型
+        repositoryService.saveModel(model);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveModel(WfModelBo modelBo) {
-        // 根据模型Key查询模型信息
-        Model model = repositoryService.createModelQuery().modelKey(modelBo.getModelKey()).singleResult();
-        Model newModel;
+        // 查询模型信息
+        Model model = repositoryService.getModel(modelBo.getModelId());
         if (ObjectUtil.isNull(model)) {
-            newModel = repositoryService.newModel();
-        } else {
-            if (modelBo.getNewVersion() != null && modelBo.getNewVersion()) {
-                newModel = repositoryService.newModel();
-                newModel.setVersion(model.getVersion() + 1);
-            } else {
-                newModel = model;
-            }
+            throw new RuntimeException("流程模型不存在！");
         }
-        newModel.setName(modelBo.getModelName());
-        newModel.setKey(modelBo.getModelKey());
-        newModel.setCategory(modelBo.getCategory());
-        newModel.setMetaInfo(buildMetaInfo(modelBo));
+        BpmnModel bpmnModel = ModelUtils.getBpmnModel(modelBo.getBpmnXml());
+        if (ObjectUtil.isEmpty(bpmnModel)) {
+            throw new RuntimeException("获取模型设计失败！");
+        }
+        String processName = bpmnModel.getMainProcess().getName();
+        // 获取开始节点
+        StartEvent startEvent = ModelUtils.getStartEvent(bpmnModel);
+        if (ObjectUtil.isNull(startEvent)) {
+            throw new RuntimeException("开始节点不存在，请检查流程设计是否有误！");
+        }
+        // 获取开始节点配置的表单Key
+        if (StrUtil.isBlank(startEvent.getFormKey())) {
+            throw new RuntimeException("请配置流程表单");
+        }
+        Model newModel;
+        if (Boolean.TRUE.equals(modelBo.getNewVersion())) {
+            newModel = repositoryService.newModel();
+            newModel.setName(processName);
+            newModel.setKey(model.getKey());
+            newModel.setCategory(model.getCategory());
+            newModel.setMetaInfo(model.getMetaInfo());
+            newModel.setVersion(model.getVersion() + 1);
+        } else {
+            newModel = model;
+            // 设置流程名称
+            newModel.setName(processName);
+        }
         // 保存流程模型
         repositoryService.saveModel(newModel);
         // 保存 BPMN XML
-        saveModelBpmnXml(newModel.getId(), modelBo.getBpmnXml());
+        repositoryService.addModelEditorSource(newModel.getId(), ModelUtils.getBpmnXml(bpmnModel));
     }
 
     @Override
@@ -214,7 +255,7 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         // 保存流程模型
         repositoryService.saveModel(newModel);
         // 保存 BPMN XML
-        saveModelBpmnXml(newModel.getId(), bpmnXml);
+        repositoryService.addModelEditorSource(newModel.getId(), StrUtil.utf8Bytes(bpmnXml));
     }
 
     @Override
@@ -237,10 +278,18 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         if (ObjectUtil.isNull(model)) {
             throw new RuntimeException("流程模型不存在！");
         }
-        WfMetaInfoDto metaInfo = getMetaInfo(model.getMetaInfo());
         // 获取流程图
         String bpmnXml = queryBpmnXmlById(modelId);
         BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnXml);
+        // 获取开始节点
+        StartEvent startEvent = ModelUtils.getStartEvent(bpmnModel);
+        if (ObjectUtil.isNull(startEvent)) {
+            throw new RuntimeException("开始节点不存在，请检查流程设计是否有误！");
+        }
+        String formKey = startEvent.getFormKey();
+        if (StringUtils.isEmpty(formKey)) {
+            throw new RuntimeException("请配置流程表单");
+        }
         String processName = model.getName() + ProcessConstants.SUFFIX;
         Deployment deployment = repositoryService.createDeployment()
             .name(model.getName())
@@ -249,38 +298,22 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
             .category(model.getCategory())
             .deploy();
         // 保存部署表单
-        if (FormType.PROCESS.getType().equals(metaInfo.getFormType())) {
-            deployFormService.saveInternalDeployForm(deployment.getId(), metaInfo.getFormId());
-        }
+        deployFormService.saveInternalDeployForm(deployment.getId(), formKey);
+
     }
 
-    private String buildMetaInfo(WfModelBo modelBo) {
-        WfMetaInfoDto metaInfo = new WfMetaInfoDto();
+    /**
+     * 构建模型扩展信息
+     * @return
+     */
+    private String buildMetaInfo(WfMetaInfoDto metaInfo, String description) {
         // 只有非空，才进行设置，避免更新时的覆盖
-        if (StringUtils.isNotEmpty(modelBo.getDescription())) {
-            metaInfo.setDescription(modelBo.getDescription());
+        if (StringUtils.isNotEmpty(description)) {
+            metaInfo.setDescription(description);
         }
-        if (ObjectUtil.isNotNull(modelBo.getFormType())) {
-            metaInfo.setFormType(modelBo.getFormType());
-            metaInfo.setFormId(modelBo.getFormId());
+        if (StringUtils.isNotEmpty(metaInfo.getCreateUser())) {
+            metaInfo.setCreateUser(LoginHelper.getUsername());
         }
         return JsonUtils.toJsonString(metaInfo);
-    }
-
-    private WfMetaInfoDto getMetaInfo(String metaInfoJson) {
-        WfMetaInfoDto metaInfo = JsonUtils.parseObject(metaInfoJson, WfMetaInfoDto.class);
-        if (ObjectUtil.isNull(metaInfo) || ObjectUtil.hasNull(metaInfo.getFormType(), metaInfo.getFormId())) {
-            throw new RuntimeException("未配置表单信息！");
-        }
-        return metaInfo;
-    }
-
-    private void saveModelBpmnXml(String modelId, String bpmnXml) {
-        if (StringUtils.isBlank(modelId)) {
-            throw new RuntimeException("模板主键不能为空！");
-        }
-        if (StringUtils.isNotEmpty(bpmnXml)) {
-            repositoryService.addModelEditorSource(modelId, StrUtil.utf8Bytes(bpmnXml));
-        }
     }
 }

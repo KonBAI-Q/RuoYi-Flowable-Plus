@@ -1,128 +1,133 @@
 <template>
   <div class="panel-tab__content">
     <el-form size="mini" label-width="80px" @submit.native.prevent>
-      <el-form-item label="表单标识">
-        <el-input v-model="formKey" clearable @change="updateElementFormKey" />
-      </el-form-item>
-      <el-form-item label="业务标识">
-        <el-select v-model="businessKey" @change="updateElementBusinessKey">
-          <el-option v-for="i in fieldList" :key="i.id" :value="i.id" :label="i.label" />
-          <el-option label="无" value="" />
+      <el-form-item label="表单" prop="formKey">
+        <el-select v-model="formKey" placeholder="请选择表单" @change="updateElementFormKey" clearable>
+          <el-option v-for="item in formOptions" :key="item.formId" :label="item.formName" :value="`key_${item.formId}`" />
         </el-select>
       </el-form-item>
+<!--      <el-form-item label="表单标识">-->
+<!--        <el-input v-model="formKey" clearable @change="updateElementFormKey" />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="业务标识">-->
+<!--        <el-select v-model="businessKey" @change="updateElementBusinessKey">-->
+<!--          <el-option v-for="i in fieldList" :key="i.id" :value="i.id" :label="i.label" />-->
+<!--          <el-option label="无" value="" />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
     </el-form>
 
     <!--字段列表-->
-    <div class="element-property list-property">
-      <el-divider><i class="el-icon-coin"></i> 表单字段</el-divider>
-      <el-table :data="fieldList" size="mini" max-height="240" border fit>
-        <el-table-column label="序号" type="index" width="50px" />
-        <el-table-column label="字段名称" prop="label" min-width="80px" show-overflow-tooltip />
-        <el-table-column label="字段类型" prop="type" min-width="80px" :formatter="row => fieldType[row.type] || row.type" show-overflow-tooltip />
-        <el-table-column label="默认值" prop="defaultValue" min-width="80px" show-overflow-tooltip />
-        <el-table-column label="操作" width="90px">
-          <template slot-scope="{ row, $index }">
-            <el-button size="mini" type="text" @click="openFieldForm(row, $index)">编辑</el-button>
-            <el-divider direction="vertical" />
-            <el-button size="mini" type="text" style="color: #ff4d4f" @click="removeField(row, $index)">移除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div class="element-drawer__button">
-      <el-button size="mini" type="primary" icon="el-icon-plus" @click="openFieldForm(null, -1)">添加字段</el-button>
-    </div>
+<!--    <div class="element-property list-property">-->
+<!--      <el-divider><i class="el-icon-coin"></i> 表单字段</el-divider>-->
+<!--      <el-table :data="fieldList" size="mini" max-height="240" border fit>-->
+<!--        <el-table-column label="序号" type="index" width="50px" />-->
+<!--        <el-table-column label="字段名称" prop="label" min-width="80px" show-overflow-tooltip />-->
+<!--        <el-table-column label="字段类型" prop="type" min-width="80px" :formatter="row => fieldType[row.type] || row.type" show-overflow-tooltip />-->
+<!--        <el-table-column label="默认值" prop="defaultValue" min-width="80px" show-overflow-tooltip />-->
+<!--        <el-table-column label="操作" width="90px">-->
+<!--          <template slot-scope="{ row, $index }">-->
+<!--            <el-button size="mini" type="text" @click="openFieldForm(row, $index)">编辑</el-button>-->
+<!--            <el-divider direction="vertical" />-->
+<!--            <el-button size="mini" type="text" style="color: #ff4d4f" @click="removeField(row, $index)">移除</el-button>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--      </el-table>-->
+<!--    </div>-->
+<!--    <div class="element-drawer__button">-->
+<!--      <el-button size="mini" type="primary" icon="el-icon-plus" @click="openFieldForm(null, -1)">添加字段</el-button>-->
+<!--    </div>-->
 
     <!--字段配置侧边栏-->
-    <el-drawer :visible.sync="fieldModelVisible" title="字段配置" :size="`${width}px`" append-to-body destroy-on-close>
-      <el-form :model="formFieldForm" label-width="90px" size="mini" @submit.native.prevent>
-        <el-form-item label="字段ID">
-          <el-input v-model="formFieldForm.id" clearable />
-        </el-form-item>
-        <el-form-item label="类型">
-          <el-select v-model="formFieldForm.typeType" placeholder="请选择字段类型" clearable @change="changeFieldTypeType">
-            <el-option v-for="(value, key) of fieldType" :label="value" :value="key" :key="key" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="类型名称" v-if="formFieldForm.typeType === 'custom'">
-          <el-input v-model="formFieldForm.type" clearable />
-        </el-form-item>
-        <el-form-item label="名称">
-          <el-input v-model="formFieldForm.label" clearable />
-        </el-form-item>
-        <el-form-item label="时间格式" v-if="formFieldForm.typeType === 'date'">
-          <el-input v-model="formFieldForm.datePattern" clearable />
-        </el-form-item>
-        <el-form-item label="默认值">
-          <el-input v-model="formFieldForm.defaultValue" clearable />
-        </el-form-item>
-      </el-form>
+<!--    <el-drawer :visible.sync="fieldModelVisible" title="字段配置" :size="`${width}px`" append-to-body destroy-on-close>-->
+<!--      <el-form :model="formFieldForm" label-width="90px" size="mini" @submit.native.prevent>-->
+<!--        <el-form-item label="字段ID">-->
+<!--          <el-input v-model="formFieldForm.id" clearable />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="类型">-->
+<!--          <el-select v-model="formFieldForm.typeType" placeholder="请选择字段类型" clearable @change="changeFieldTypeType">-->
+<!--            <el-option v-for="(value, key) of fieldType" :label="value" :value="key" :key="key" />-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="类型名称" v-if="formFieldForm.typeType === 'custom'">-->
+<!--          <el-input v-model="formFieldForm.type" clearable />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="名称">-->
+<!--          <el-input v-model="formFieldForm.label" clearable />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="时间格式" v-if="formFieldForm.typeType === 'date'">-->
+<!--          <el-input v-model="formFieldForm.datePattern" clearable />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="默认值">-->
+<!--          <el-input v-model="formFieldForm.defaultValue" clearable />-->
+<!--        </el-form-item>-->
+<!--      </el-form>-->
 
-      <!-- 枚举值设置 -->
-      <template v-if="formFieldForm.type === 'enum'">
-        <el-divider key="enum-divider" />
-        <p class="listener-filed__title" key="enum-title">
-          <span><i class="el-icon-menu"></i>枚举值列表：</span>
-          <el-button size="mini" type="primary" @click="openFieldOptionForm(null, -1, 'enum')">添加枚举值</el-button>
-        </p>
-        <el-table :data="fieldEnumList" size="mini" key="enum-table" max-height="240" border fit>
-          <el-table-column label="序号" width="50px" type="index" />
-          <el-table-column label="枚举值编号" prop="id" min-width="100px" show-overflow-tooltip />
-          <el-table-column label="枚举值名称" prop="name" min-width="100px" show-overflow-tooltip />
-          <el-table-column label="操作" width="90px">
-            <template slot-scope="{ row, $index }">
-              <el-button size="mini" type="text" @click="openFieldOptionForm(row, $index, 'enum')">编辑</el-button>
-              <el-divider direction="vertical" />
-              <el-button size="mini" type="text" style="color: #ff4d4f" @click="removeFieldOptionItem(row, $index, 'enum')">移除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </template>
+<!--      &lt;!&ndash; 枚举值设置 &ndash;&gt;-->
+<!--      <template v-if="formFieldForm.type === 'enum'">-->
+<!--        <el-divider key="enum-divider" />-->
+<!--        <p class="listener-filed__title" key="enum-title">-->
+<!--          <span><i class="el-icon-menu"></i>枚举值列表：</span>-->
+<!--          <el-button size="mini" type="primary" @click="openFieldOptionForm(null, -1, 'enum')">添加枚举值</el-button>-->
+<!--        </p>-->
+<!--        <el-table :data="fieldEnumList" size="mini" key="enum-table" max-height="240" border fit>-->
+<!--          <el-table-column label="序号" width="50px" type="index" />-->
+<!--          <el-table-column label="枚举值编号" prop="id" min-width="100px" show-overflow-tooltip />-->
+<!--          <el-table-column label="枚举值名称" prop="name" min-width="100px" show-overflow-tooltip />-->
+<!--          <el-table-column label="操作" width="90px">-->
+<!--            <template slot-scope="{ row, $index }">-->
+<!--              <el-button size="mini" type="text" @click="openFieldOptionForm(row, $index, 'enum')">编辑</el-button>-->
+<!--              <el-divider direction="vertical" />-->
+<!--              <el-button size="mini" type="text" style="color: #ff4d4f" @click="removeFieldOptionItem(row, $index, 'enum')">移除</el-button>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
+<!--        </el-table>-->
+<!--      </template>-->
 
-      <!-- 校验规则 -->
-      <el-divider key="validation-divider" />
-      <p class="listener-filed__title" key="validation-title">
-        <span><i class="el-icon-menu"></i>约束条件列表：</span>
-        <el-button size="mini" type="primary" @click="openFieldOptionForm(null, -1, 'constraint')">添加约束</el-button>
-      </p>
-      <el-table :data="fieldConstraintsList" size="mini" key="validation-table" max-height="240" border fit>
-        <el-table-column label="序号" width="50px" type="index" />
-        <el-table-column label="约束名称" prop="name" min-width="100px" show-overflow-tooltip />
-        <el-table-column label="约束配置" prop="config" min-width="100px" show-overflow-tooltip />
-        <el-table-column label="操作" width="90px">
-          <template slot-scope="{ row, $index }">
-            <el-button size="mini" type="text" @click="openFieldOptionForm(row, $index, 'constraint')">编辑</el-button>
-            <el-divider direction="vertical" />
-            <el-button size="mini" type="text" style="color: #ff4d4f" @click="removeFieldOptionItem(row, $index, 'constraint')">移除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+<!--      &lt;!&ndash; 校验规则 &ndash;&gt;-->
+<!--      <el-divider key="validation-divider" />-->
+<!--      <p class="listener-filed__title" key="validation-title">-->
+<!--        <span><i class="el-icon-menu"></i>约束条件列表：</span>-->
+<!--        <el-button size="mini" type="primary" @click="openFieldOptionForm(null, -1, 'constraint')">添加约束</el-button>-->
+<!--      </p>-->
+<!--      <el-table :data="fieldConstraintsList" size="mini" key="validation-table" max-height="240" border fit>-->
+<!--        <el-table-column label="序号" width="50px" type="index" />-->
+<!--        <el-table-column label="约束名称" prop="name" min-width="100px" show-overflow-tooltip />-->
+<!--        <el-table-column label="约束配置" prop="config" min-width="100px" show-overflow-tooltip />-->
+<!--        <el-table-column label="操作" width="90px">-->
+<!--          <template slot-scope="{ row, $index }">-->
+<!--            <el-button size="mini" type="text" @click="openFieldOptionForm(row, $index, 'constraint')">编辑</el-button>-->
+<!--            <el-divider direction="vertical" />-->
+<!--            <el-button size="mini" type="text" style="color: #ff4d4f" @click="removeFieldOptionItem(row, $index, 'constraint')">移除</el-button>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--      </el-table>-->
 
-      <!-- 表单属性 -->
-      <el-divider key="property-divider" />
-      <p class="listener-filed__title" key="property-title">
-        <span><i class="el-icon-menu"></i>字段属性列表：</span>
-        <el-button size="mini" type="primary" @click="openFieldOptionForm(null, -1, 'property')">添加属性</el-button>
-      </p>
-      <el-table :data="fieldPropertiesList" size="mini" key="property-table" max-height="240" border fit>
-        <el-table-column label="序号" width="50px" type="index" />
-        <el-table-column label="属性编号" prop="id" min-width="100px" show-overflow-tooltip />
-        <el-table-column label="属性值" prop="value" min-width="100px" show-overflow-tooltip />
-        <el-table-column label="操作" width="90px">
-          <template slot-scope="{ row, $index }">
-            <el-button size="mini" type="text" @click="openFieldOptionForm(row, $index, 'property')">编辑</el-button>
-            <el-divider direction="vertical" />
-            <el-button size="mini" type="text" style="color: #ff4d4f" @click="removeFieldOptionItem(row, $index, 'property')">移除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+<!--      &lt;!&ndash; 表单属性 &ndash;&gt;-->
+<!--      <el-divider key="property-divider" />-->
+<!--      <p class="listener-filed__title" key="property-title">-->
+<!--        <span><i class="el-icon-menu"></i>字段属性列表：</span>-->
+<!--        <el-button size="mini" type="primary" @click="openFieldOptionForm(null, -1, 'property')">添加属性</el-button>-->
+<!--      </p>-->
+<!--      <el-table :data="fieldPropertiesList" size="mini" key="property-table" max-height="240" border fit>-->
+<!--        <el-table-column label="序号" width="50px" type="index" />-->
+<!--        <el-table-column label="属性编号" prop="id" min-width="100px" show-overflow-tooltip />-->
+<!--        <el-table-column label="属性值" prop="value" min-width="100px" show-overflow-tooltip />-->
+<!--        <el-table-column label="操作" width="90px">-->
+<!--          <template slot-scope="{ row, $index }">-->
+<!--            <el-button size="mini" type="text" @click="openFieldOptionForm(row, $index, 'property')">编辑</el-button>-->
+<!--            <el-divider direction="vertical" />-->
+<!--            <el-button size="mini" type="text" style="color: #ff4d4f" @click="removeFieldOptionItem(row, $index, 'property')">移除</el-button>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--      </el-table>-->
 
-      <!-- 底部按钮 -->
-      <div class="element-drawer__button">
-        <el-button size="mini">取 消</el-button>
-        <el-button size="mini" type="primary" @click="saveField">保 存</el-button>
-      </div>
-    </el-drawer>
+<!--      &lt;!&ndash; 底部按钮 &ndash;&gt;-->
+<!--      <div class="element-drawer__button">-->
+<!--        <el-button size="mini">取 消</el-button>-->
+<!--        <el-button size="mini" type="primary" @click="saveField">保 存</el-button>-->
+<!--      </div>-->
+<!--    </el-drawer>-->
 
     <el-dialog :visible.sync="fieldOptionModelVisible" :title="optionModelTitle" width="600px" append-to-body destroy-on-close>
       <el-form :model="fieldOptionForm" size="mini" label-width="96px" @submit.native.prevent>
@@ -148,6 +153,8 @@
 </template>
 
 <script>
+import { listForm } from "@/api/workflow/form";
+
 export default {
   name: "ElementForm",
   props: {
@@ -160,6 +167,7 @@ export default {
   },
   data() {
     return {
+      formOptions: [],
       formKey: "",
       businessKey: "",
       optionModelTitle: "",
@@ -192,7 +200,15 @@ export default {
       }
     }
   },
+  created() {
+    /** 查询流程分类列表 */
+    this.getFormList();
+  },
   methods: {
+    /** 查询表单列表 */
+    getFormList() {
+      listForm().then(response => this.formOptions = response.rows)
+    },
     resetFormList() {
       this.bpmnELement = window.bpmnInstances.bpmnElement;
       this.formKey = this.bpmnELement.businessObject.formKey;
@@ -200,21 +216,20 @@ export default {
       this.elExtensionElements =
         this.bpmnELement.businessObject.get("extensionElements") || window.bpmnInstances.moddle.create("bpmn:ExtensionElements", { values: [] });
       // 获取元素表单配置 或者 创建新的表单配置
-      this.formData =
-        this.elExtensionElements.values.filter(ex => ex.$type === `${this.prefix}:FormData`)?.[0] ||
-        window.bpmnInstances.moddle.create(`${this.prefix}:FormData`, { fields: [] });
-
+      // this.formData =
+      //   this.elExtensionElements.values.filter(ex => ex.$type === `${this.prefix}:FormData`)?.[0] ||
+      //   window.bpmnInstances.moddle.create(`${this.prefix}:FormData`, { fields: [] });
       // 业务标识 businessKey， 绑定在 formData 中
-      this.businessKey = this.formData.businessKey;
+      // this.businessKey = this.formData.businessKey;
 
       // 保留剩余扩展元素，便于后面更新该元素对应属性
       this.otherExtensions = this.elExtensionElements.values.filter(ex => ex.$type !== `${this.prefix}:FormData`);
 
       // 复制原始值，填充表格
-      this.fieldList = JSON.parse(JSON.stringify(this.formData.fields || []));
+      // this.fieldList = JSON.parse(JSON.stringify(this.formData.fields || []));
 
       // 更新元素扩展属性，避免后续报错
-      this.updateElementExtensions();
+      // this.updateElementExtensions();
     },
     updateElementFormKey() {
       window.bpmnInstances.modeling.updateProperties(this.bpmnELement, { formKey: this.formKey });

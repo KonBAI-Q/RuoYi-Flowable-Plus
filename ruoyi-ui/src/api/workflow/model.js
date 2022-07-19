@@ -25,10 +25,28 @@ export function getModel(modelId) {
   })
 }
 
+// 新增模型信息
+export function addModel(data) {
+  return request({
+    url: '/workflow/model',
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改模型信息
+export function updateModel(data) {
+  return request({
+    url: '/workflow/model',
+    method: 'put',
+    data: data
+  })
+}
+
 // 保存流程模型
 export function saveModel(data) {
   return request({
-    url: '/workflow/model',
+    url: '/workflow/model/save',
     method: 'post',
     data: data
   })

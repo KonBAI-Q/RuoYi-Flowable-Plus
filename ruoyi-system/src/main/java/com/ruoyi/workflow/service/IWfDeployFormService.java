@@ -22,10 +22,10 @@ public interface IWfDeployFormService {
     /**
      * 保存流程实例关联表单
      * @param deployId
-     * @param formId
+     * @param formKey
      * @return
      */
-    int saveInternalDeployForm(String deployId, Long formId);
+    int saveInternalDeployForm(String deployId, String formKey);
 
     /**
      * 查询流程挂着的表单

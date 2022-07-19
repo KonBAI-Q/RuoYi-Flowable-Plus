@@ -4,7 +4,7 @@
       <slot name="control-header"></slot>
       <template v-if="!$slots['control-header']">
         <el-button-group key="file-control">
-<!--          <el-button :size="headerButtonSize" :type="headerButtonType" icon="el-icon-edit-outline" @click="onSave">保存流程</el-button>-->
+          <el-button :size="headerButtonSize" :type="headerButtonType" icon="el-icon-edit-outline" @click="onSave">保存流程</el-button>
           <el-button :size="headerButtonSize" :type="headerButtonType" icon="el-icon-folder-opened" @click="$refs.refFile.click()">打开文件</el-button>
           <el-tooltip effect="light">
             <div slot="content">

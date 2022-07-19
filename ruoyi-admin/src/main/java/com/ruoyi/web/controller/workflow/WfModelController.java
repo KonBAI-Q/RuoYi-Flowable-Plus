@@ -7,6 +7,8 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.validate.AddGroup;
+import com.ruoyi.common.core.validate.EditGroup;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.workflow.domain.bo.WfModelBo;
 import com.ruoyi.workflow.domain.vo.WfModelVo;
@@ -16,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotEmpty;
@@ -62,10 +65,35 @@ public class WfModelController extends BaseController {
     /**
      * 获取流程表单详细信息
      */
+    @ApiOperation("查询流程表单详细信息")
     @SaCheckPermission("workflow:model:query")
     @GetMapping(value = "/bpmnXml/{modelId}")
     public R<String> getBpmnXml(@ApiParam("主键") @NotNull(message = "主键不能为空") @PathVariable("modelId") String modelId) {
         return R.ok("操作成功", modelService.queryBpmnXmlById(modelId));
+    }
+
+    /**
+     * 新增流程模型
+     */
+    @ApiOperation("新增流程模型")
+    @SaCheckPermission("workflow:model:add")
+    @Log(title = "流程模型", businessType = BusinessType.INSERT)
+    @PostMapping
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody WfModelBo modelBo) {
+        modelService.insertModel(modelBo);
+        return R.ok();
+    }
+
+    /**
+     * 修改流程模型
+     */
+    @ApiOperation("修改流程模型")
+    @SaCheckPermission("workflow:model:edit")
+    @Log(title = "流程模型", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody WfModelBo modelBo) {
+        modelService.updateModel(modelBo);
+        return R.ok();
     }
 
     /**
@@ -75,7 +103,7 @@ public class WfModelController extends BaseController {
     @SaCheckPermission("workflow:model:save")
     @Log(title = "保存流程模型", businessType = BusinessType.INSERT)
     @RepeatSubmit()
-    @PostMapping()
+    @PostMapping("/save")
     public R<String> save(@RequestBody WfModelBo modelBo) {
         modelService.saveModel(modelBo);
         return R.ok();

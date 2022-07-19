@@ -14,8 +14,7 @@
 </template>
 
 <script>
-import { getFormByDeployId } from '@/api/workflow/deploy'
-import { startProcess } from '@/api/workflow/process'
+import { getProcessForm, startProcess } from '@/api/workflow/process'
 import Parser from '@/utils/generator/parser'
 
 export default {
@@ -40,7 +39,10 @@ export default {
     initData() {
       this.definitionId = this.$route.query && this.$route.query.definitionId;
       this.deployId = this.$route.query && this.$route.query.deployId;
-      getFormByDeployId(this.deployId).then(res => {
+      getProcessForm({
+        definitionId: this.definitionId,
+        deployId: this.deployId
+      }).then(res => {
         if (res.data) {
           this.formData = res.data;
           this.formOpen = true

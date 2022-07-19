@@ -13,10 +13,10 @@
         <div slot="title" class="panel-tab__title"><i class="el-icon-s-promotion"></i>流转条件</div>
         <flow-condition :business-object="elementBusinessObject" :type="elementType" />
       </el-collapse-item>
-<!--      <el-collapse-item name="condition" v-if="formVisible" key="form">-->
-<!--        <div slot="title" class="panel-tab__title"><i class="el-icon-s-order"></i>表单</div>-->
-<!--        <element-form :id="elementId" :type="elementType" />-->
-<!--      </el-collapse-item>-->
+      <el-collapse-item name="condition" v-if="formVisible" key="form">
+        <div slot="title" class="panel-tab__title"><i class="el-icon-s-order"></i>表单</div>
+        <element-form :id="elementId" :type="elementType" />
+      </el-collapse-item>
       <el-collapse-item name="task" v-if="elementType.indexOf('Task') !== -1" key="task">
         <div slot="title" class="panel-tab__title"><i class="el-icon-s-claim"></i>任务</div>
         <element-task :id="elementId" :type="elementType" />
@@ -53,7 +53,7 @@ import FlowCondition from "./flow-condition/FlowCondition";
 import SignalAndMassage from "./signal-message/SignalAndMessage";
 import ElementListeners from "./listeners/ElementListeners";
 import ElementProperties from "./properties/ElementProperties";
-// import ElementForm from "./form/ElementForm";
+import ElementForm from "./form/ElementForm";
 import UserTaskListeners from "./listeners/UserTaskListeners";
 /**
  * 侧边栏
@@ -65,7 +65,7 @@ export default {
   name: "BpmnPropertiesPanel",
   components: {
     UserTaskListeners,
-    // ElementForm,
+    ElementForm,
     ElementProperties,
     ElementListeners,
     SignalAndMassage,
@@ -183,7 +183,8 @@ export default {
         activatedElement.source &&
         activatedElement.source.type.indexOf("StartEvent") === -1
       );
-      this.formVisible = this.elementType === "UserTask" || this.elementType === "StartEvent";
+      this.formVisible = this.elementType === "StartEvent";
+      // this.formVisible = this.elementType === "UserTask" || this.elementType === "StartEvent";
     },
     beforeDestroy() {
       window.bpmnInstances = null;

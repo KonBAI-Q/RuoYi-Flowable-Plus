@@ -5,6 +5,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.workflow.domain.bo.WfCopyBo;
 import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfCopyVo;
@@ -42,6 +43,15 @@ public class WfProcessController extends BaseController {
     @ApiOperation(value = "查询可发起流程列表", response = WfDefinitionVo.class)
     public TableDataInfo<WfDefinitionVo> list(PageQuery pageQuery) {
         return processService.processList(pageQuery);
+    }
+
+    @GetMapping("/getProcessForm")
+    @SaCheckPermission("workflow:process:start")
+    @ApiOperation(value = "查询流程部署关联表单信息")
+    public R<?> getForm(@ApiParam(value = "流程定义id") @RequestParam(value = "definitionId") String definitionId,
+                      @ApiParam(value = "流程部署id") @RequestParam(value = "deployId") String deployId) {
+        String formContent = processService.selectFormContent(definitionId, deployId);
+        return R.ok(JsonUtils.parseObject(formContent, Map.class));
     }
 
     @ApiOperation(value = "根据流程定义id启动流程实例")

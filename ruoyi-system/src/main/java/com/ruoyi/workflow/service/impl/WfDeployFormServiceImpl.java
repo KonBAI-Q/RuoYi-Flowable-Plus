@@ -1,10 +1,12 @@
 package com.ruoyi.workflow.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.WfForm;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
@@ -48,10 +50,11 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int saveInternalDeployForm(String deployId, Long formId) {
+    public int saveInternalDeployForm(String deployId, String formKey) {
         WfDeployForm deployForm = new WfDeployForm();
         deployForm.setDeployId(deployId);
-        deployForm.setFormId(formId);
+        deployForm.setFormKey(formKey);
+        Long formId = Convert.toLong(StringUtils.substringAfter(formKey, "key_"));
         WfForm wfForm = formMapper.selectById(formId);
         if (ObjectUtil.isNotNull(wfForm)) {
             deployForm.setContent(wfForm.getContent());

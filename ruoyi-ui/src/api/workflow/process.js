@@ -9,6 +9,14 @@ export function listProcess(query) {
   })
 }
 
+// 查询流程列表
+export function getProcessForm(query) {
+  return request({
+    url: '/workflow/process/getProcessForm',
+    method: 'get',
+    params: query
+  })
+}
 
 // 部署流程实例
 export function startProcess(processDefId, data) {

@@ -3,6 +3,9 @@ package com.ruoyi.workflow.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.IORuntimeException;
+import cn.hutool.core.io.IoUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.ruoyi.common.core.domain.PageQuery;
@@ -14,14 +17,19 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
+import com.ruoyi.flowable.utils.ModelUtils;
 import com.ruoyi.flowable.utils.TaskUtils;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
+import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
+import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.StartEvent;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.Deployment;
@@ -35,6 +43,7 @@ import org.flowable.task.api.history.HistoricTaskInstanceQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +59,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
 
     private final IWfTaskService wfTaskService;
     private final ISysUserService userService;
+    private final WfDeployFormMapper deployFormMapper;
 
     /**
      * 流程定义列表
@@ -82,7 +92,6 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             vo.setProcessKey(processDefinition.getKey());
             vo.setProcessName(processDefinition.getName());
             vo.setVersion(processDefinition.getVersion());
-            vo.setCategory(processDefinition.getCategory());
             vo.setDeploymentId(processDefinition.getDeploymentId());
             vo.setSuspended(processDefinition.isSuspended());
             // 流程定义时间
@@ -93,6 +102,23 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         page.setRecords(definitionVoList);
         page.setTotal(pageTotal);
         return TableDataInfo.build(page);
+    }
+
+    @Override
+    public String selectFormContent(String definitionId, String deployId) {
+        InputStream inputStream = repositoryService.getProcessModel(definitionId);
+        String bpmnString;
+        try {
+            bpmnString = IoUtil.readUtf8(inputStream);
+        } catch (IORuntimeException exception) {
+            throw new RuntimeException("获取流程设计失败！");
+        }
+        BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnString);
+        StartEvent startEvent = ModelUtils.getStartEvent(bpmnModel);
+        WfDeployForm deployForm = deployFormMapper.selectVoOne(new LambdaQueryWrapper<WfDeployForm>()
+            .eq(WfDeployForm::getDeployId, deployId)
+            .eq(WfDeployForm::getFormKey, startEvent.getFormKey()));
+        return deployForm.getContent();
     }
 
     /**

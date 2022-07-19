@@ -17,6 +17,11 @@ public class WfDeployForm {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 表单主键
+     */
+    private String formKey;
+
+    /**
      * 流程定义主键
      */
     private String deployId;

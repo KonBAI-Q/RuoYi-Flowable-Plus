@@ -22,6 +22,13 @@ public interface IWfProcessService {
     TableDataInfo<WfDefinitionVo> processList(PageQuery pageQuery);
 
     /**
+     * 查询流程部署关联表单信息
+     * @param definitionId 流程定义ID
+     * @param deployId 部署ID
+     */
+    String selectFormContent(String definitionId, String deployId);
+
+    /**
      * 启动流程实例
      * @param procDefId 流程定义ID
      * @param variables 扩展参数
