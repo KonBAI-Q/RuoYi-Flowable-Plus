@@ -23,6 +23,7 @@ import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
+import com.ruoyi.workflow.domain.vo.WfDeployFormVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
@@ -115,10 +116,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         }
         BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnString);
         StartEvent startEvent = ModelUtils.getStartEvent(bpmnModel);
-        WfDeployForm deployForm = deployFormMapper.selectVoOne(new LambdaQueryWrapper<WfDeployForm>()
+        WfDeployFormVo deployFormVo = deployFormMapper.selectVoOne(new LambdaQueryWrapper<WfDeployForm>()
             .eq(WfDeployForm::getDeployId, deployId)
             .eq(WfDeployForm::getFormKey, startEvent.getFormKey()));
-        return deployForm.getContent();
+        return deployFormVo.getContent();
     }
 
     /**

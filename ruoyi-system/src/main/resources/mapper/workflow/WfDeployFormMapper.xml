@@ -5,8 +5,11 @@
 <mapper namespace="com.ruoyi.workflow.mapper.WfDeployFormMapper">
 
     <resultMap type="com.ruoyi.workflow.domain.WfDeployForm" id="WfDeployFormResult">
-        <result property="formId" column="form_id"/>
         <result property="deployId" column="deploy_id"/>
+        <result property="formKey" column="form_key"/>
+        <result property="nodeKey" column="node_key"/>
+        <result property="nodeName" column="node_name"/>
+        <result property="content" column="content"/>
     </resultMap>
 
 </mapper>
