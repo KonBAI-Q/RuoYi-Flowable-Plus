@@ -99,18 +99,6 @@ export const constantRoutes = [
         meta: { title: '发起流程', icon: '' }
       },
       {
-        path: 'own',
-        component: () => import('@/views/workflow/work/own'),
-        name: 'own',
-        meta: { title: '我的流程', icon: '' }
-      },
-      {
-        path: 'todo',
-        component: () => import('@/views/workflow/work/todo'),
-        name: 'todo',
-        meta: { title: '代办任务', icon: '' }
-      },
-      {
         path: 'detail',
         component: () => import('@/views/workflow/work/detail'),
         name: 'Detail',
@@ -127,7 +115,7 @@ export const constantRoutes = [
         path: 'build/index',
         component: () => import('@/views/tool/build/index'),
         name: 'FormBuild',
-        meta: { title: '表单配置', icon: '' }
+        meta: { title: '表单设计', icon: '' }
       }
     ]
   },
