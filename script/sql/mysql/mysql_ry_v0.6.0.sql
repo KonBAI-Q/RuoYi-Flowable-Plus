@@ -160,8 +160,8 @@ create table sys_menu (
 insert into sys_menu values('1', '系统管理', '0', '1', 'system',   null, '', 1, 0, 'M', '0', '0', '', 'system',   'admin', sysdate(), '', null, '系统管理目录');
 insert into sys_menu values('2', '系统监控', '0', '2', 'monitor',  null, '', 1, 0, 'M', '0', '0', '', 'monitor',  'admin', sysdate(), '', null, '系统监控目录');
 insert into sys_menu values('3', '系统工具', '0', '3', 'tool',     null, '', 1, 0, 'M', '0', '0', '', 'tool',     'admin', sysdate(), '', null, '系统工具目录');
-insert into sys_menu values('4', '流程管理', '0', '4', 'workflow', null, '', 1, 0, 'M', '0', '0', '', 'skill',    'admin', sysdate(), '', null, '流程管理目录');
-insert into sys_menu values('5', '办公管理', '0', '5', 'task',     null, '', 1, 0, 'M', '0', '0', '', 'job',      'admin', sysdate(), '', null, '办公管理目录');
+insert into sys_menu values('4', '流程管理', '0', '4', 'process',  null, '', 1, 0, 'M', '0', '0', '', 'skill',    'admin', sysdate(), '', null, '流程管理目录');
+insert into sys_menu values('5', '办公管理', '0', '5', 'work',     null, '', 1, 0, 'M', '0', '0', '', 'job',      'admin', sysdate(), '', null, '办公管理目录');
 
 -- 二级菜单
 insert into sys_menu values('100',  '用户管理', '1',   '1', 'user',       'system/user/index',        '', 1, 0, 'C', '0', '0', 'system:user:list',        'user',          'admin', sysdate(), '', null, '用户管理菜单');
@@ -186,16 +186,17 @@ insert into sys_menu values('118',  '文件管理', '1', '10', 'oss', 'system/os
 -- xxl-job-admin控制台
 insert into sys_menu values('120',  '任务调度中心', '2',  '5', 'XxlJob',      'monitor/xxljob/index',      '', 1, 0, 'C', '0', '0', 'monitor:xxljob:list',      'job',     'admin', sysdate(), '', null, 'Xxl-Job控制台菜单');
 -- 流程管理
-insert into sys_menu values('121',  '流程分类', '4',   '1', 'category',   'workflow/category/index',      '', 1, 0, 'C', '0', '0', 'workflow:category:list',   'nested',  'admin', sysdate(), '', null, '流程分类菜单');
-insert into sys_menu values('122',  '表单配置', '4',   '2', 'form',       'workflow/form/index',          '', 1, 0, 'C', '0', '0', 'workflow:form:list',       'form',    'admin', sysdate(), '', null, '表单配置菜单');
-insert into sys_menu values('123',  '流程定义', '4',   '3', 'definition', 'workflow/definition/index',    '', 1, 0, 'C', '0', '0', 'workflow:definition:list', 'example', 'admin', sysdate(), '', null, '流程定义菜单');
+insert into sys_menu values('121',  '流程分类', '4',   '1', 'category',   'workflow/category/index',      '', 1, 0, 'C', '0', '0', 'workflow:category:list',   'nested',    'admin', sysdate(), '', null, '流程分类菜单');
+insert into sys_menu values('122',  '表单配置', '4',   '2', 'form',       'workflow/form/index',          '', 1, 0, 'C', '0', '0', 'workflow:form:list',       'form',      'admin', sysdate(), '', null, '表单配置菜单');
+insert into sys_menu values('123',  '流程模型', '4',   '3', 'model',      'workflow/model/index',         '', 1, 0, 'C', '0', '0', 'workflow:model:list',      'component', 'admin', sysdate(), '', null, '流程模型菜单');
+insert into sys_menu values('124',  '部署管理', '4',   '4', 'deploy',     'workflow/deploy/index',        '', 1, 0, 'C', '0', '0', 'workflow:deploy:list',     'example',   'admin', sysdate(), '', null, '部署管理菜单');
 -- 办公管理
-insert into sys_menu values('124',  '新建流程', '5',   '1', 'start',      'workflow/work/index',       '', 1, 0, 'C', '0', '0', 'workflow:process:startList',    'guide',      'admin', sysdate(), '', null, '');
-insert into sys_menu values('125',  '我的流程', '5',   '2', 'process',    'workflow/work/own',         '', 1, 0, 'C', '0', '0', 'workflow:process:ownList',      'cascader',   'admin', sysdate(), '', null, '');
-insert into sys_menu values('126',  '待办任务', '5',   '3', 'todo',       'workflow/work/todo',        '', 1, 0, 'C', '0', '0', 'workflow:process:todoList',     'time-range', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('127',  '待签任务', '5',   '4', 'claim',       'workflow/work/claim',      '', 1, 0, 'C', '0', '0', 'workflow:process:claimList',    'checkbox',   'admin', sysdate(), '', null, '');
-insert into sys_menu values('128',  '已办任务', '5',   '5', 'finished',   'workflow/work/finished',    '', 1, 0, 'C', '0', '0', 'workflow:process:finishedList', 'checkbox',   'admin', sysdate(), '', null, '');
-insert into sys_menu values('129',  '抄送我的', '5',   '6', 'copy',       'workflow/work/copy',        '', 1, 0, 'C', '0', '0', 'workflow:process:copyList',     'checkbox',   'admin', sysdate(), '', null, '');
+insert into sys_menu values('125',  '新建流程', '5',   '1', 'create',     'workflow/work/index',       '', 1, 0, 'C', '0', '0', 'workflow:process:startList',    'guide',      'admin', sysdate(), '', null, '新建流程菜单');
+insert into sys_menu values('126',  '我的流程', '5',   '2', 'own',        'workflow/work/own',         '', 1, 0, 'C', '0', '0', 'workflow:process:ownList',      'cascader',   'admin', sysdate(), '', null, '我的流程菜单');
+insert into sys_menu values('127',  '待办任务', '5',   '3', 'todo',       'workflow/work/todo',        '', 1, 0, 'C', '0', '0', 'workflow:process:todoList',     'time-range', 'admin', sysdate(), '', null, '待办任务菜单');
+insert into sys_menu values('128',  '待签任务', '5',   '4', 'claim',      'workflow/work/claim',       '', 1, 0, 'C', '0', '0', 'workflow:process:claimList',    'checkbox',   'admin', sysdate(), '', null, '待签任务菜单');
+insert into sys_menu values('129',  '已办任务', '5',   '5', 'finished',   'workflow/work/finished',    '', 1, 0, 'C', '0', '0', 'workflow:process:finishedList', 'checkbox',   'admin', sysdate(), '', null, '已办任务菜单');
+insert into sys_menu values('130',  '抄送我的', '5',   '6', 'copy',       'workflow/work/copy',        '', 1, 0, 'C', '0', '0', 'workflow:process:copyList',     'checkbox',   'admin', sysdate(), '', null, '抄送我的菜单');
 
 -- 三级菜单
 insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          'admin', sysdate(), '', null, '操作日志菜单');
@@ -284,14 +285,34 @@ insert into sys_menu values('1151', '表单新增', '122', '2', '#', '', '', 1, 
 insert into sys_menu values('1152', '表单修改', '122', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:edit',    '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1153', '表单删除', '122', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:remove',  '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1154', '表单导出', '122', '5', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:form:export',  '#', 'admin', sysdate(), '', null, '');
--- 流程定义
-insert into sys_menu values('1160', '查看流程', '123', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:view',     '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1161', '流程设计', '123', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:designer', '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1162', '启动流程', '123', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:start',    '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1163', '更新流程', '123', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:update',   '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1164', '流程删除', '123', '5', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:definition:remove',   '#', 'admin', sysdate(), '', null, '');
+-- 流程模型
+insert into sys_menu values('1160', '模型查询', '123', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:query',    '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1161', '模型新增', '123', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:add',      '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1162', '模型修改', '123', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:edit',     '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1163', '模型删除', '123', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:remove',   '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1164', '模型导出', '123', '5', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:export',   '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1165', '模型导入', '123', '6', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:import',   '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1166', '模型设计', '123', '7', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:designer', '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1167', '模型保存', '123', '8', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:save',     '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1168', '流程部署', '123', '9', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:deploy',   '#', 'admin', sysdate(), '', null, '');
+-- 部署管理
+insert into sys_menu values('1170', '部署查询', '124', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:deploy:query',   '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1171', '部署删除', '124', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:deploy:remove',  '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1172', '更新状态', '124', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:deploy:status',  '#', 'admin', sysdate(), '', null, '');
 -- 新建流程
-insert into sys_menu values('1170', '发起流程', '124', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:start',       '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1180', '发起流程', '125', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:start',  '#', 'admin', sysdate(), '', null, '');
+-- 我的流程
+insert into sys_menu values('1190', '流程详情', '126', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:query',  '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1191', '流程删除', '126', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:remove', '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1192', '流程取消', '126', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:cancel', '#', 'admin', sysdate(), '', null, '');
+-- 待办任务
+insert into sys_menu values('1200', '流程办理', '127', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:approval', '#', 'admin', sysdate(), '', null, '');
+-- 代签任务
+insert into sys_menu values('1210', '流程签收', '128', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:claim',  '#', 'admin', sysdate(), '', null, '');
+-- 已办任务
+insert into sys_menu values('1220', '流程撤回', '129', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:revoke', '#', 'admin', sysdate(), '', null, '');
+-- 抄送我的
+insert into sys_menu values('1230', '流程导出', '130', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:export', '#', 'admin', sysdate(), '', null, '');
 
 -- ----------------------------
 -- 6、用户和角色关联表  用户N-1角色
@@ -355,6 +376,7 @@ insert into sys_role_menu values ('2', '126');
 insert into sys_role_menu values ('2', '127');
 insert into sys_role_menu values ('2', '128');
 insert into sys_role_menu values ('2', '129');
+insert into sys_role_menu values ('2', '130');
 insert into sys_role_menu values ('2', '500');
 insert into sys_role_menu values ('2', '501');
 insert into sys_role_menu values ('2', '1001');
@@ -431,7 +453,21 @@ insert into sys_role_menu values ('2', '1161');
 insert into sys_role_menu values ('2', '1162');
 insert into sys_role_menu values ('2', '1163');
 insert into sys_role_menu values ('2', '1164');
+insert into sys_role_menu values ('2', '1165');
+insert into sys_role_menu values ('2', '1166');
+insert into sys_role_menu values ('2', '1167');
+insert into sys_role_menu values ('2', '1168');
 insert into sys_role_menu values ('2', '1170');
+insert into sys_role_menu values ('2', '1171');
+insert into sys_role_menu values ('2', '1172');
+insert into sys_role_menu values ('2', '1180');
+insert into sys_role_menu values ('2', '1190');
+insert into sys_role_menu values ('2', '1191');
+insert into sys_role_menu values ('2', '1192');
+insert into sys_role_menu values ('2', '1200');
+insert into sys_role_menu values ('2', '1210');
+insert into sys_role_menu values ('2', '1220');
+insert into sys_role_menu values ('2', '1230');
 
 -- ----------------------------
 -- 8、角色和部门关联表  角色1-N部门
@@ -773,9 +809,12 @@ create table `wf_form` (
 -- ----------------------------
 drop table if exists `wf_deploy_form`;
 create table `wf_deploy_form` (
-    deploy_id varchar(64)     not null    comment '流程实例主键',
-    form_id   bigint(20)      not null    comment '表单主键',
-    primary key (deploy_id, form_id)
+    deploy_id  varchar(64)     not null     comment '流程实例主键',
+    form_key   varchar(64)     not null     comment '表单Key',
+    node_key   varchar(64)     default ''   comment '节点Key',
+    node_name  varchar(255)    default ''   comment '节点名称',
+    content    longtext        default null comment '表单内容',
+    primary key (deploy_id, form_key)
 ) engine = innodb comment = '流程实例关联表单';
 
 -- ----------------------------
