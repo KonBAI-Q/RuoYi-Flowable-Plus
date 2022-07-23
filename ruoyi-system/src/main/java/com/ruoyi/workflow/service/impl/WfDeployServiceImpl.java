@@ -154,7 +154,7 @@ public class WfDeployServiceImpl implements IWfDeployService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteByIds(List<String> deployIds) {
         for (String deployId : deployIds) {
-            repositoryService.deleteDeployment(deployId);
+            repositoryService.deleteDeployment(deployId, true);
             deployFormMapper.delete(new LambdaQueryWrapper<WfDeployForm>().eq(WfDeployForm::getDeployId, deployId));
         }
     }
