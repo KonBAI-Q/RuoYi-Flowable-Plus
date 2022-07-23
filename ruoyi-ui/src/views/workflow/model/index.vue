@@ -129,7 +129,7 @@
               <el-dropdown-item
                 icon="el-icon-view"
                 @click.native="handleProcessView(scope.row)"
-                v-hasPermi="['workflow:model:view']"
+                v-hasPermi="['workflow:model:query']"
               >流程图</el-dropdown-item>
               <el-dropdown-item
                 icon="el-icon-price-tag"
@@ -257,7 +257,7 @@
               type="text"
               size="mini"
               icon="el-icon-star-off"
-              v-hasPermi="['workflow:model:designer']"
+              v-hasPermi="['workflow:model:save']"
               @click.native="handleLatest(scope.row)"
             >设为最新</el-button>
           </template>

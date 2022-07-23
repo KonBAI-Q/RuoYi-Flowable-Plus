@@ -31,7 +31,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['workflow:copy:export']"
+          v-hasPermi="['workflow:process:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -55,6 +55,7 @@
             type="text"
             icon="el-icon-tickets"
             @click="handleFlowRecord(scope.row)"
+            v-hasPermi="['workflow:process:query']"
           >详情</el-button>
         </template>
       </el-table-column>

@@ -74,22 +74,27 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              更多操作<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item icon="el-icon-tickets" @click.native="handleFlowRecord(scope.row)">
-                详情
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-circle-close" @click.native="handleStop(scope.row)">
-                取消申请
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-delete" @click.native="handleDelete(scope.row)">
-                删除
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-tickets"
+            @click="handleFlowRecord(scope.row)"
+            v-hasPermi="['workflow:process:query']"
+          >详情</el-button>
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['workflow:process:remove']"
+          >删除</el-button>
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-circle-close"
+            @click="handleStop(scope.row)"
+            v-hasPermi="['workflow:process:cancel']"
+          >取消</el-button>
         </template>
       </el-table-column>
     </el-table>

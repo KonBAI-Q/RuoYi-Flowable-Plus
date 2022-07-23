@@ -33,7 +33,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:deployment:remove']"
+          v-hasPermi="['workflow:process:remove']"
         >删除</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -59,12 +59,14 @@
             type="text"
             icon="el-icon-tickets"
             @click="handleFlowRecord(scope.row)"
+            v-hasPermi="['workflow:process:query']"
           >流转记录</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-tickets"
             @click="handleRevoke(scope.row)"
+            v-hasPermi="['workflow:process:revoke']"
           >撤回
           </el-button>
         </template>

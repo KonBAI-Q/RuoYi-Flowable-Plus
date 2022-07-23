@@ -62,7 +62,8 @@
             type="text"
             icon="el-icon-edit-outline"
             @click="handleProcess(scope.row)"
-          >处理
+            v-hasPermi="['workflow:process:approval']"
+          >办理
           </el-button>
         </template>
       </el-table-column>

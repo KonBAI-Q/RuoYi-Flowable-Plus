@@ -44,6 +44,7 @@
             type="text"
             icon="el-icon-s-claim"
             @click="handleClaim(scope.row)"
+            v-hasPermi="['workflow:process:claim']"
           >签收
           </el-button>
         </template>
