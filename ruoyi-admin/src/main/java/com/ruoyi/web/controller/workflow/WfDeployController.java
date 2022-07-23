@@ -1,10 +1,12 @@
 package com.ruoyi.web.controller.workflow;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfDeployVo;
@@ -18,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
@@ -74,6 +78,18 @@ public class WfDeployController extends BaseController {
     @GetMapping("/bpmnXml/{definitionId}")
     public R<String> getBpmnXml(@ApiParam(value = "流程定义ID") @PathVariable(value = "definitionId") String definitionId) {
         return R.ok(null, deployService.queryBpmnXmlById(definitionId));
+    }
+
+    /**
+     * 删除流程模型
+     */
+    @ApiOperation("删除流程部署")
+    @SaCheckPermission("workflow:deploy:remove")
+    @Log(title = "删除流程部署", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{deployIds}")
+    public R<String> remove(@ApiParam(value = "流程部署ids") @NotEmpty(message = "主键不能为空") @PathVariable String[] deployIds) {
+        deployService.deleteByIds(Arrays.asList(deployIds));
+        return R.ok();
     }
 
     /**

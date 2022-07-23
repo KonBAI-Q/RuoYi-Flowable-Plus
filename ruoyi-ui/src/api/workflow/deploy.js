@@ -34,6 +34,13 @@ export function changeState(params) {
   })
 }
 
+// 删除流程部署
+export function delDeploy(deployIds) {
+  return request({
+    url: '/workflow/deploy/' + deployIds,
+    method: 'delete'
+  })
+}
 
 // 查询流程部署关联表单信息
 export function getFormByDeployId(deployId) {

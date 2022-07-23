@@ -2,12 +2,15 @@ package com.ruoyi.workflow.service.impl;
 
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.io.IoUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfDeployVo;
+import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfDeployService;
 import lombok.RequiredArgsConstructor;
 import org.flowable.common.engine.impl.db.SuspensionState;
@@ -16,6 +19,7 @@ import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,6 +35,7 @@ import java.util.stream.Collectors;
 public class WfDeployServiceImpl implements IWfDeployService {
 
     private final RepositoryService repositoryService;
+    private final WfDeployFormMapper deployFormMapper;
 
     @Override
     public TableDataInfo<WfDeployVo> queryPageList(WfProcessBo processBo, PageQuery pageQuery) {
@@ -142,6 +147,15 @@ public class WfDeployServiceImpl implements IWfDeployService {
             return IoUtil.readUtf8(inputStream);
         } catch (IORuntimeException exception) {
             throw new RuntimeException("加载xml文件异常");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteByIds(List<String> deployIds) {
+        for (String deployId : deployIds) {
+            repositoryService.deleteDeployment(deployId);
+            deployFormMapper.delete(new LambdaQueryWrapper<WfDeployForm>().eq(WfDeployForm::getDeployId, deployId));
         }
     }
 }

@@ -42,7 +42,22 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-table v-loading="loading" fit :data="deployList">
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          :disabled="multiple"
+          @click="handleDelete"
+          v-hasPermi="['workflow:deploy:remove']"
+        >删除</el-button>
+      </el-col>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+    </el-row>
+
+    <el-row :gutter="10" class="mb8">
+      <el-table v-loading="loading" fit :data="deployList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="流程标识" align="center" prop="processKey" :show-overflow-tooltip="true" />
         <el-table-column label="流程名称" align="center" :show-overflow-tooltip="true">
@@ -101,8 +116,7 @@
 
     <!-- 版本管理 -->
     <el-dialog title="版本管理" :visible.sync="publish.open" width="50%" append-to-body>
-      <el-table v-loading="publish.loading" :data="publish.dataList" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" align="center" />
+      <el-table v-loading="publish.loading" :data="publish.dataList">
         <el-table-column label="流程标识" align="center" prop="processKey" :show-overflow-tooltip="true" />
         <el-table-column label="流程名称" align="center" :show-overflow-tooltip="true">
           <template slot-scope="scope">
@@ -164,7 +178,7 @@
 
 <script>
 import { listAllCategory } from '@/api/workflow/category'
-import { listDeploy, listPublish, getBpmnXml, changeState } from '@/api/workflow/deploy'
+import { listDeploy, listPublish, getBpmnXml, changeState, delDeploy } from '@/api/workflow/deploy'
 import ProcessViewer from '@/components/ProcessViewer'
 
 export default {
@@ -255,6 +269,12 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.deploymentId)
+      this.single = selection.length !== 1
+      this.multiple = !selection.length
+    },
     /** 查看流程图 */
     handleProcessView(row) {
       let definitionId = row.definitionId;
@@ -288,6 +308,19 @@ export default {
       changeState(params).then(res => {
         this.$modal.msgSuccess(res.msg)
         this.getPublishList();
+      });
+    },
+    handleDelete(row) {
+      const deploymentIds = row.deploymentId || this.ids;
+      this.$modal.confirm('是否确认删除选中的数据项？').then(() => {
+        this.loading = true;
+        return delDeploy(deploymentIds);
+      }).then(() => {
+        this.loading = false;
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).finally(() => {
+        this.loading = false;
       });
     },
     categoryFormat(row, column) {

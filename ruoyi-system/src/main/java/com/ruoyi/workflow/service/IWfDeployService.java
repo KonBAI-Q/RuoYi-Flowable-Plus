@@ -5,6 +5,8 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfDeployVo;
 
+import java.util.List;
+
 /**
  * @author KonBAI
  * @createTime 2022/6/30 9:03
@@ -18,4 +20,6 @@ public interface IWfDeployService {
     void updateState(String definitionId, String stateCode);
 
     String queryBpmnXmlById(String definitionId);
+
+    void deleteByIds(List<String> deployIds);
 }
