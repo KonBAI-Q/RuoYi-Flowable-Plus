@@ -753,6 +753,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      * @param processInstance 流程实例
      * @param variables 流程参数
      */
+    @Override
     public void startFirstTask(ProcessInstance processInstance, Map<String, Object> variables) {
         // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题？
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
