@@ -61,5 +61,5 @@ public interface IWfModelService {
     /**
      * 部署流程模型
      */
-    void deployModel(String modelId);
+    boolean deployModel(String modelId);
 }

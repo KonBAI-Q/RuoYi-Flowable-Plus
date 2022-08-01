@@ -1,5 +1,6 @@
 package com.ruoyi.workflow.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -7,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.flowable.utils.ModelUtils;
 import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.WfForm;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
@@ -14,9 +16,15 @@ import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.mapper.WfFormMapper;
 import com.ruoyi.workflow.service.IWfDeployFormService;
 import lombok.RequiredArgsConstructor;
+import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.FlowNode;
+import org.flowable.bpmn.model.StartEvent;
+import org.flowable.bpmn.model.UserTask;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -50,17 +58,30 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int saveInternalDeployForm(String deployId, String formKey) {
-        WfDeployForm deployForm = new WfDeployForm();
-        deployForm.setDeployId(deployId);
-        deployForm.setFormKey(formKey);
-        Long formId = Convert.toLong(StringUtils.substringAfter(formKey, "key_"));
-        WfForm wfForm = formMapper.selectById(formId);
-        if (ObjectUtil.isNotNull(wfForm)) {
-            deployForm.setContent(wfForm.getContent());
+    public boolean saveInternalDeployForm(String deployId, BpmnModel bpmnModel) {
+        List<WfDeployForm> deployFormList = new ArrayList<>();
+        // 获取开始节点
+        StartEvent startEvent = ModelUtils.getStartEvent(bpmnModel);
+        if (ObjectUtil.isNull(startEvent)) {
+            throw new RuntimeException("开始节点不存在，请检查流程设计是否有误！");
         }
-        // 新增部署流程和表单关系
-        return baseMapper.insert(deployForm);
+        // 保存开始节点表单信息
+        WfDeployForm startDeployForm = buildDeployForm(deployId, startEvent);
+        if (ObjectUtil.isNotNull(startDeployForm)) {
+            deployFormList.add(startDeployForm);
+        }
+        // 保存用户节点表单信息
+        Collection<UserTask> userTasks = ModelUtils.getAllUserTaskEvent(bpmnModel);
+        if (CollUtil.isNotEmpty(userTasks)) {
+            for (UserTask userTask : userTasks) {
+                WfDeployForm userTaskDeployForm = buildDeployForm(deployId, userTask);
+                if (ObjectUtil.isNotNull(userTaskDeployForm)) {
+                    deployFormList.add(userTaskDeployForm);
+                }
+            }
+        }
+        // 批量新增部署流程和表单关联信息
+        return baseMapper.insertBatch(deployFormList);
     }
 
     /**
@@ -83,5 +104,36 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
         } else {
             return null;
         }
+    }
+
+    /**
+     * 构建部署表单关联信息对象
+     * @param deployId 部署ID
+     * @param node 节点信息
+     * @return 部署表单关联对象。若无表单信息（formKey），则返回null
+     */
+    private WfDeployForm buildDeployForm(String deployId, FlowNode node) {
+        String formKey = null;
+        if (node instanceof StartEvent) {
+            formKey = ((StartEvent) node).getFormKey();
+        } else if (node instanceof UserTask) {
+            formKey = ((UserTask) node).getFormKey();
+        }
+        if (StringUtils.isEmpty(formKey)) {
+            return null;
+        }
+        Long formId = Convert.toLong(StringUtils.substringAfter(formKey, "key_"));
+        WfForm wfForm = formMapper.selectById(formId);
+        if (ObjectUtil.isNull(wfForm)) {
+            throw new ServiceException("表单信息查询错误");
+        }
+        WfDeployForm deployForm = new WfDeployForm();
+        deployForm.setContent(wfForm.getContent());
+        deployForm.setDeployId(deployId);
+        deployForm.setNodeKey(node.getId());
+        deployForm.setNodeName(node.getName());
+        deployForm.setFormKey(formKey);
+        deployForm.setContent(wfForm.getContent());
+        return deployForm;
     }
 }

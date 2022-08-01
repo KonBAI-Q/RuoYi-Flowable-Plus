@@ -272,7 +272,7 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deployModel(String modelId) {
+    public boolean deployModel(String modelId) {
         // 获取流程模型
         Model model = repositoryService.getModel(modelId);
         if (ObjectUtil.isNull(model)) {
@@ -281,16 +281,8 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         // 获取流程图
         String bpmnXml = queryBpmnXmlById(modelId);
         BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnXml);
-        // 获取开始节点
-        StartEvent startEvent = ModelUtils.getStartEvent(bpmnModel);
-        if (ObjectUtil.isNull(startEvent)) {
-            throw new RuntimeException("开始节点不存在，请检查流程设计是否有误！");
-        }
-        String formKey = startEvent.getFormKey();
-        if (StringUtils.isEmpty(formKey)) {
-            throw new RuntimeException("请配置流程表单");
-        }
         String processName = model.getName() + ProcessConstants.SUFFIX;
+        // 部署流程
         Deployment deployment = repositoryService.createDeployment()
             .name(model.getName())
             .key(model.getKey())
@@ -298,8 +290,7 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
             .category(model.getCategory())
             .deploy();
         // 保存部署表单
-        deployFormService.saveInternalDeployForm(deployment.getId(), formKey);
-
+        return deployFormService.saveInternalDeployForm(deployment.getId(), bpmnModel);
     }
 
     /**

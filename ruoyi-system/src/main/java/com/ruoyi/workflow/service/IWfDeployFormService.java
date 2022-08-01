@@ -2,6 +2,7 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
+import org.flowable.bpmn.model.BpmnModel;
 
 /**
  * 流程实例关联表单Service接口
@@ -21,11 +22,11 @@ public interface IWfDeployFormService {
 
     /**
      * 保存流程实例关联表单
-     * @param deployId
-     * @param formKey
+     * @param deployId 部署ID
+     * @param bpmnModel bpmnModel对象
      * @return
      */
-    int saveInternalDeployForm(String deployId, String formKey);
+    boolean saveInternalDeployForm(String deployId, BpmnModel bpmnModel);
 
     /**
      * 查询流程挂着的表单
@@ -33,5 +34,6 @@ public interface IWfDeployFormService {
      * @param deployId
      * @return
      */
+    @Deprecated
     WfFormVo selectDeployFormByDeployId(String deployId);
 }
