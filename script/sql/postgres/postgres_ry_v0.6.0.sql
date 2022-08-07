@@ -1092,7 +1092,7 @@ create table wf_deploy_form
     node_key  varchar(64)   default ''::varchar,
     node_name varchar(255)  default ''::varchar,
     content   text,
-    constraint wf_deploy_form_pk primary key (deploy_id, form_key)
+    constraint wf_deploy_form_pk primary key (deploy_id, form_key, node_key)
 );
 
 comment on table wf_deploy_form is '流程实例关联表单';

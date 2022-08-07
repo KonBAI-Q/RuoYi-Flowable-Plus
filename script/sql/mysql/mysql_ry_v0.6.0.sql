@@ -814,7 +814,7 @@ create table `wf_deploy_form` (
     node_key   varchar(64)     default ''   comment '节点Key',
     node_name  varchar(255)    default ''   comment '节点名称',
     content    longtext        default null comment '表单内容',
-    primary key (deploy_id, form_key)
+    primary key (deploy_id, form_key, node_key)
 ) engine = innodb comment = '流程实例关联表单';
 
 -- ----------------------------

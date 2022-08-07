@@ -1081,7 +1081,7 @@ create table wf_deploy_form (
     content    nclob          default null,
 );
 
-alter table wf_deploy_form add constraint pk_wf_deploy_form primary key (deploy_id, form_key);
+alter table wf_deploy_form add constraint pk_wf_deploy_form primary key (deploy_id, form_key, node_key);
 
 comment on table wf_deploy_form is '流程实例关联表单';
 comment on column wf_deploy_form.deploy_id is '流程实例主键';
