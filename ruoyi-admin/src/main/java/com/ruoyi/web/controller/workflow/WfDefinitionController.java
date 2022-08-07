@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/definition")
+@Deprecated
 public class WfDefinitionController extends BaseController {
 
     private final IWfDefinitionService flowDefinitionService;

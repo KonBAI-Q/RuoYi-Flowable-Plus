@@ -11,6 +11,7 @@ import java.io.InputStream;
  * @author KonBAI
  * @createTime 2022/3/10 00:12
  */
+@Deprecated
 public interface IWfDefinitionService {
 
     boolean exist(String processDefinitionKey);
