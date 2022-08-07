@@ -74,11 +74,11 @@ export default {
     submit(data) {
       if (data) {
         const variables = data.valData;
-        const formData = data.formData;
-        formData.disabled = true;
-        formData.formBtns = false;
+        // const formData = data.formData;
+        // formData.disabled = true;
+        // formData.formBtns = false;
         if (this.definitionId) {
-          variables.variables = formData;
+          // formData.variables = variables;
           // 启动流程并将表单数据加入流程变量
           startProcess(this.definitionId, JSON.stringify(variables)).then(res => {
             this.$modal.msgSuccess(res.msg);

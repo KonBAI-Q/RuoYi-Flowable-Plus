@@ -183,8 +183,7 @@ export default {
         activatedElement.source &&
         activatedElement.source.type.indexOf("StartEvent") === -1
       );
-      this.formVisible = this.elementType === "StartEvent";
-      // this.formVisible = this.elementType === "UserTask" || this.elementType === "StartEvent";
+      this.formVisible = this.elementType === "UserTask" || this.elementType === "StartEvent";
     },
     beforeDestroy() {
       window.bpmnInstances = null;

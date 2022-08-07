@@ -27,6 +27,14 @@ export function startProcess(processDefId, data) {
   })
 }
 
+export function detailProcess(query) {
+  return request({
+    url: '/workflow/process/detail',
+    method: 'get',
+    params: query
+  })
+}
+
 // 我的发起的流程
 export function listOwnProcess(query) {
   return request({

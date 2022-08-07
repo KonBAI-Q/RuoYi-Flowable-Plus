@@ -64,6 +64,12 @@ public class WfProcessController extends BaseController {
 
     }
 
+    @ApiOperation(value = "查询流程详情信息")
+    @GetMapping("/detail")
+    public R detail(String procInsId, String deployId, String taskId) {
+        return R.ok(processService.queryProcessDetail(procInsId, deployId, taskId));
+    }
+
     @ApiOperation(value = "我拥有的流程", response = WfTaskVo.class)
     @SaCheckPermission("workflow:process:ownList")
     @GetMapping(value = "/ownList")

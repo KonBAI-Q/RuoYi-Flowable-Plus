@@ -5,42 +5,58 @@ import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.ruoyi.common.core.domain.PageQuery;
+import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.TaskConstants;
+import com.ruoyi.flowable.core.FormConf;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.utils.ModelUtils;
+import com.ruoyi.flowable.utils.ProcessFormUtils;
 import com.ruoyi.flowable.utils.TaskUtils;
+import com.ruoyi.system.service.ISysDeptService;
+import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfDeployFormVo;
+import com.ruoyi.workflow.domain.vo.WfDetailVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
+import org.flowable.bpmn.constants.BpmnXMLConstants;
 import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.StartEvent;
+import org.flowable.bpmn.model.UserTask;
+import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.engine.task.Comment;
+import org.flowable.identitylink.api.history.HistoricIdentityLink;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.api.history.HistoricTaskInstanceQuery;
+import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +65,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author KonBAI
@@ -60,6 +77,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
 
     private final IWfTaskService wfTaskService;
     private final ISysUserService userService;
+    private final ISysRoleService roleService;
+    private final ISysDeptService deptService;
     private final WfDeployFormMapper deployFormMapper;
 
     /**
@@ -118,7 +137,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         StartEvent startEvent = ModelUtils.getStartEvent(bpmnModel);
         WfDeployFormVo deployFormVo = deployFormMapper.selectVoOne(new LambdaQueryWrapper<WfDeployForm>()
             .eq(WfDeployForm::getDeployId, deployId)
-            .eq(WfDeployForm::getFormKey, startEvent.getFormKey()));
+            .eq(WfDeployForm::getFormKey, startEvent.getFormKey())
+            .eq(WfDeployForm::getNodeKey, startEvent.getId()));
         return deployFormVo.getContent();
     }
 
@@ -172,6 +192,32 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             e.printStackTrace();
             throw new ServiceException("流程启动错误");
         }
+    }
+
+    /**
+     * 流程详情信息
+     *
+     * @param procInsId 流程实例ID
+     * @param deployId 流程部署ID
+     * @param taskId 任务ID
+     * @return
+     */
+    @Override
+    public WfDetailVo queryProcessDetail(String procInsId, String deployId, String taskId) {
+        WfDetailVo detailVo = new WfDetailVo();
+        HistoricTaskInstance taskIns = historyService.createHistoricTaskInstanceQuery()
+            .taskId(taskId)
+            .includeIdentityLinks()
+            .includeProcessVariables()
+            .includeTaskLocalVariables()
+            .singleResult();
+        if (taskIns == null) {
+            throw new ServiceException("没有可办理的任务！");
+        }
+        detailVo.setTaskFormData(currTaskFormData(deployId, taskIns));
+        detailVo.setHistoryTaskList(historyTaskList(procInsId));
+        detailVo.setProcessFormList(processFormList(procInsId, deployId, taskIns));
+        return detailVo;
     }
 
     @Override
@@ -404,5 +450,168 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             return historicTaskInstance.getProcessVariables();
         }
         return taskService.getVariables(taskId);
+    }
+
+    /**
+     * 获取当前任务流程表单信息
+     */
+    private FormConf currTaskFormData(String deployId, HistoricTaskInstance taskIns) {
+        WfDeployFormVo deployFormVo = deployFormMapper.selectVoOne(new LambdaQueryWrapper<WfDeployForm>()
+            .eq(WfDeployForm::getDeployId, deployId)
+            .eq(WfDeployForm::getFormKey, taskIns.getFormKey())
+            .eq(WfDeployForm::getNodeKey, taskIns.getTaskDefinitionKey()));
+        if (ObjectUtil.isNotEmpty(deployFormVo)) {
+            FormConf currTaskFormData = JsonUtils.parseObject(deployFormVo.getContent(), FormConf.class);
+            if (null != currTaskFormData) {
+                currTaskFormData.setFormBtns(false);
+                ProcessFormUtils.fillFormData(currTaskFormData, taskIns.getTaskLocalVariables());
+                return currTaskFormData;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取流程表单信息（不包括当前任务节点）
+     */
+    private List<FormConf> processFormList(String procInsId, String deployId, HistoricTaskInstance taskIns) {
+        List<FormConf> procFormList = new ArrayList<>();
+        HistoricProcessInstance historicProcIns = historyService.createHistoricProcessInstanceQuery().processInstanceId(procInsId).includeProcessVariables().singleResult();
+        Process process = repositoryService.getBpmnModel(historicProcIns.getProcessDefinitionId()).getMainProcess();
+
+        buildStartFormData(historicProcIns, process, deployId, procFormList);
+        buildUserTaskFormData(procInsId, deployId, taskIns.getTaskDefinitionKey(), process, procFormList);
+        return procFormList;
+    }
+
+    private void buildStartFormData(HistoricProcessInstance historicProcIns, Process process, String deployId, List<FormConf> procFormList) {
+        procFormList = procFormList == null ? new ArrayList<>() : procFormList;
+        HistoricActivityInstance startInstance = historyService.createHistoricActivityInstanceQuery()
+            .processInstanceId(historicProcIns.getId())
+            .activityId(historicProcIns.getStartActivityId())
+            .singleResult();
+        StartEvent startEvent = (StartEvent) process.getFlowElement(startInstance.getActivityId());
+        WfDeployFormVo startFormInfo = deployFormMapper.selectVoOne(new LambdaQueryWrapper<WfDeployForm>()
+            .eq(WfDeployForm::getDeployId, deployId)
+            .eq(WfDeployForm::getFormKey, startEvent.getFormKey())
+            .eq(WfDeployForm::getNodeKey, startEvent.getId()));
+        if (ObjectUtil.isNotNull(startFormInfo)) {
+            FormConf formConf = JsonUtils.parseObject(startFormInfo.getContent(), FormConf.class);
+            if (null != formConf) {
+                formConf.setTitle(startEvent.getName());
+                formConf.setDisabled(true);
+                formConf.setFormBtns(false);
+                ProcessFormUtils.fillFormData(formConf, historicProcIns.getProcessVariables());
+                procFormList.add(formConf);
+            }
+        }
+    }
+
+    private void buildUserTaskFormData(String procInsId, String deployId, String taskActivityId, Process process, List<FormConf> procFormList) {
+        procFormList = procFormList == null ? new ArrayList<>() : procFormList;
+        List<HistoricActivityInstance> activityInstanceList = historyService.createHistoricActivityInstanceQuery()
+            .processInstanceId(procInsId).finished()
+            .activityType(BpmnXMLConstants.ELEMENT_TASK_USER)
+            .orderByHistoricActivityInstanceStartTime().asc()
+            .list();
+        for (HistoricActivityInstance instanceItem : activityInstanceList) {
+            // 跳过当前节点
+            if (instanceItem.getActivityId().equals(taskActivityId)) {
+                continue;
+            }
+            UserTask userTask = (UserTask) process.getFlowElement(instanceItem.getActivityId(), true);
+            String formKey = userTask.getFormKey();
+            if (formKey == null) {
+                continue;
+            }
+            // 查询任务节点参数，并转换成Map
+            Map<String, Object> variables = historyService.createHistoricVariableInstanceQuery()
+                .processInstanceId(procInsId)
+                .taskId(instanceItem.getTaskId())
+                .list()
+                .stream()
+                .collect(Collectors.toMap(HistoricVariableInstance::getVariableName, HistoricVariableInstance::getValue));
+            WfDeployFormVo deployFormVo = deployFormMapper.selectVoOne(new LambdaQueryWrapper<WfDeployForm>()
+                .eq(WfDeployForm::getDeployId, deployId)
+                .eq(WfDeployForm::getFormKey, formKey)
+                .eq(WfDeployForm::getNodeKey, userTask.getId()));
+            if (ObjectUtil.isNotNull(deployFormVo)) {
+                FormConf formConf = JsonUtils.parseObject(deployFormVo.getContent(), FormConf.class);
+                if (null != formConf) {
+                    formConf.setTitle(userTask.getName());
+                    formConf.setDisabled(true);
+                    formConf.setFormBtns(false);
+                    ProcessFormUtils.fillFormData(formConf, variables);
+                    procFormList.add(formConf);
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取历史任务信息列表
+     */
+    private List<WfTaskVo> historyTaskList(String procInsId) {
+        List<HistoricTaskInstance> taskInstanceList = historyService.createHistoricTaskInstanceQuery()
+            .processInstanceId(procInsId)
+            .orderByHistoricTaskInstanceStartTime().desc()
+            .list();
+        List<Comment> commentList = taskService.getProcessInstanceComments(procInsId);
+        List<WfTaskVo> taskVoList = new ArrayList<>(taskInstanceList.size());
+        taskInstanceList.forEach(taskInstance -> {
+            WfTaskVo taskVo = new WfTaskVo();
+            taskVo.setProcDefId(taskInstance.getProcessDefinitionId());
+            taskVo.setTaskId(taskInstance.getId());
+            taskVo.setTaskDefKey(taskInstance.getTaskDefinitionKey());
+            taskVo.setTaskName(taskInstance.getName());
+            taskVo.setCreateTime(taskInstance.getStartTime());
+            taskVo.setFinishTime(taskInstance.getEndTime());
+            if (StringUtils.isNotBlank(taskInstance.getAssignee())) {
+                SysUser user = userService.selectUserById(Long.parseLong(taskInstance.getAssignee()));
+                taskVo.setAssigneeId(user.getUserId());
+                taskVo.setAssigneeName(user.getNickName());
+                taskVo.setDeptName(user.getDept().getDeptName());
+            }
+            // 展示审批人员
+            List<HistoricIdentityLink> linksForTask = historyService.getHistoricIdentityLinksForTask(taskInstance.getId());
+            StringBuilder stringBuilder = new StringBuilder();
+            for (HistoricIdentityLink identityLink : linksForTask) {
+                if ("candidate".equals(identityLink.getType())) {
+                    if (StringUtils.isNotBlank(identityLink.getUserId())) {
+                        SysUser user = userService.selectUserById(Long.parseLong(identityLink.getUserId()));
+                        stringBuilder.append(user.getNickName()).append(",");
+                    }
+                    if (StringUtils.isNotBlank(identityLink.getGroupId())) {
+                        if (identityLink.getGroupId().startsWith(TaskConstants.ROLE_GROUP_PREFIX)) {
+                            Long roleId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.ROLE_GROUP_PREFIX));
+                            SysRole role = roleService.selectRoleById(roleId);
+                            stringBuilder.append(role.getRoleName()).append(",");
+                        } else if (identityLink.getGroupId().startsWith(TaskConstants.DEPT_GROUP_PREFIX)) {
+                            Long deptId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.DEPT_GROUP_PREFIX));
+                            SysDept dept = deptService.selectDeptById(deptId);
+                            stringBuilder.append(dept.getDeptName()).append(",");
+                        }
+                    }
+                }
+            }
+            if (StringUtils.isNotBlank(stringBuilder)) {
+                taskVo.setCandidate(stringBuilder.substring(0, stringBuilder.length() - 1));
+            }
+            if (ObjectUtil.isNotNull(taskInstance.getDurationInMillis())) {
+                taskVo.setDuration(DateUtil.formatBetween(taskInstance.getDurationInMillis(), BetweenFormatter.Level.SECOND));
+            }
+            // 获取意见评论内容
+            if (CollUtil.isNotEmpty(commentList)) {
+                List<Comment> comments = new ArrayList<>();
+                for (Comment comment : commentList) {
+                    if (comment.getTaskId().equals(taskInstance.getId())) {
+                        comments.add(comment);
+                    }
+                }
+                taskVo.setCommentList(comments);
+            }
+            taskVoList.add(taskVo);
+        });
+        return taskVoList;
     }
 }

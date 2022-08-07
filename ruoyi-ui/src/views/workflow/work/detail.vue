@@ -3,7 +3,18 @@
     <el-tabs tab-position="top" :value="finished === 'true' ? 'approval' : 'form'">
 
       <el-tab-pane label="任务办理" name="approval" v-if="finished === 'true'">
-        <el-card class="box-card" shadow="never">
+        <el-card class="box-card" shadow="hover" v-if="taskFormOpen">
+          <div slot="header" class="clearfix">
+            <span>填写表单</span>
+          </div>
+          <el-col :span="20" :offset="2">
+            <parser :form-conf="taskFormData" ref="taskFormParser"/>
+          </el-col>
+        </el-card>
+        <el-card class="box-card" shadow="hover">
+          <div slot="header" class="clearfix">
+            <span>审批流程</span>
+          </div>
           <el-row>
             <el-col :span="20" :offset="2">
               <el-form ref="taskForm" :model="taskForm" :rules="rules" label-width="80px">
@@ -48,21 +59,17 @@
       </el-tab-pane>
 
       <el-tab-pane label="表单信息" name="form">
-        <el-card class="box-card" shadow="never">
-          <!--流程处理表单模块-->
-          <el-col :span="20" :offset="2" v-if="variableOpen">
-            <div>
-              <parser :key="new Date().getTime()" :form-conf="variablesData"/>
+        <div v-if="formOpen">
+          <el-card class="box-card" shadow="never" v-for="formInfo in processFormList">
+            <div slot="header" class="clearfix">
+              <span>{{ formInfo.title }}</span>
             </div>
-          </el-col>
-
-          <!--初始化流程加载表单信息-->
-          <el-col :span="16" :offset="4" v-if="formConfOpen">
-            <div class="form-conf">
-              <parser :key="new Date().getTime()" :form-conf="formConf" @submit="submitForm" ref="parser" @getData="getData"/>
-            </div>
-          </el-col>
-        </el-card>
+            <!--流程处理表单模块-->
+            <el-col :span="20" :offset="2">
+              <parser :form-conf="formInfo"/>
+            </el-col>
+          </el-card>
+        </div>
       </el-tab-pane >
 
       <el-tab-pane label="流转记录" name="record">
@@ -70,7 +77,7 @@
           <el-col :span="20" :offset="2">
             <div class="block">
               <el-timeline>
-                <el-timeline-item v-for="(item,index) in flowRecordList" :key="index" :icon="setIcon(item.finishTime)" :color="setColor(item.finishTime)">
+                <el-timeline-item v-for="(item,index) in historyTaskList" :key="index" :icon="setIcon(item.finishTime)" :color="setColor(item.finishTime)">
                   <p style="font-weight: 700">{{ item.taskName }}</p>
                   <el-card class="box-card" shadow="hover">
                     <el-descriptions :column="5" :labelStyle="{'font-weight': 'bold'}">
@@ -98,7 +105,7 @@
       <el-tab-pane label="流程跟踪" name="track">
         <el-card class="box-card" shadow="never">
           <process-viewer :key="`designer-${loadIndex}`" :style="'height:' + height" :xml="xmlData"
-                          :finishedInfo="finishedInfo" :allCommentList="flowRecordList"
+                          :finishedInfo="finishedInfo" :allCommentList="historyTaskList"
           />
         </el-card>
       </el-tab-pane>
@@ -181,10 +188,10 @@
 </template>
 
 <script>
-import { getDetailInstance } from '@/api/workflow/instance'
+import { detailProcess } from '@/api/workflow/process'
 import Parser from '@/utils/generator/parser'
-import { definitionStart, getFlowViewer, getProcessVariables, readXml } from '@/api/workflow/definition'
-import { complete, delegate, transfer,getNextFlowNode, rejectTask, returnList, returnTask } from '@/api/workflow/todo'
+import { definitionStart, getFlowViewer, readXml } from '@/api/workflow/definition'
+import { complete, delegate, transfer, getNextFlowNode, rejectTask, returnList, returnTask } from '@/api/workflow/todo'
 import { treeselect } from '@/api/system/dept'
 import ProcessViewer from '@/components/ProcessViewer'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -235,7 +242,7 @@ export default {
         unfinishedTaskSet: [],
         rejectedTaskSet: []
       },
-      taskList: [],
+      historyTaskList: [],
       // 部门名称
       deptName: undefined,
       // 部门树选项
@@ -254,18 +261,9 @@ export default {
       total: 0,
       // 遮罩层
       loading: true,
-      flowRecordList: [],
-      formConfCopy: {},
-      variablesForm: {},
       taskForm:{
-        returnTaskShow: false,
-        delegateTaskOpen: false,
-        defaultTaskShow: true,
-        sendUserShow: false,
-        multiple: false,
         comment:"", // 意见内容
         procInsId: "", // 流程实例编号
-        instanceId: "", // 流程实例编号
         deployId: "",  // 流程定义编号
         taskId: "" ,// 流程任务编号
         definitionId: "",  // 流程编号
@@ -277,13 +275,11 @@ export default {
         comment: [{ required: true, message: '请输入审批意见', trigger: 'blur' }],
       },
       currentUserId: null,
-      userDataList:[], // 流程候选人
-      assignee: null,
-      formConf: {}, // 默认表单数据
-      formConfOpen: false, // 是否加载默认表单数据
       variables: [], // 流程变量数据
-      variablesData: {}, // 流程变量数据
-      variableOpen: false, // 是否加载流程变量数据
+      taskFormOpen: false,
+      taskFormData: {}, // 流程变量数据
+      processFormList: [], // 流程变量数据
+      formOpen: false, // 是否加载流程变量数据
       returnTaskList: [],  // 回退列表数据
       finished: 'false',
       returnTitle: null,
@@ -307,15 +303,11 @@ export default {
     this.taskForm.definitionId = this.$route.query && this.$route.query.definitionId;
     this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
-    this.taskForm.instanceId = this.$route.query && this.$route.query.procInsId;
     this.finished =  this.$route.query && this.$route.query.finished
     // 流程任务重获取变量表单
     if (this.taskForm.taskId) {
-      this.processVariables( this.taskForm.taskId)
-      // this.getNextFlowNode(this.taskForm.taskId)
-      this.taskForm.deployId = null
+      this.getProcessDetails(this.taskForm.procInsId, this.taskForm.deployId, this.taskForm.taskId);
     }
-    this.getFlowRecordList( this.taskForm.procInsId, this.taskForm.deployId);
     Promise.all([this.getFlowViewer(this.taskForm.procInsId), this.getModelDetail(this.taskForm.definitionId)]).then(() => {
       this.loadIndex = this.taskForm.procInsId;
     });
@@ -428,29 +420,18 @@ export default {
         }
       }
     },
-    /** 流程流转记录 */
-    getFlowRecordList(procInsId, deployId) {
-      const params = {procInsId: procInsId, deployId: deployId}
-      getDetailInstance(params).then(res => {
-        this.flowRecordList = res.data.flowList;
-        // 流程过程中不存在初始化表单 直接读取的流程变量中存储的表单值
-        if (res.data.formData) {
-          this.formConf = res.data.formData;
-          this.formConfOpen = true
+    getProcessDetails(procInsId, deployId, taskId) {
+      const params = {procInsId: procInsId, deployId: deployId, taskId: taskId}
+      detailProcess(params).then(res => {
+        const data = res.data;
+        this.processFormList = data.processFormList;
+        this.taskFormOpen = data.existTaskForm;
+        if (this.taskFormOpen) {
+          this.taskFormData = data.taskFormData;
         }
-      }).catch(res => {
-        this.goBack();
+        this.historyTaskList = data.taskList;
+        this.formOpen = true
       })
-    },
-    /** 获取流程变量内容 */
-    processVariables(taskId) {
-      if (taskId) {
-        // 提交流程申请时填写的表单存入了流程变量中后续任务处理时需要展示
-        getProcessVariables(taskId).then(res => {
-          this.variablesData = res.data.variables;
-          this.variableOpen = true
-        });
-      }
     },
     onSelectUsers() {
       this.userData.title = '添加抄送人';
@@ -464,14 +445,25 @@ export default {
     },
     /** 通过任务 */
     handleComplete() {
-      this.$refs['taskForm'].validate(valid => {
-        if (valid) {
-          complete(this.taskForm).then(response => {
-            this.$modal.msgSuccess(response.msg);
-            this.goBack();
-          });
-        }
+      // 校验表单
+      const taskFormRef = this.$refs.taskFormParser;
+      const taskFormPromise = new Promise((resolve, reject) => {
+        taskFormRef.$refs[taskFormRef.formConfCopy.formRef].validate(valid => {
+          valid ? resolve() : reject()
+        })
       });
+      const approvalPromise = new Promise((resolve, reject) => {
+        this.$refs['taskForm'].validate(valid => {
+          valid ? resolve() : reject()
+        })
+      });
+      Promise.all([taskFormPromise, approvalPromise]).then(() => {
+        this.taskForm.variables = this.$refs.taskFormParser.formData;
+        complete(this.taskForm).then(response => {
+          this.$modal.msgSuccess(response.msg);
+          this.goBack();
+        });
+      })
     },
     /** 委派任务 */
     handleDelegate() {
@@ -629,12 +621,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.form-conf {
-  margin: 15px auto;
-  width: 800px;
-  padding: 15px;
-}
-
 .clearfix:before,
 .clearfix:after {
   display: table;

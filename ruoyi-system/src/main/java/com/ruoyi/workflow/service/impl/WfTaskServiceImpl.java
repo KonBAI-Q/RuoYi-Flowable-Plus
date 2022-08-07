@@ -82,13 +82,13 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         }
         if (DelegationState.PENDING.equals(task.getDelegationState())) {
             taskService.addComment(taskBo.getTaskId(), taskBo.getInstanceId(), FlowComment.DELEGATE.getType(), taskBo.getComment());
-            taskService.resolveTask(taskBo.getTaskId(), taskBo.getValues());
+            taskService.resolveTask(taskBo.getTaskId());
         } else {
             taskService.addComment(taskBo.getTaskId(), taskBo.getInstanceId(), FlowComment.NORMAL.getType(), taskBo.getComment());
             Long userId = LoginHelper.getUserId();
             taskService.setAssignee(taskBo.getTaskId(), userId.toString());
-            if (ObjectUtil.isNotEmpty(taskBo.getValues())) {
-                taskService.complete(taskBo.getTaskId(), taskBo.getValues());
+            if (ObjectUtil.isNotEmpty(taskBo.getVariables())) {
+                taskService.complete(taskBo.getTaskId(), taskBo.getVariables(), true);
             } else {
                 taskService.complete(taskBo.getTaskId());
             }
