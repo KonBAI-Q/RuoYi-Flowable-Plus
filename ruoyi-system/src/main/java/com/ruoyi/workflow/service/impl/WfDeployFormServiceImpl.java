@@ -128,7 +128,6 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
             throw new ServiceException("表单信息查询错误");
         }
         WfDeployForm deployForm = new WfDeployForm();
-        deployForm.setContent(wfForm.getContent());
         deployForm.setDeployId(deployId);
         deployForm.setNodeKey(node.getId());
         deployForm.setNodeName(node.getName());

@@ -60,7 +60,6 @@ public class WfDeployServiceImpl implements IWfDeployService {
                 processDefinitionQuery.suspended();
             }
         }
-        // SuspensionState.ACTIVE
         long pageTotal = processDefinitionQuery.count();
         if (pageTotal <= 0) {
             return TableDataInfo.build();
