@@ -2654,7 +2654,7 @@ CREATE TABLE [wf_deploy_form]
 (
     [deploy_id]  nvarchar(64)              NOT NULL,
     [form_key]   nvarchar(64)              NOT NULL,
-    [node_key]   nvarchar(64)   DEFAULT '' NULL,
+    [node_key]   nvarchar(64)              NOT NULL,
     [node_name]  nvarchar(64)   DEFAULT '' NULL,
     [content]    nvarchar(max)             NULL,
     CONSTRAINT [PK__wf_deploy_form] PRIMARY KEY CLUSTERED ([deploy_id], [form_key], [node_key])

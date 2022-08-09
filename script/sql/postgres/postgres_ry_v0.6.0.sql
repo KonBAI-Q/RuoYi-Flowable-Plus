@@ -1089,7 +1089,7 @@ create table wf_deploy_form
 (
     deploy_id varchar(64)   not null,
     form_key  varchar(64)   not null,
-    node_key  varchar(64)   default ''::varchar,
+    node_key  varchar(64)   not null,
     node_name varchar(255)  default ''::varchar,
     content   text,
     constraint wf_deploy_form_pk primary key (deploy_id, form_key, node_key)

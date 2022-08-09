@@ -811,7 +811,7 @@ drop table if exists `wf_deploy_form`;
 create table `wf_deploy_form` (
     deploy_id  varchar(64)     not null     comment '流程实例主键',
     form_key   varchar(64)     not null     comment '表单Key',
-    node_key   varchar(64)     default ''   comment '节点Key',
+    node_key   varchar(64)     not null     comment '节点Key',
     node_name  varchar(255)    default ''   comment '节点名称',
     content    longtext        default null comment '表单内容',
     primary key (deploy_id, form_key, node_key)

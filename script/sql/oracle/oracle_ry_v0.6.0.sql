@@ -1076,9 +1076,9 @@ comment on column wf_form.del_flag is '删除标志（0代表存在 2代表删�
 create table wf_deploy_form (
     deploy_id  varchar(64)    not null,
     form_key   varchar(64)    not null,
-    node_key   varchar(64)    default '',
+    node_key   varchar(64)    not null,
     node_name  varchar(255)   default '',
-    content    nclob          default null,
+    content    nclob          default null
 );
 
 alter table wf_deploy_form add constraint pk_wf_deploy_form primary key (deploy_id, form_key, node_key);
