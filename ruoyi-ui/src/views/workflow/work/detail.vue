@@ -429,7 +429,7 @@ export default {
         if (this.taskFormOpen) {
           this.taskFormData = data.taskFormData;
         }
-        this.historyTaskList = data.taskList;
+        this.historyTaskList = data.historyTaskList;
         this.formOpen = true
       })
     },
