@@ -480,7 +480,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         Process process = repositoryService.getBpmnModel(historicProcIns.getProcessDefinitionId()).getMainProcess();
 
         buildStartFormData(historicProcIns, process, deployId, procFormList);
-        buildUserTaskFormData(procInsId, deployId, taskIns.getTaskDefinitionKey(), process, procFormList);
+        buildUserTaskFormData(procInsId, deployId, process, procFormList);
         return procFormList;
     }
 
@@ -507,7 +507,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         }
     }
 
-    private void buildUserTaskFormData(String procInsId, String deployId, String taskActivityId, Process process, List<FormConf> procFormList) {
+    private void buildUserTaskFormData(String procInsId, String deployId, Process process, List<FormConf> procFormList) {
         procFormList = procFormList == null ? new ArrayList<>() : procFormList;
         List<HistoricActivityInstance> activityInstanceList = historyService.createHistoricActivityInstanceQuery()
             .processInstanceId(procInsId).finished()
@@ -515,10 +515,6 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .orderByHistoricActivityInstanceStartTime().asc()
             .list();
         for (HistoricActivityInstance instanceItem : activityInstanceList) {
-            // 跳过当前节点
-            if (instanceItem.getActivityId().equals(taskActivityId)) {
-                continue;
-            }
             UserTask userTask = (UserTask) process.getFlowElement(instanceItem.getActivityId(), true);
             String formKey = userTask.getFormKey();
             if (formKey == null) {
