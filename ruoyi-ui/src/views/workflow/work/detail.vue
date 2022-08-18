@@ -447,7 +447,8 @@ export default {
     handleComplete() {
       // 校验表单
       const taskFormRef = this.$refs.taskFormParser;
-      const taskFormPromise = new Promise((resolve, reject) => {
+      // 若无任务表单，则 taskFormPromise 为 true，即不需要校验
+      const taskFormPromise = taskFormRef === undefined ? true : new Promise((resolve, reject) => {
         taskFormRef.$refs[taskFormRef.formConfCopy.formRef].validate(valid => {
           valid ? resolve() : reject()
         })
@@ -458,7 +459,7 @@ export default {
         })
       });
       Promise.all([taskFormPromise, approvalPromise]).then(() => {
-        this.taskForm.variables = this.$refs.taskFormParser.formData;
+        this.taskForm.variables = taskFormRef?.formData;
         complete(this.taskForm).then(response => {
           this.$modal.msgSuccess(response.msg);
           this.goBack();
