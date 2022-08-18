@@ -44,8 +44,11 @@ public class ModelUtils {
      */
     public static StartEvent getStartEvent(BpmnModel model) {
         Process process = model.getMainProcess();
-        Collection<FlowElement> flowElements = process.getFlowElements();
-        return getStartEvent(flowElements);
+        FlowElement startElement = process.getInitialFlowElement();
+        if (startElement instanceof StartEvent) {
+            return (StartEvent) startElement;
+        }
+        return getStartEvent(process.getFlowElements());
     }
 
     /**
