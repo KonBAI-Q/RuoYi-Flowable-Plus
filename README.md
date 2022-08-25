@@ -3,7 +3,7 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/KonBAI-Q/RuoYi-Flowable-Plus?style=social)](https://github.com/KonBAI-Q/RuoYi-Flowable-Plus/stargazers)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://gitee.com/KonBAI-Q/ruoyi-flowable-plus/blob/master/LICENSE)
 [![使用IntelliJ IDEA开发维护](https://img.shields.io/badge/IntelliJ%20IDEA-提供支持-blue.svg)](https://www.jetbrains.com)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.5-blue.svg)]()
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7-blue.svg)]()
 [![JDK-8+](https://img.shields.io/badge/JDK-8-green.svg)]()
 [![JDK-11](https://img.shields.io/badge/JDK-11-green.svg)]()
 
