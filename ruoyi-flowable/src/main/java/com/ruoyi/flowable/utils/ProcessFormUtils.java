@@ -3,6 +3,7 @@ package com.ruoyi.flowable.utils;
 import cn.hutool.core.convert.Convert;
 import com.ruoyi.flowable.core.FormConf;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,6 +14,9 @@ import java.util.Map;
  */
 public class ProcessFormUtils {
 
+    private static final String CONFIG = "__config__";
+    private static final String MODEL = "__vModel__";
+
     /**
      * 填充表单项内容
      *
@@ -21,13 +25,26 @@ public class ProcessFormUtils {
      */
     public static void fillFormData(FormConf formConf, Map<String, Object> data) {
         for (Map<String, Object> field : formConf.getFields()) {
-            String modelKey = Convert.toStr(field.get("__vModel__"));
-            Object value = data.get(modelKey);
-            if (value != null) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> configMap = (Map<String, Object>) field.get("__config__");
-                configMap.put("defaultValue", value);
+            recursiveFillField(field, data);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void recursiveFillField(final Map<String, Object> field, final Map<String, Object> data) {
+        if (!field.containsKey(CONFIG)) {
+            return;
+        }
+        Map<String, Object> configMap = (Map<String, Object>) field.get(CONFIG);
+        if (configMap.containsKey("children")) {
+            List<Map<String, Object>> childrens = (List<Map<String, Object>>) configMap.get("children");
+            for (Map<String, Object> children : childrens) {
+                recursiveFillField(children, data);
             }
+        }
+        String modelKey = Convert.toStr(field.get(MODEL));
+        Object value = data.get(modelKey);
+        if (value != null) {
+            configMap.put("defaultValue", value);
         }
     }
 }
