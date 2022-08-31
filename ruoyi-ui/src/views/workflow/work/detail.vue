@@ -3,14 +3,14 @@
     <el-tabs tab-position="top" :value="finished === 'true' ? 'approval' : 'form'">
 
       <el-tab-pane label="任务办理" name="approval" v-if="finished === 'true'">
-        <el-card class="box-card" shadow="hover" v-if="taskFormOpen">
-          <div slot="header" class="clearfix">
-            <span>填写表单</span>
-          </div>
-          <el-col :span="20" :offset="2">
-            <parser :form-conf="taskFormData" ref="taskFormParser"/>
-          </el-col>
-        </el-card>
+<!--        <el-card class="box-card" shadow="hover" v-if="taskFormOpen">-->
+<!--          <div slot="header" class="clearfix">-->
+<!--            <span>填写表单</span>-->
+<!--          </div>-->
+<!--          <el-col :span="20" :offset="2">-->
+<!--            <parser :form-conf="taskFormData" ref="taskFormParser"/>-->
+<!--          </el-col>-->
+<!--        </el-card>-->
         <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
             <span>审批流程</span>
@@ -447,8 +447,9 @@ export default {
     handleComplete() {
       // 校验表单
       const taskFormRef = this.$refs.taskFormParser;
+      const isExistTaskForm = taskFormRef !== undefined;
       // 若无任务表单，则 taskFormPromise 为 true，即不需要校验
-      const taskFormPromise = taskFormRef === undefined ? true : new Promise((resolve, reject) => {
+      const taskFormPromise = !isExistTaskForm ? true : new Promise((resolve, reject) => {
         taskFormRef.$refs[taskFormRef.formConfCopy.formRef].validate(valid => {
           valid ? resolve() : reject()
         })
@@ -459,7 +460,9 @@ export default {
         })
       });
       Promise.all([taskFormPromise, approvalPromise]).then(() => {
-        this.taskForm.variables = taskFormRef?.formData;
+        if (isExistTaskForm) {
+          this.taskForm.variables = taskFormRef[taskFormRef.formConfCopy.formModel]
+        }
         complete(this.taskForm).then(response => {
           this.$modal.msgSuccess(response.msg);
           this.goBack();
