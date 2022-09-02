@@ -89,7 +89,7 @@ public class WfCopyServiceImpl implements IWfCopyService {
             return true;
         }
         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-            .processInstanceId(taskBo.getInstanceId()).singleResult();
+            .processInstanceId(taskBo.getProcInsId()).singleResult();
         String[] ids = taskBo.getCopyUserIds().split(",");
         List<WfCopy> copyList = new ArrayList<>(ids.length);
         Long originatorId = LoginHelper.getUserId();
@@ -102,7 +102,7 @@ public class WfCopyServiceImpl implements IWfCopyService {
             copy.setProcessId(historicProcessInstance.getProcessDefinitionId());
             copy.setProcessName(historicProcessInstance.getProcessDefinitionName());
             copy.setDeploymentId(historicProcessInstance.getDeploymentId());
-            copy.setInstanceId(taskBo.getInstanceId());
+            copy.setInstanceId(taskBo.getProcInsId());
             copy.setTaskId(taskBo.getTaskId());
             copy.setUserId(userId);
             copy.setOriginatorId(originatorId);

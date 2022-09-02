@@ -81,10 +81,10 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             throw new ServiceException("任务不存在");
         }
         if (DelegationState.PENDING.equals(task.getDelegationState())) {
-            taskService.addComment(taskBo.getTaskId(), taskBo.getInstanceId(), FlowComment.DELEGATE.getType(), taskBo.getComment());
+            taskService.addComment(taskBo.getTaskId(), taskBo.getProcInsId(), FlowComment.DELEGATE.getType(), taskBo.getComment());
             taskService.resolveTask(taskBo.getTaskId());
         } else {
-            taskService.addComment(taskBo.getTaskId(), taskBo.getInstanceId(), FlowComment.NORMAL.getType(), taskBo.getComment());
+            taskService.addComment(taskBo.getTaskId(), taskBo.getProcInsId(), FlowComment.NORMAL.getType(), taskBo.getComment());
             Long userId = LoginHelper.getUserId();
             taskService.setAssignee(taskBo.getTaskId(), userId.toString());
             if (ObjectUtil.isNotEmpty(taskBo.getVariables())) {
@@ -484,13 +484,13 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      */
     @Override
     public void stopProcess(WfTaskBo bo) {
-        List<Task> task = taskService.createTaskQuery().processInstanceId(bo.getInstanceId()).list();
+        List<Task> task = taskService.createTaskQuery().processInstanceId(bo.getProcInsId()).list();
         if (CollectionUtils.isEmpty(task)) {
             throw new RuntimeException("流程未启动或已执行完成，取消申请失败");
         }
 
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-            .processInstanceId(bo.getInstanceId()).singleResult();
+            .processInstanceId(bo.getProcInsId()).singleResult();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processInstance.getProcessDefinitionId());
         if (Objects.nonNull(bpmnModel)) {
             Process process = bpmnModel.getMainProcess();
@@ -520,7 +520,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      */
     @Override
     public void revokeProcess(WfTaskBo bo) {
-        Task task = taskService.createTaskQuery().processInstanceId(bo.getInstanceId()).singleResult();
+        Task task = taskService.createTaskQuery().processInstanceId(bo.getProcInsId()).singleResult();
         if (task == null) {
             throw new RuntimeException("流程未启动或已执行完成，无法撤回");
         }

@@ -30,7 +30,7 @@ public class WfTaskBo {
     private String comment;
 
     @ApiModelProperty("流程实例Id")
-    private String instanceId;
+    private String procInsId;
 
     @ApiModelProperty("节点")
     private String targetKey;
