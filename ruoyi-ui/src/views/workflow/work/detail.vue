@@ -3,14 +3,14 @@
     <el-tabs tab-position="top" :value="finished === 'true' ? 'approval' : 'form'">
 
       <el-tab-pane label="任务办理" name="approval" v-if="finished === 'true'">
-<!--        <el-card class="box-card" shadow="hover" v-if="taskFormOpen">-->
-<!--          <div slot="header" class="clearfix">-->
-<!--            <span>填写表单</span>-->
-<!--          </div>-->
-<!--          <el-col :span="20" :offset="2">-->
-<!--            <parser :form-conf="taskFormData" ref="taskFormParser"/>-->
-<!--          </el-col>-->
-<!--        </el-card>-->
+        <el-card class="box-card" shadow="hover" v-if="taskFormOpen">
+          <div slot="header" class="clearfix">
+            <span>填写表单</span>
+          </div>
+          <el-col :span="20" :offset="2">
+            <parser :form-conf="taskFormData" ref="taskFormParser"/>
+          </el-col>
+        </el-card>
         <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
             <span>审批流程</span>
