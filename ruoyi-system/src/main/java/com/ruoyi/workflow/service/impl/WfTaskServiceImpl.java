@@ -27,6 +27,7 @@ import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.flowable.bpmn.constants.BpmnXMLConstants;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
 import org.flowable.common.engine.api.FlowableException;
@@ -647,7 +648,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         // 所有已完成的任务节点
         Set<String> finishedTaskSet = new HashSet<>();
         finishedElementList.forEach(item -> {
-            if ("sequenceFlow".equals(item.getActivityType())) {
+            if (BpmnXMLConstants.ELEMENT_SEQUENCE_FLOW.equals(item.getActivityType())) {
                 finishedSequenceFlowSet.add(item.getActivityId());
             } else {
                 finishedTaskSet.add(item.getActivityId());
