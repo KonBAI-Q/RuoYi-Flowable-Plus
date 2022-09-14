@@ -456,9 +456,15 @@ export default {
       this.operationType = 'download'
     },
     run() {
-      this.dialogVisible = true
-      this.showFileName = false
+      // TODO 弹窗类型异常
+      // this.dialogVisible = true
+      // this.showFileName = false
       this.operationType = 'run'
+      let data = {
+        fileName: undefined,
+          type: 'file'
+      }
+      this.generate(data);
     },
     copy() {
       this.dialogVisible = true

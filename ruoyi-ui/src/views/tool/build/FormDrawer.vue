@@ -60,7 +60,7 @@
               ref="previewPage"
               class="result-wrapper"
               frameborder="0"
-              src="preview.html"
+              src="/preview.html"
               @load="iframeLoad"
             />
             <div v-show="!isIframeLoaded" v-loading="true" class="result-wrapper" />
