@@ -49,11 +49,20 @@
       <div v-show="showMultiFlog">
         <el-divider />
         <h4><b>多实例审批方式</b></h4>
-        <el-radio-group v-model="multiLoopType" @change="changeMultiLoopType">
-          <el-row><el-radio label="Null">无</el-radio></el-row>
-          <el-row><el-radio label="SequentialMultiInstance">会签（需所有审批人同意）</el-radio></el-row>
-          <el-row><el-radio label="ParallelMultiInstance">或签（一名审批人同意即可）</el-radio></el-row>
-        </el-radio-group>
+        <el-row>
+          <el-radio-group v-model="multiLoopType" @change="changeMultiLoopType">
+            <el-row><el-radio label="Null">无</el-radio></el-row>
+            <el-row><el-radio label="SequentialMultiInstance">会签（需所有审批人同意）</el-radio></el-row>
+            <el-row><el-radio label="ParallelMultiInstance">或签（一名审批人同意即可）</el-radio></el-row>
+          </el-radio-group>
+        </el-row>
+        <el-row v-if="multiLoopType !== 'Null'">
+          <el-tooltip content="开启后，实例需按顺序轮流审批" placement="top-start" @click.stop.prevent>
+            <i class="header-icon el-icon-info"></i>
+          </el-tooltip>
+          <span class="custom-label">顺序审批：</span>
+          <el-switch v-model="isSequential" @change="changeMultiLoopType" />
+        </el-row>
       </div>
     </el-row>
 
@@ -127,15 +136,6 @@ const userTaskForm = {
   // priority: ''
 }
 
-const multiInstanceForm = {
-  completionCondition: "",
-  loopCardinality: "",
-  extensionElements: [],
-  asyncAfter: false,
-  asyncBefore: false,
-  exclusive: false
-}
-
 export default {
   name: "UserTask",
   props: {
@@ -171,6 +171,7 @@ export default {
         deptId: undefined
       },
       showMultiFlog: false,
+      isSequential: false,
       multiLoopType: 'Null',
     };
   },
@@ -424,10 +425,14 @@ export default {
         this.multiLoopType = "Null";
         return;
       }
-      if (businessObject.loopCharacteristics.isSequential) {
-        this.multiLoopType = "SequentialMultiInstance";
-      } else {
-        this.multiLoopType = "ParallelMultiInstance";
+      this.isSequential = businessObject.loopCharacteristics.isSequential;
+      if (businessObject.loopCharacteristics.completionCondition) {
+        if (businessObject.loopCharacteristics.completionCondition.body === "${nrOfCompletedInstances >= nrOfInstances}") {
+          this.multiLoopType = "SequentialMultiInstance";
+        } else {
+          this.multiLoopType = "ParallelMultiInstance";
+
+        }
       }
     },
     changeMultiLoopType(type) {
@@ -436,23 +441,22 @@ export default {
         window.bpmnInstances.modeling.updateProperties(this.bpmnElement, { loopCharacteristics: null });
         return;
       }
-      // 完成条件
-      let completionCondition = null;
-      // 会签
-      if (type === "SequentialMultiInstance") {
-        this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: true });
-        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: '${nrOfCompletedInstances >= nrOfInstances}' });
-      }
-      // 或签
-      if (type === "ParallelMultiInstance") {
-        this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics");
-        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: '${nrOfCompletedInstances > 0}' });
-      }
+      this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: this.isSequential });
       // 更新多实例配置
       window.bpmnInstances.modeling.updateProperties(this.bpmnElement, {
         loopCharacteristics: this.multiLoopInstance,
         assignee: '${assignee}'
       });
+      // 完成条件
+      let completionCondition = null;
+      // 会签
+      if (type === "SequentialMultiInstance") {
+        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances >= nrOfInstances}" });
+      }
+      // 或签
+      if (type === "ParallelMultiInstance") {
+        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances > 0}" });
+      }
       // 更新模块属性信息
       window.bpmnInstances.modeling.updateModdleProperties(this.bpmnElement, this.multiLoopInstance, {
         collection: '${multiInstanceHandler.getUserIds(execution)}',
@@ -476,6 +480,13 @@ export default {
   + .el-tag {
     margin-left: 10px;
   }
+}
+
+.custom-label {
+  padding-left: 5px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #606266;
 }
 
 </style>
