@@ -155,6 +155,8 @@ import DraggableItem from './DraggableItem'
 import { getDrawingList, saveDrawingList, getIdGlobal, saveIdGlobal, getFormConf } from '@/utils/db'
 import loadBeautifier from '@/utils/loadBeautifier'
 import { getForm, addForm, updateForm } from '@/api/workflow/form'
+import axios from 'axios'
+import Vue from 'vue';
 
 let beautifier
 const emptyActiveData = { style: {}, autosize: {} }
@@ -163,6 +165,7 @@ let tempActiveData
 const drawingListInDB = getDrawingList()
 const formConfInDB = getFormConf()
 const idGlobal = getIdGlobal()
+Vue.prototype.$axios = axios
 
 export default {
   components: {

@@ -232,7 +232,7 @@ function buildOptionMethod(methodName, model, methodList, scheme) {
       url: '${config.url}'
     }).then(resp => {
       var { data } = resp
-      this.${model} = data.${config.dataPath}
+      this.${model} = data.${config.dataKey}
     })
   },`
   methodList.push(str)

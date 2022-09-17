@@ -339,9 +339,9 @@
             <el-divider />
           </template>
 
-          <template v-if="['el-cascader', 'el-table'].includes(activeData.__config__.tag)">
+          <template v-if="['el-cascader'].indexOf(activeData.__config__.tag) > -1">
             <el-divider>选项</el-divider>
-            <el-form-item v-if="activeData.__config__.dataType" label="数据类型">
+            <el-form-item label="数据类型">
               <el-radio-group v-model="activeData.__config__.dataType" size="small">
                 <el-radio-button label="dynamic">
                   动态数据
@@ -359,13 +359,11 @@
                   :title="activeData.__config__.url"
                   placeholder="请输入接口地址"
                   clearable
-                  @blur="$emit('fetch-data', activeData)"
                 >
                   <el-select
                     slot="prepend"
                     v-model="activeData.__config__.method"
                     :style="{width: '85px'}"
-                    @change="$emit('fetch-data', activeData)"
                   >
                     <el-option label="get" value="get" />
                     <el-option label="post" value="post" />
@@ -375,24 +373,17 @@
                 </el-input>
               </el-form-item>
               <el-form-item label="数据位置">
-                <el-input
-                  v-model="activeData.__config__.dataPath"
-                  placeholder="请输入数据位置"
-                  @blur="$emit('fetch-data', activeData)"
-                />
+                <el-input v-model="activeData.__config__.dataKey" placeholder="请输入标签键名" />
               </el-form-item>
-
-              <template v-if="activeData.props && activeData.props.props">
-                <el-form-item label="标签键名">
-                  <el-input v-model="activeData.props.props.label" placeholder="请输入标签键名" />
-                </el-form-item>
-                <el-form-item label="值键名">
-                  <el-input v-model="activeData.props.props.value" placeholder="请输入值键名" />
-                </el-form-item>
-                <el-form-item label="子级键名">
-                  <el-input v-model="activeData.props.props.children" placeholder="请输入子级键名" />
-                </el-form-item>
-              </template>
+              <el-form-item label="标签键名">
+                <el-input v-model="activeData.props.props.label" placeholder="请输入标签键名" />
+              </el-form-item>
+              <el-form-item label="值键名">
+                <el-input v-model="activeData.props.props.value" placeholder="请输入值键名" />
+              </el-form-item>
+              <el-form-item label="子级键名">
+                <el-input v-model="activeData.props.props.children" placeholder="请输入子级键名" />
+              </el-form-item>
             </template>
 
             <!-- 级联选择静态树 -->
@@ -650,7 +641,6 @@
 
 <script>
 import { isArray } from 'util'
-import draggable from 'vuedraggable'
 import TreeNodeDialog from './TreeNodeDialog'
 import { isNumberStr } from '@/utils/index'
 import IconsDialog from './IconsDialog'
@@ -675,7 +665,6 @@ const needRerenderList = ['tinymce']
 
 export default {
   components: {
-    draggable,
     TreeNodeDialog,
     IconsDialog
   },
@@ -851,12 +840,12 @@ export default {
           <span>{node.label}</span>
           <span class="node-operation">
             <i on-click={() => this.append(data)}
-              class="el-icon-plus"
-              title="添加"
+               class="el-icon-plus"
+               title="添加"
             ></i>
             <i on-click={() => this.remove(node, data)}
-              class="el-icon-delete"
-              title="删除"
+               class="el-icon-delete"
+               title="删除"
             ></i>
           </span>
         </div>

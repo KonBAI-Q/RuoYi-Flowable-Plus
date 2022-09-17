@@ -186,7 +186,7 @@ export const selectComponents = [
       label: '级联选择',
       url: 'https://www.fastmock.site/mock/f8d7a54fb1e60561e2f720d5a810009d/fg/cascaderList',
       method: 'get',
-      dataPath: 'list',
+      dataKey: 'list',
       dataConsumer: 'options',
       showLabel: true,
       labelWidth: null,

@@ -1,6 +1,10 @@
 import { deepClone } from '@/utils/index';
 import { getToken } from '@/utils/auth';
 import render from '@/utils/generator/render';
+import axios from 'axios'
+import Vue from 'vue';
+
+Vue.prototype.$axios = axios
 
 const ruleTrigger = {
   'el-input': 'blur',
@@ -140,6 +144,7 @@ export default {
   methods: {
     initFormData(componentList, formData) {
       componentList.forEach(cur => {
+        this.buildOptionMethod(cur)
         const config = cur.__config__;
         if (cur.__vModel__) {
           formData[cur.__vModel__] = config.defaultValue;
@@ -172,6 +177,21 @@ export default {
           this.initFormData(config.children, formData);
         }
       })
+    },
+    // 特殊处理的 Option
+    buildOptionMethod(scheme) {
+      const config = scheme.__config__;
+      if (config && config.tag === 'el-cascader') {
+        if (config.dataType === 'dynamic') {
+          this.$axios({
+            method: config.method,
+            url: config.url
+          }).then(resp => {
+            var { data } = resp
+            scheme[config.dataConsumer] = data[config.dataKey]
+          });
+        }
+      }
     },
     buildRules(componentList, rules) {
       componentList.forEach(cur => {
