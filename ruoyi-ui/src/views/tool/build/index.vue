@@ -321,10 +321,9 @@ export default {
       }, obj)
     },
     setRespData(component, resp) {
-      const { dataPath, renderKey, dataConsumer } = component.__config__
-      if (!dataPath || !dataConsumer) return
-      const respData = dataPath.split('.').reduce((pre, item) => pre[item], resp)
-
+      const { dataKey, renderKey, dataConsumer } = component.__config__
+      if (!dataKey || !dataConsumer) return
+      const respData = dataKey.split('.').reduce((pre, item) => pre[item], resp)
       // 将请求回来的数据，赋值到指定属性。
       // 以el-tabel为例，根据Element文档，应该将数据赋值给el-tabel的data属性，所以dataConsumer的值应为'data';
       // 此时赋值代码可写成 component[dataConsumer] = respData；
