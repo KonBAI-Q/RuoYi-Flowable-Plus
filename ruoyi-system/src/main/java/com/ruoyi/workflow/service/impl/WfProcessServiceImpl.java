@@ -8,7 +8,6 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
@@ -378,7 +377,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .desc();
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<HistoricTaskInstance> historicTaskInstanceList = taskInstanceQuery.listPage(offset, pageQuery.getPageSize());
-        List<WfTaskVo> hisTaskList = Lists.newArrayList();
+        List<WfTaskVo> hisTaskList = new ArrayList<>();
         for (HistoricTaskInstance histTask : historicTaskInstanceList) {
             WfTaskVo flowTask = new WfTaskVo();
             // 当前流程信息

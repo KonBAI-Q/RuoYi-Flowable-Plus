@@ -5,11 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.dto.WfNextDto;
-import com.ruoyi.workflow.domain.vo.WfTaskVo;
 import com.ruoyi.workflow.service.IWfTaskService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +24,6 @@ import java.io.OutputStream;
  * @createTime 2022/3/10 00:12
  */
 @Slf4j
-@Api(tags = "工作流流程任务管理")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/task")
@@ -36,7 +31,9 @@ public class WfTaskController {
 
     private final IWfTaskService flowTaskService;
 
-    @ApiOperation(value = "取消申请", response = WfTaskVo.class)
+    /**
+     * 取消申请
+     */
     @PostMapping(value = "/stopProcess")
     @SaCheckPermission("workflow:process:cancel")
     public R stopProcess(@RequestBody WfTaskBo bo) {
@@ -44,7 +41,9 @@ public class WfTaskController {
         return R.ok();
     }
 
-    @ApiOperation(value = "撤回流程", response = WfTaskVo.class)
+    /**
+     * 撤回流程
+     */
     @PostMapping(value = "/revokeProcess")
     @SaCheckPermission("workflow:process:revoke")
     public R revokeProcess(@RequestBody WfTaskBo bo) {
@@ -52,14 +51,19 @@ public class WfTaskController {
         return R.ok();
     }
 
-    @ApiOperation(value = "获取流程变量", response = WfTaskVo.class)
+    /**
+     * 获取流程变量
+     * @param taskId 流程任务Id
+     */
     @GetMapping(value = "/processVariables/{taskId}")
     @SaCheckPermission("workflow:process:query")
-    public R processVariables(@ApiParam(value = "流程任务Id") @PathVariable(value = "taskId") String taskId) {
+    public R processVariables(@PathVariable(value = "taskId") String taskId) {
         return R.ok(flowTaskService.getProcessVariables(taskId));
     }
 
-    @ApiOperation(value = "审批任务")
+    /**
+     * 审批任务
+     */
     @PostMapping(value = "/complete")
     @SaCheckPermission("workflow:process:approval")
     public R complete(@RequestBody WfTaskBo bo) {
@@ -67,8 +71,9 @@ public class WfTaskController {
         return R.ok();
     }
 
-
-    @ApiOperation(value = "驳回任务")
+    /**
+     * 驳回任务
+     */
     @PostMapping(value = "/reject")
     @SaCheckPermission("workflow:process:approval")
     public R taskReject(@RequestBody WfTaskBo bo) {
@@ -76,7 +81,9 @@ public class WfTaskController {
         return R.ok();
     }
 
-    @ApiOperation(value = "退回任务")
+    /**
+     * 退回任务
+     */
     @PostMapping(value = "/return")
     @SaCheckPermission("workflow:process:approval")
     public R taskReturn(@RequestBody WfTaskBo bo) {
@@ -84,14 +91,18 @@ public class WfTaskController {
         return R.ok();
     }
 
-    @ApiOperation(value = "获取所有可回退的节点")
+    /**
+     * 获取所有可回退的节点
+     */
     @PostMapping(value = "/returnList")
     @SaCheckPermission("workflow:process:query")
     public R findReturnTaskList(@RequestBody WfTaskBo bo) {
         return R.ok(flowTaskService.findReturnTaskList(bo));
     }
 
-    @ApiOperation(value = "删除任务")
+    /**
+     * 删除任务
+     */
     @DeleteMapping(value = "/delete")
     @SaCheckPermission("workflow:process:approval")
     public R delete(@RequestBody WfTaskBo bo) {
@@ -99,7 +110,9 @@ public class WfTaskController {
         return R.ok();
     }
 
-    @ApiOperation(value = "认领/签收任务")
+    /**
+     * 认领/签收任务
+     */
     @PostMapping(value = "/claim")
     @SaCheckPermission("workflow:process:claim")
     public R claim(@RequestBody WfTaskBo bo) {
@@ -107,7 +120,9 @@ public class WfTaskController {
         return R.ok();
     }
 
-    @ApiOperation(value = "取消认领/签收任务")
+    /**
+     * 取消认领/签收任务
+     */
     @PostMapping(value = "/unClaim")
     @SaCheckPermission("workflow:process:claim")
     public R unClaim(@RequestBody WfTaskBo bo) {
@@ -115,7 +130,9 @@ public class WfTaskController {
         return R.ok();
     }
 
-    @ApiOperation(value = "委派任务")
+    /**
+     * 委派任务
+     */
     @PostMapping(value = "/delegate")
     @SaCheckPermission("workflow:process:approval")
     public R delegate(@RequestBody WfTaskBo bo) {
@@ -126,7 +143,9 @@ public class WfTaskController {
         return R.ok();
     }
 
-    @ApiOperation(value = "转办任务")
+    /**
+     * 转办任务
+     */
     @PostMapping(value = "/transfer")
     @SaCheckPermission("workflow:process:approval")
     public R transfer(@RequestBody WfTaskBo bo) {
@@ -137,7 +156,9 @@ public class WfTaskController {
         return R.ok();
     }
 
-    @ApiOperation(value = "获取下一节点")
+    /**
+     * 获取下一节点
+     */
     @PostMapping(value = "/nextFlowNode")
     @SaCheckPermission("workflow:process:query")
     public R getNextFlowNode(@RequestBody WfTaskBo bo) {

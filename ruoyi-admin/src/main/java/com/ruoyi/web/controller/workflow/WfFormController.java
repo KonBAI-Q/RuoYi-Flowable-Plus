@@ -14,7 +14,6 @@ import com.ruoyi.workflow.domain.bo.WfFormBo;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
 import com.ruoyi.workflow.service.IWfDeployFormService;
 import com.ruoyi.workflow.service.IWfFormService;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -62,10 +61,11 @@ public class WfFormController extends BaseController {
 
     /**
      * 获取流程表单详细信息
+     * @param formId 主键
      */
     @SaCheckPermission("workflow:form:query")
     @GetMapping(value = "/{formId}")
-    public R<WfFormVo> getInfo(@ApiParam("主键") @NotNull(message = "主键不能为空") @PathVariable("formId") Long formId) {
+    public R<WfFormVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable("formId") Long formId) {
         return R.ok(formService.queryById(formId));
     }
 
@@ -91,11 +91,12 @@ public class WfFormController extends BaseController {
 
     /**
      * 删除流程表单
+     * @param formIds 主键串
      */
     @SaCheckPermission("workflow:form:remove")
     @Log(title = "流程表单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{formIds}")
-    public R<Void> remove(@ApiParam("主键串") @NotEmpty(message = "主键不能为空") @PathVariable Long[] formIds) {
+    public R<Void> remove(@NotEmpty(message = "主键不能为空") @PathVariable Long[] formIds) {
         return toAjax(formService.deleteWithValidByIds(Arrays.asList(formIds)) ? 1 : 0);
     }
 

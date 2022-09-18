@@ -2,62 +2,72 @@ package com.ruoyi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
 
 /**
+ * 流程模型视图对象
+ *
  * @author KonBAI
  * @createTime 2022/6/21 9:16
  */
 @Data
-@ApiModel("流程模型视图对象")
 @ExcelIgnoreUnannotated
 public class WfModelVo {
-
+    /**
+     * 模型ID
+     */
     @ExcelProperty(value = "模型ID")
-    @ApiModelProperty("模型ID")
     private String modelId;
-
+    /**
+     * 模型名称
+     */
     @ExcelProperty(value = "模型名称")
-    @ApiModelProperty("模型名称")
     private String modelName;
-
+    /**
+     * 模型Key
+     */
     @ExcelProperty(value = "模型Key")
-    @ApiModelProperty("模型Key")
     private String modelKey;
-
+    /**
+     * 分类编码
+     */
     @ExcelProperty(value = "分类编码")
-    @ApiModelProperty("分类编码")
     private String category;
-
+    /**
+     * 版本
+     */
     @ExcelProperty(value = "版本")
-    @ApiModelProperty("版本")
     private Integer version;
-
+    /**
+     * 表单类型
+     */
     @ExcelProperty(value = "表单类型")
-    @ApiModelProperty("表单类型")
     private Integer formType;
-
+    /**
+     * 表单ID
+     */
     @ExcelProperty(value = "表单ID")
-    @ApiModelProperty("表单ID")
     private Long formId;
-
+    /**
+     * 模型描述
+     */
     @ExcelProperty(value = "模型描述")
-    @ApiModelProperty("模型描述")
     private String description;
-
+    /**
+     * 创建时间
+     */
     @ExcelProperty(value = "创建时间")
-    @ApiModelProperty("创建时间")
     private Date createTime;
-
+    /**
+     * 流程xml
+     */
     @ExcelProperty(value = "流程xml")
-    @ApiModelProperty("流程xml")
     private String bpmnXml;
-
+    /**
+     * 表单内容
+     */
     @ExcelProperty(value = "表单内容")
-    @ApiModelProperty("表单内容")
     private String content;
 }

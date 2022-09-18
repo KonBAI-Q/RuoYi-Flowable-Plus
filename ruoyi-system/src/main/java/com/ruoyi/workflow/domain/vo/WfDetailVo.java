@@ -2,7 +2,6 @@ package com.ruoyi.workflow.domain.vo;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.flowable.core.FormConf;
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.List;
  * @createTime 2022/8/7 15:01
  */
 @Data
-@ApiModel("流程详情视图对象")
 public class WfDetailVo {
 
     /**

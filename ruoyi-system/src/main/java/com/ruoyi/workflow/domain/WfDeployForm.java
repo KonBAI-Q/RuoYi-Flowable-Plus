@@ -1,7 +1,6 @@
 package com.ruoyi.workflow.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 /**
@@ -12,7 +11,6 @@ import lombok.Data;
  */
 @Data
 @TableName("wf_deploy_form")
-@ApiModel("部署实例和表单关联")
 public class WfDeployForm {
     private static final long serialVersionUID = 1L;
 

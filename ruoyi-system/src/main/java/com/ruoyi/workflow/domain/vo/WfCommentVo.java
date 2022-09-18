@@ -1,16 +1,16 @@
 package com.ruoyi.workflow.domain.vo;
 
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.util.Date;
 
 /**
+ * 流程批复视图对象
+ *
  * @author konbai
  * @createTime 2022/4/4 02:03
  */
 @Data
-@ApiModel("流程批复视图对象")
 public class WfCommentVo {
 
     /**

@@ -4,9 +4,6 @@ package com.ruoyi.web.controller.workflow;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.service.IWfInstanceService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
  * @createTime 2022/3/10 00:12
  */
 @Slf4j
-@Api(tags = "工作流流程实例管理")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/instance")
@@ -26,30 +22,47 @@ public class WfInstanceController {
 
     private final IWfInstanceService instanceService;
 
-    @ApiOperation(value = "激活或挂起流程实例")
+    /**
+     * 激活或挂起流程实例
+     *
+     * @param state 1:激活,2:挂起
+     * @param instanceId 流程实例ID
+     */
     @PostMapping(value = "/updateState")
-    public R updateState(@ApiParam(value = "1:激活,2:挂起", required = true) @RequestParam Integer state,
-                         @ApiParam(value = "流程实例ID", required = true) @RequestParam String instanceId) {
+    public R updateState(@RequestParam Integer state, @RequestParam String instanceId) {
         instanceService.updateState(state, instanceId);
         return R.ok();
     }
 
-    @ApiOperation("结束流程实例")
+    /**
+     * 结束流程实例
+     *
+     * @param bo 流程任务业务对象
+     */
     @PostMapping(value = "/stopProcessInstance")
     public R stopProcessInstance(@RequestBody WfTaskBo bo) {
         instanceService.stopProcessInstance(bo);
         return R.ok();
     }
 
-    @ApiOperation(value = "删除流程实例")
+    /**
+     * 删除流程实例
+     *
+     * @param instanceId 流程实例ID
+     * @param deleteReason 删除原因
+     */
     @DeleteMapping(value = "/delete")
-    public R delete(@ApiParam(value = "流程实例ID", required = true) @RequestParam String instanceId,
-                    @ApiParam(value = "删除原因") @RequestParam(required = false) String deleteReason) {
+    public R delete(@RequestParam String instanceId, String deleteReason) {
         instanceService.delete(instanceId, deleteReason);
         return R.ok();
     }
 
-    @ApiOperation(value = "查询流程实例详情信息")
+    /**
+     * 查询流程实例详情信息
+     *
+     * @param procInsId 流程实例ID
+     * @param deployId 流程部署ID
+     */
     @GetMapping("/detail")
     public R detail(String procInsId, String deployId) {
         return R.ok(instanceService.queryDetailProcess(procInsId, deployId));

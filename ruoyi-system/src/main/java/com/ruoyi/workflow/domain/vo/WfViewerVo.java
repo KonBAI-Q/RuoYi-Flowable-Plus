@@ -1,7 +1,6 @@
 package com.ruoyi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
-import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,6 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel("任务追踪视图对象")
 @ExcelIgnoreUnannotated
 public class WfViewerVo {
 

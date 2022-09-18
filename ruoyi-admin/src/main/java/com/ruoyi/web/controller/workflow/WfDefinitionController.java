@@ -9,9 +9,6 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.workflow.domain.bo.WfDesignerBo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.service.IWfDefinitionService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +29,6 @@ import java.nio.charset.StandardCharsets;
  * @date 2022-01-17
  */
 @Slf4j
-@Api(tags = "流程定义")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/definition")
@@ -41,9 +37,13 @@ public class WfDefinitionController extends BaseController {
 
     private final IWfDefinitionService flowDefinitionService;
 
+    /**
+     * 流程定义列表
+     *
+     * @param pageQuery 分页参数
+     */
     @GetMapping(value = "/list")
     @SaCheckPermission("workflow:definition:list")
-    @ApiOperation(value = "流程定义列表", response = WfDefinitionVo.class)
     public TableDataInfo<WfDefinitionVo> list(PageQuery pageQuery) {
         return flowDefinitionService.list(pageQuery);
     }
@@ -56,14 +56,13 @@ public class WfDefinitionController extends BaseController {
      */
     @GetMapping(value = "/publishList")
     @SaCheckPermission("workflow:definition:list")
-    @ApiOperation(value = "指定流程的发布版本列表", response = WfDefinitionVo.class)
-    public TableDataInfo<WfDefinitionVo> publishList(@ApiParam(value = "流程定义Key", required = true) @RequestParam String processKey,
-                                                     PageQuery pageQuery) {
+    public TableDataInfo<WfDefinitionVo> publishList(@RequestParam String processKey, PageQuery pageQuery) {
         return flowDefinitionService.publishList(processKey, pageQuery);
     }
 
-
-    @ApiOperation(value = "导入流程文件", notes = "上传bpmn20的xml文件")
+    /**
+     * 导入流程文件
+     */
     @SaCheckPermission("workflow:definition:designer")
     @PostMapping("/import")
     public R<Void> importFile(@RequestParam(required = false) String name,
@@ -79,11 +78,12 @@ public class WfDefinitionController extends BaseController {
         return R.ok("导入成功");
     }
 
-
-    @ApiOperation(value = "读取xml文件")
+    /**
+     * 读取xml文件
+     */
     @SaCheckLogin
     @GetMapping("/readXml/{definitionId}")
-    public R<String> readXml(@ApiParam(value = "流程定义ID") @PathVariable(value = "definitionId") String definitionId) {
+    public R<String> readXml(@PathVariable(value = "definitionId") String definitionId) {
         try {
             return R.ok(null, flowDefinitionService.readXml(definitionId));
         } catch (Exception e) {
@@ -92,10 +92,12 @@ public class WfDefinitionController extends BaseController {
 
     }
 
-    @ApiOperation(value = "读取图片文件")
+    /**
+     * 读取图片文件
+     */
     @SaCheckPermission("workflow:definition:view")
     @GetMapping("/readImage/{definitionId}")
-    public void readImage(@ApiParam(value = "流程定义id") @PathVariable(value = "definitionId") String definitionId,
+    public void readImage(@PathVariable(value = "definitionId") String definitionId,
                           HttpServletResponse response) {
         try (OutputStream os = response.getOutputStream()) {
             BufferedImage image = ImageIO.read(flowDefinitionService.readImage(definitionId));
@@ -108,8 +110,9 @@ public class WfDefinitionController extends BaseController {
         }
     }
 
-
-    @ApiOperation(value = "保存流程设计器内的xml文件")
+    /**
+     * 保存流程设计器内的xml文件
+     */
     @SaCheckPermission("workflow:definition:designer")
     @PostMapping("/save")
     public R<Void> save(@RequestBody WfDesignerBo bo) {
@@ -123,19 +126,22 @@ public class WfDefinitionController extends BaseController {
         return R.ok("导入成功");
     }
 
-    @ApiOperation(value = "激活或挂起流程定义")
+    /**
+     * 激活或挂起流程定义
+     */
     @SaCheckPermission("workflow:definition:update")
     @PutMapping(value = "/updateState")
-    public R<Void> updateState(@ApiParam(value = "ture:挂起,false:激活", required = true) @RequestParam Boolean suspended,
-                               @ApiParam(value = "流程定义ID", required = true) @RequestParam String definitionId) {
+    public R<Void> updateState(@RequestParam Boolean suspended, @RequestParam String definitionId) {
         flowDefinitionService.updateState(suspended, definitionId);
         return R.ok();
     }
 
-    @ApiOperation(value = "删除流程")
+    /**
+     * 删除流程
+     */
     @SaCheckPermission("workflow:definition:remove")
     @DeleteMapping(value = "/delete")
-    public R<Void> delete(@ApiParam(value = "流程部署ID", required = true) @RequestParam String deployId) {
+    public R<Void> delete(@RequestParam String deployId) {
         flowDefinitionService.delete(deployId);
         return R.ok();
     }

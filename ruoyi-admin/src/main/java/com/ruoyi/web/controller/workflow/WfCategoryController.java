@@ -16,9 +16,6 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.workflow.domain.bo.WfCategoryBo;
 import com.ruoyi.workflow.domain.vo.WfCategoryVo;
 import com.ruoyi.workflow.service.IWfCategoryService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +33,6 @@ import java.util.List;
  * @createTime 2022/3/10 00:12
  */
 @Validated
-@Api(value = "流程分类控制器", tags = {"流程分类管理"})
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/workflow/category")
@@ -47,7 +43,6 @@ public class WfCategoryController extends BaseController {
     /**
      * 查询流程分类列表
      */
-    @ApiOperation("查询流程分类列表")
     @SaCheckPermission("workflow:category:list")
     @GetMapping("/list")
     public TableDataInfo<WfCategoryVo> list(@Validated(QueryGroup.class) WfCategoryBo bo, PageQuery pageQuery) {
@@ -57,7 +52,6 @@ public class WfCategoryController extends BaseController {
     /**
      * 查询全部的流程分类列表
      */
-    @ApiOperation("查询全部流程分类列表")
     @SaCheckLogin
     @GetMapping("/listAll")
     public R<List<WfCategoryVo>> listAll(@Validated(QueryGroup.class) WfCategoryBo bo) {
@@ -67,7 +61,6 @@ public class WfCategoryController extends BaseController {
     /**
      * 导出流程分类列表
      */
-    @ApiOperation("导出流程分类列表")
     @SaCheckPermission("workflow:category:export")
     @Log(title = "流程分类", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
@@ -78,20 +71,17 @@ public class WfCategoryController extends BaseController {
 
     /**
      * 获取流程分类详细信息
+     * @param categoryId 分类主键
      */
-    @ApiOperation("获取流程分类详细信息")
     @SaCheckPermission("workflow:category:query")
     @GetMapping("/{categoryId}")
-    public R<WfCategoryVo> getInfo(@ApiParam("主键")
-                                                  @NotNull(message = "主键不能为空")
-                                                  @PathVariable("categoryId") Long categoryId) {
+    public R<WfCategoryVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable("categoryId") Long categoryId) {
         return R.ok(flowCategoryService.queryById(categoryId));
     }
 
     /**
      * 新增流程分类
      */
-    @ApiOperation("新增流程分类")
     @SaCheckPermission("workflow:category:add")
     @Log(title = "流程分类", businessType = BusinessType.INSERT)
     @RepeatSubmit()
@@ -103,7 +93,6 @@ public class WfCategoryController extends BaseController {
     /**
      * 修改流程分类
      */
-    @ApiOperation("修改流程分类")
     @SaCheckPermission("workflow:category:edit")
     @Log(title = "流程分类", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
@@ -114,12 +103,12 @@ public class WfCategoryController extends BaseController {
 
     /**
      * 删除流程分类
+     * @param categoryIds 分类主键串
      */
-    @ApiOperation("删除流程分类")
     @SaCheckPermission("workflow:category:remove")
     @Log(title = "流程分类" , businessType = BusinessType.DELETE)
     @DeleteMapping("/{categoryIds}")
-    public R<Void> remove(@ApiParam("主键串") @NotEmpty(message = "主键不能为空") @PathVariable Long[] categoryIds) {
+    public R<Void> remove(@NotEmpty(message = "主键不能为空") @PathVariable Long[] categoryIds) {
         return toAjax(flowCategoryService.deleteWithValidByIds(Arrays.asList(categoryIds), true) ? 1 : 0);
     }
 }
