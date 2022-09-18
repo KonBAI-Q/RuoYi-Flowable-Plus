@@ -231,7 +231,7 @@ comment on column sys_menu.query_param is '路由参数';
 comment on column sys_menu.is_frame is '是否为外链（0是 1否）';
 comment on column sys_menu.is_cache is '是否缓存（0缓存 1不缓存）';
 comment on column sys_menu.menu_type is '菜单类型（M目录 C菜单 F按钮）';
-comment on column sys_menu.visible is '菜单状态（0显示 1隐藏）';
+comment on column sys_menu.visible is '显示状态（0显示 1隐藏）';
 comment on column sys_menu.status is '菜单状态（0正常 1停用）';
 comment on column sys_menu.perms is '权限标识';
 comment on column sys_menu.icon is '菜单图标';
@@ -263,10 +263,10 @@ insert into sys_menu values('107',  '通知公告', '1',   '8', 'notice',     's
 insert into sys_menu values('108',  '日志管理', '1',   '9', 'log',        '',                         '', 1, 0, 'M', '0', '0', '',                        'log',           'admin', now(), '', null, '日志管理菜单');
 insert into sys_menu values('109',  '在线用户', '2',   '1', 'online',     'monitor/online/index',     '', 1, 0, 'C', '0', '0', 'monitor:online:list',     'online',        'admin', now(), '', null, '在线用户菜单');
 insert into sys_menu values('111',  '数据监控', '2',   '3', 'druid',      'monitor/druid/index',      '', 1, 0, 'C', '0', '0', 'monitor:druid:list',      'druid',         'admin', now(), '', null, '数据监控菜单');
+insert into sys_menu values('112',  '缓存列表', '2',   '6', 'cacheList',  'monitor/cache/list',       '', 1, 0, 'C', '0', '0', 'monitor:cache:list',  'redis-list',        'admin', now(), '', null, '缓存列表菜单');
 insert into sys_menu values('113',  '缓存监控', '2',   '5', 'cache',      'monitor/cache/index',      '', 1, 0, 'C', '0', '0', 'monitor:cache:list',      'redis',         'admin', now(), '', null, '缓存监控菜单');
 insert into sys_menu values('114',  '表单构建', '3',   '1', 'build',      'tool/build/index',         '', 1, 0, 'C', '0', '0', 'tool:build:list',         'build',         'admin', now(), '', null, '表单构建菜单');
 insert into sys_menu values('115',  '代码生成', '3',   '2', 'gen',        'tool/gen/index',           '', 1, 0, 'C', '0', '0', 'tool:gen:list',           'code',          'admin', now(), '', null, '代码生成菜单');
-insert into sys_menu values('116',  '系统接口', '3',   '3', 'swagger',    'tool/swagger/index',       '', 1, 0, 'C', '0', '0', 'tool:swagger:list',       'swagger',       'admin', now(), '', null, '系统接口菜单');
 -- springboot-admin监控
 insert into sys_menu values('117',  'Admin监控', '2',  '5', 'Admin',      'monitor/admin/index',      '', 1, 0, 'C', '0', '0', 'monitor:admin:list',      'dashboard',     'admin', now(), '', null, 'Admin监控菜单');
 -- oss菜单
@@ -344,6 +344,7 @@ insert into sys_menu values('1082', '日志导出', '500', '4', '#', '', '', 1, 
 insert into sys_menu values('1090', '登录查询', '501', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:query',   '#', 'admin', now(), '', null, '');
 insert into sys_menu values('1091', '登录删除', '501', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:remove',  '#', 'admin', now(), '', null, '');
 insert into sys_menu values('1092', '日志导出', '501', '3', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:export',  '#', 'admin', now(), '', null, '');
+insert into sys_menu values('1093', '账户解锁', '501', '4', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:unlock',  '#', 'admin', now(), '', null, '');
 -- 在线用户按钮
 insert into sys_menu values('1100', '在线查询', '109', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:query',       '#', 'admin', now(), '', null, '');
 insert into sys_menu values('1101', '批量强退', '109', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:batchLogout', '#', 'admin', now(), '', null, '');
@@ -458,6 +459,7 @@ insert into sys_role_menu values ('2', '107');
 insert into sys_role_menu values ('2', '108');
 insert into sys_role_menu values ('2', '109');
 insert into sys_role_menu values ('2', '111');
+insert into sys_role_menu values ('2', '112');
 insert into sys_role_menu values ('2', '113');
 insert into sys_role_menu values ('2', '114');
 insert into sys_role_menu values ('2', '115');
@@ -522,6 +524,7 @@ insert into sys_role_menu values ('2', '1082');
 insert into sys_role_menu values ('2', '1090');
 insert into sys_role_menu values ('2', '1091');
 insert into sys_role_menu values ('2', '1092');
+insert into sys_role_menu values ('2', '1093');
 insert into sys_role_menu values ('2', '1100');
 insert into sys_role_menu values ('2', '1101');
 insert into sys_role_menu values ('2', '1102');
@@ -745,6 +748,7 @@ insert into sys_dict_data values(14, 1,  '通知',     '1',       'sys_notice_ty
 insert into sys_dict_data values(15, 2,  '公告',     '2',       'sys_notice_type',     '',   'success', 'N', '0', 'admin', now(), '', null, '公告');
 insert into sys_dict_data values(16, 1,  '正常',     '0',       'sys_notice_status',   '',   'primary', 'Y', '0', 'admin', now(), '', null, '正常状态');
 insert into sys_dict_data values(17, 2,  '关闭',     '1',       'sys_notice_status',   '',   'danger',  'N', '0', 'admin', now(), '', null, '关闭状态');
+insert into sys_dict_data values(29, 99, '其他',     '0',       'sys_oper_type',       '',   'info',    'N', '0', 'admin', now(), '', null, '其他操作');
 insert into sys_dict_data values(18, 1,  '新增',     '1',       'sys_oper_type',       '',   'info',    'N', '0', 'admin', now(), '', null, '新增操作');
 insert into sys_dict_data values(19, 2,  '修改',     '2',       'sys_oper_type',       '',   'info',    'N', '0', 'admin', now(), '', null, '修改操作');
 insert into sys_dict_data values(20, 3,  '删除',     '3',       'sys_oper_type',       '',   'danger',  'N', '0', 'admin', now(), '', null, '删除操作');
@@ -792,7 +796,7 @@ comment on column sys_config.remark is '备注';
 insert into sys_config values(1, '主框架页-默认皮肤样式名称',     'sys.index.skinName',            'skin-blue',     'Y', 'admin', now(), '', null, '蓝色 skin-blue、绿色 skin-green、紫色 skin-purple、红色 skin-red、黄色 skin-yellow' );
 insert into sys_config values(2, '用户管理-账号初始密码',         'sys.user.initPassword',         '123456',        'Y', 'admin', now(), '', null, '初始化密码 123456' );
 insert into sys_config values(3, '主框架页-侧边栏主题',           'sys.index.sideTheme',           'theme-dark',    'Y', 'admin', now(), '', null, '深色主题theme-dark，浅色主题theme-light' );
-insert into sys_config values(4, '账号自助-验证码开关',           'sys.account.captchaOnOff',      'true',          'Y', 'admin', now(), '', null, '是否开启验证码功能（true开启，false关闭）');
+insert into sys_config values(4, '账号自助-验证码开关',           'sys.account.captchaEnabled',    'true',          'Y', 'admin', now(), '', null, '是否开启验证码功能（true开启，false关闭）');
 insert into sys_config values(5, '账号自助-是否开启用户注册功能',   'sys.account.registerUser',      'false',         'Y', 'admin', now(), '', null, '是否开启注册用户功能（true开启，false关闭）');
 insert into sys_config values(11, 'OSS预览列表资源开关',          'sys.oss.previewListResource',   'true',          'Y', 'admin', now(), '', null, 'true:开启, false:关闭');
 
@@ -985,7 +989,7 @@ create table if not exists sys_oss
     create_time   timestamp,
     update_by     varchar(64)  default ''::varchar,
     update_time   timestamp,
-    service       varchar(10)  default 'minio'::varchar,
+    service       varchar(20)  default 'minio'::varchar,
     constraint sys_oss_pk primary key (oss_id)
 );
 
@@ -1008,12 +1012,13 @@ drop table if exists sys_oss_config;
 create table if not exists sys_oss_config
 (
     oss_config_id int8,
-    config_key    varchar(255) default ''::varchar not null,
+    config_key    varchar(20)  default ''::varchar not null,
     access_key    varchar(255) default ''::varchar,
     secret_key    varchar(255) default ''::varchar,
     bucket_name   varchar(255) default ''::varchar,
     prefix        varchar(255) default ''::varchar,
     endpoint      varchar(255) default ''::varchar,
+    domain        varchar(255) default ''::varchar,
     is_https      char         default 'N'::bpchar,
     region        varchar(255) default ''::varchar,
     status        char         default '1'::bpchar,
@@ -1173,3 +1178,10 @@ comment on column wf_copy.create_time     is '创建时间';
 comment on column wf_copy.update_by       is '更新者';
 comment on column wf_copy.update_time     is '更新时间';
 comment on column wf_copy.del_flag        is '删除标志（0代表存在 2代表删除）';
+
+-- 字符串自动转时间 避免框架时间查询报错问题
+create or replace function cast_varchar_to_timestamp(varchar) returns timestamptz as $$
+select to_timestamp($1, 'yyyy-mm-dd hh24:mi:ss');
+$$ language sql strict ;
+
+create cast (varchar as timestamptz) with function cast_varchar_to_timestamp as IMPLICIT;
