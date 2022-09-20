@@ -120,9 +120,8 @@
 </template>
 
 <script>
-import { listUser } from "@/api/system/user";
+import { listUser, deptTreeSelect } from "@/api/system/user";
 import { listRole } from "@/api/system/role";
-import { treeselect } from '@/api/system/dept'
 import TreeSelect from "@/components/TreeSelect";
 
 const userTaskForm = {
@@ -248,7 +247,7 @@ export default {
     getDeptOptions() {
       return new Promise((resolve, reject) => {
         if (!this.deptOptions || this.deptOptions.length <= 0) {
-          treeselect().then(response => {
+          deptTreeSelect().then(response => {
             this.deptTempOptions = response.data;
             this.deptOptions = response.data;
             resolve()

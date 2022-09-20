@@ -192,11 +192,10 @@ import { detailProcess } from '@/api/workflow/process'
 import Parser from '@/utils/generator/parser'
 import { definitionStart, getFlowViewer, readXml } from '@/api/workflow/definition'
 import { complete, delegate, transfer, getNextFlowNode, rejectTask, returnList, returnTask } from '@/api/workflow/todo'
-import { treeselect } from '@/api/system/dept'
+import { selectUser, deptTreeSelect } from '@/api/system/user'
 import ProcessViewer from '@/components/ProcessViewer'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import Treeselect from '@riophae/vue-treeselect'
-import { selectUser } from '@/api/system/user'
 
 export default {
   name: "Detail",
@@ -315,7 +314,7 @@ export default {
   methods: {
     /** 查询部门下拉树结构 */
     getTreeSelect() {
-      treeselect().then(response => {
+      deptTreeSelect().then(response => {
         this.deptOptions = response.data;
       });
     },
