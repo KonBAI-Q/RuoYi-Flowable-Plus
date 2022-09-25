@@ -77,14 +77,17 @@
           <el-col :span="20" :offset="2">
             <div class="block">
               <el-timeline>
-                <el-timeline-item v-for="(item,index) in historyTaskList" :key="index" :icon="setIcon(item.finishTime)" :color="setColor(item.finishTime)">
-                  <p style="font-weight: 700">{{ item.taskName }}</p>
-                  <el-card class="box-card" shadow="hover">
+                <el-timeline-item v-for="(item,index) in historyProcNodeList" :key="index" :icon="setIcon(item.endTime)" :color="setColor(item.endTime)">
+                  <p style="font-weight: 700">{{ item.activityName }}</p>
+                  <el-card v-if="item.activityType === 'startEvent'" class="box-card" shadow="hover">
+                    {{ item.assigneeName }} 在 {{ item.createTime }} 发起流程
+                  </el-card>
+                  <el-card v-if="item.activityType === 'userTask'" class="box-card" shadow="hover">
                     <el-descriptions :column="5" :labelStyle="{'font-weight': 'bold'}">
                       <el-descriptions-item label="实际办理">{{ item.assigneeName || '-'}}</el-descriptions-item>
                       <el-descriptions-item label="候选办理">{{ item.candidate || '-'}}</el-descriptions-item>
                       <el-descriptions-item label="接收时间">{{ item.createTime || '-'}}</el-descriptions-item>
-                      <el-descriptions-item label="办结时间">{{ item.finishTime || '-' }}</el-descriptions-item>
+                      <el-descriptions-item label="办结时间">{{ item.endTime || '-' }}</el-descriptions-item>
                       <el-descriptions-item label="耗时">{{ item.duration || '-'}}</el-descriptions-item>
                     </el-descriptions>
                     <div v-if="item.commentList && item.commentList.length > 0" v-for="comment in item.commentList">
@@ -94,6 +97,9 @@
                       </el-divider>
                       <span>{{ comment.fullMessage }}</span>
                     </div>
+                  </el-card>
+                  <el-card v-if="item.activityType === 'endEvent'" class="box-card" shadow="hover">
+                    {{ item.createTime }} 结束流程
                   </el-card>
                 </el-timeline-item>
               </el-timeline>
@@ -105,7 +111,7 @@
       <el-tab-pane label="流程跟踪" name="track">
         <el-card class="box-card" shadow="never">
           <process-viewer :key="`designer-${loadIndex}`" :style="'height:' + height" :xml="xmlData"
-                          :finishedInfo="finishedInfo" :allCommentList="historyTaskList"
+                          :finishedInfo="finishedInfo" :allCommentList="historyProcNodeList"
           />
         </el-card>
       </el-tab-pane>
@@ -241,7 +247,7 @@ export default {
         unfinishedTaskSet: [],
         rejectedTaskSet: []
       },
-      historyTaskList: [],
+      historyProcNodeList: [],
       // 部门名称
       deptName: undefined,
       // 部门树选项
@@ -428,7 +434,7 @@ export default {
         if (this.taskFormOpen) {
           this.taskFormData = data.taskFormData;
         }
-        this.historyTaskList = data.historyTaskList;
+        this.historyProcNodeList = data.historyProcNodeList;
         this.formOpen = true
       })
     },

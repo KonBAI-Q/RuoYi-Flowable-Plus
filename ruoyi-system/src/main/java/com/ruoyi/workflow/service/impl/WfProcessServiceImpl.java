@@ -29,10 +29,7 @@ import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.bo.WfProcessBo;
-import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
-import com.ruoyi.workflow.domain.vo.WfDeployFormVo;
-import com.ruoyi.workflow.domain.vo.WfDetailVo;
-import com.ruoyi.workflow.domain.vo.WfTaskVo;
+import com.ruoyi.workflow.domain.vo.*;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
 import com.ruoyi.workflow.service.IWfTaskService;
@@ -214,7 +211,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             throw new ServiceException("没有可办理的任务！");
         }
         detailVo.setTaskFormData(currTaskFormData(deployId, taskIns));
-        detailVo.setHistoryTaskList(historyTaskList(procInsId));
+        detailVo.setHistoryProcNodeList(historyProcNodeList(procInsId));
         detailVo.setProcessFormList(processFormList(procInsId, deployId, taskIns));
         return detailVo;
     }
@@ -429,7 +426,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     private void buildProcessVariables(Map<String, Object> variables) {
         String userIdStr = LoginHelper.getUserId().toString();
         identityService.setAuthenticatedUserId(userIdStr);
-        variables.put(TaskConstants.PROCESS_INITIATOR, userIdStr);
+        variables.put(BpmnXMLConstants.ATTRIBUTE_EVENT_START_INITIATOR, userIdStr);
     }
 
 
@@ -546,67 +543,87 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     /**
      * 获取历史任务信息列表
      */
-    private List<WfTaskVo> historyTaskList(String procInsId) {
-        List<HistoricTaskInstance> taskInstanceList = historyService.createHistoricTaskInstanceQuery()
+    private List<WfProcNodeVo> historyProcNodeList(String procInsId) {
+        List<HistoricActivityInstance> historicActivityInstanceList =  historyService.createHistoricActivityInstanceQuery()
             .processInstanceId(procInsId)
-            .orderByHistoricTaskInstanceStartTime().desc()
+            .activityTypes(CollUtil.newHashSet(BpmnXMLConstants.ELEMENT_EVENT_START, BpmnXMLConstants.ELEMENT_EVENT_END, BpmnXMLConstants.ELEMENT_TASK_USER))
+            .orderByHistoricActivityInstanceStartTime().desc()
+            .orderByHistoricActivityInstanceEndTime().desc()
             .list();
+
+        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+            .processInstanceId(procInsId)
+            .singleResult();
+
         List<Comment> commentList = taskService.getProcessInstanceComments(procInsId);
-        List<WfTaskVo> taskVoList = new ArrayList<>(taskInstanceList.size());
-        taskInstanceList.forEach(taskInstance -> {
-            WfTaskVo taskVo = new WfTaskVo();
-            taskVo.setProcDefId(taskInstance.getProcessDefinitionId());
-            taskVo.setTaskId(taskInstance.getId());
-            taskVo.setTaskDefKey(taskInstance.getTaskDefinitionKey());
-            taskVo.setTaskName(taskInstance.getName());
-            taskVo.setCreateTime(taskInstance.getStartTime());
-            taskVo.setFinishTime(taskInstance.getEndTime());
-            if (StringUtils.isNotBlank(taskInstance.getAssignee())) {
-                SysUser user = userService.selectUserById(Long.parseLong(taskInstance.getAssignee()));
-                taskVo.setAssigneeId(user.getUserId());
-                taskVo.setAssigneeName(user.getNickName());
-                taskVo.setDeptName(user.getDept().getDeptName());
+
+        List<WfProcNodeVo> elementVoList = new ArrayList<>();
+        for (HistoricActivityInstance activityInstance : historicActivityInstanceList) {
+            WfProcNodeVo elementVo = new WfProcNodeVo();
+            elementVo.setProcDefId(activityInstance.getProcessDefinitionId());
+            elementVo.setActivityId(activityInstance.getActivityId());
+            elementVo.setActivityName(activityInstance.getActivityName());
+            elementVo.setActivityType(activityInstance.getActivityType());
+            elementVo.setCreateTime(activityInstance.getStartTime());
+            elementVo.setEndTime(activityInstance.getEndTime());
+            if (ObjectUtil.isNotNull(activityInstance.getDurationInMillis())) {
+                elementVo.setDuration(DateUtil.formatBetween(activityInstance.getDurationInMillis(), BetweenFormatter.Level.SECOND));
             }
-            // 展示审批人员
-            List<HistoricIdentityLink> linksForTask = historyService.getHistoricIdentityLinksForTask(taskInstance.getId());
-            StringBuilder stringBuilder = new StringBuilder();
-            for (HistoricIdentityLink identityLink : linksForTask) {
-                if ("candidate".equals(identityLink.getType())) {
-                    if (StringUtils.isNotBlank(identityLink.getUserId())) {
-                        SysUser user = userService.selectUserById(Long.parseLong(identityLink.getUserId()));
-                        stringBuilder.append(user.getNickName()).append(",");
+
+            if (BpmnXMLConstants.ELEMENT_EVENT_START.equals(activityInstance.getActivityType())) {
+                if (ObjectUtil.isNotNull(historicProcessInstance)) {
+                    Long userId = Long.parseLong(historicProcessInstance.getStartUserId());
+                    SysUser user = userService.selectUserById(userId);
+                    if (user != null) {
+                        elementVo.setAssigneeId(user.getUserId());
+                        elementVo.setAssigneeName(user.getNickName());
                     }
-                    if (StringUtils.isNotBlank(identityLink.getGroupId())) {
-                        if (identityLink.getGroupId().startsWith(TaskConstants.ROLE_GROUP_PREFIX)) {
-                            Long roleId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.ROLE_GROUP_PREFIX));
-                            SysRole role = roleService.selectRoleById(roleId);
-                            stringBuilder.append(role.getRoleName()).append(",");
-                        } else if (identityLink.getGroupId().startsWith(TaskConstants.DEPT_GROUP_PREFIX)) {
-                            Long deptId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.DEPT_GROUP_PREFIX));
-                            SysDept dept = deptService.selectDeptById(deptId);
-                            stringBuilder.append(dept.getDeptName()).append(",");
+                }
+            } else if (BpmnXMLConstants.ELEMENT_TASK_USER.equals(activityInstance.getActivityType())) {
+                if (StringUtils.isNotBlank(activityInstance.getAssignee())) {
+                    SysUser user = userService.selectUserById(Long.parseLong(activityInstance.getAssignee()));
+                    elementVo.setAssigneeId(user.getUserId());
+                    elementVo.setAssigneeName(user.getNickName());
+                }
+                // 展示审批人员
+                List<HistoricIdentityLink> linksForTask = historyService.getHistoricIdentityLinksForTask(activityInstance.getTaskId());
+                StringBuilder stringBuilder = new StringBuilder();
+                for (HistoricIdentityLink identityLink : linksForTask) {
+                    if ("candidate".equals(identityLink.getType())) {
+                        if (StringUtils.isNotBlank(identityLink.getUserId())) {
+                            SysUser user = userService.selectUserById(Long.parseLong(identityLink.getUserId()));
+                            stringBuilder.append(user.getNickName()).append(",");
+                        }
+                        if (StringUtils.isNotBlank(identityLink.getGroupId())) {
+                            if (identityLink.getGroupId().startsWith(TaskConstants.ROLE_GROUP_PREFIX)) {
+                                Long roleId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.ROLE_GROUP_PREFIX));
+                                SysRole role = roleService.selectRoleById(roleId);
+                                stringBuilder.append(role.getRoleName()).append(",");
+                            } else if (identityLink.getGroupId().startsWith(TaskConstants.DEPT_GROUP_PREFIX)) {
+                                Long deptId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.DEPT_GROUP_PREFIX));
+                                SysDept dept = deptService.selectDeptById(deptId);
+                                stringBuilder.append(dept.getDeptName()).append(",");
+                            }
                         }
                     }
                 }
-            }
-            if (StringUtils.isNotBlank(stringBuilder)) {
-                taskVo.setCandidate(stringBuilder.substring(0, stringBuilder.length() - 1));
-            }
-            if (ObjectUtil.isNotNull(taskInstance.getDurationInMillis())) {
-                taskVo.setDuration(DateUtil.formatBetween(taskInstance.getDurationInMillis(), BetweenFormatter.Level.SECOND));
-            }
-            // 获取意见评论内容
-            if (CollUtil.isNotEmpty(commentList)) {
-                List<Comment> comments = new ArrayList<>();
-                for (Comment comment : commentList) {
-                    if (comment.getTaskId().equals(taskInstance.getId())) {
-                        comments.add(comment);
-                    }
+                if (StringUtils.isNotBlank(stringBuilder)) {
+                    elementVo.setCandidate(stringBuilder.substring(0, stringBuilder.length() - 1));
                 }
-                taskVo.setCommentList(comments);
+                // 获取意见评论内容
+                if (CollUtil.isNotEmpty(commentList)) {
+                    List<Comment> comments = new ArrayList<>();
+                    for (Comment comment : commentList) {
+
+                        if (comment.getTaskId().equals(activityInstance.getTaskId())) {
+                            comments.add(comment);
+                        }
+                    }
+                    elementVo.setCommentList(comments);
+                }
             }
-            taskVoList.add(taskVo);
-        });
-        return taskVoList;
+            elementVoList.add(elementVo);
+        }
+        return elementVoList;
     }
 }

@@ -178,7 +178,7 @@ export default {
       this.dlgTitle = element.businessObject ? element.businessObject.name : undefined;
       // 计算当前悬浮任务审批记录，如果记录为空不显示弹窗
       this.taskCommentList = (this.allCommentList || []).filter(item => {
-        return item.taskDefKey === this.selectTaskId;
+        return item.activityId === this.selectTaskId;
       });
       this.dialogVisible = true;
     },

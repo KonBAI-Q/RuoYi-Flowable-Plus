@@ -21,9 +21,9 @@ public class WfDetailVo {
     private FormConf taskFormData;
 
     /**
-     * 历史任务信息
+     * 历史流程节点信息
      */
-    private List<WfTaskVo> historyTaskList;
+    private List<WfProcNodeVo> historyProcNodeList;
 
     /**
      * 流程表单列表
