@@ -141,7 +141,7 @@ public class FlowableUtils {
         userTaskList = userTaskList == null ? new ArrayList<>() : userTaskList;
 
         // 如果该节点为开始节点，且存在上级子节点，则顺着上级子节点继续迭代
-        if (source instanceof EndEvent && source.getSubProcess() != null) {
+        if (source instanceof StartEvent && source.getSubProcess() != null) {
             userTaskList = iteratorFindChildUserTasks(source.getSubProcess(), runTaskKeyList, hasSequenceFlow, userTaskList);
         }
 
