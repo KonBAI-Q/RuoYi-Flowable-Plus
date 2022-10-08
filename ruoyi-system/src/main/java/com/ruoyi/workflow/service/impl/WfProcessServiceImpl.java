@@ -256,7 +256,9 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             } else {
                 List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
                     .processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
-                taskVo.setTaskId(historicTaskInstance.get(0).getId());
+                if (CollUtil.isNotEmpty(historicTaskInstance)) {
+                    taskVo.setTaskId(historicTaskInstance.get(0).getId());
+                }
             }
             taskVoList.add(taskVo);
         }
