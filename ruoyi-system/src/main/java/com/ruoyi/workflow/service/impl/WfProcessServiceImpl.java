@@ -157,7 +157,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             // 设置流程发起人Id到流程中
             this.buildProcessVariables(variables);
             ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
-            // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题？
+            // 第一个用户任务为发起人，则自动完成任务
             wfTaskService.startFirstTask(processInstance, variables);
         } catch (Exception e) {
             e.printStackTrace();

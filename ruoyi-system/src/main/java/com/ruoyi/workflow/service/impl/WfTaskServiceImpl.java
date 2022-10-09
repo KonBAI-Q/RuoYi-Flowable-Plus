@@ -673,16 +673,15 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      */
     @Override
     public void startFirstTask(ProcessInstance processInstance, Map<String, Object> variables) {
-        // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题？
+        // 若第一个用户任务为发起人，则自动完成任务
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
-        if (Objects.nonNull(task)) {
+        if (ObjectUtil.isNotEmpty(task)) {
             String userIdStr = (String) variables.get(TaskConstants.PROCESS_INITIATOR);
-            if (!StrUtil.equalsAny(task.getAssignee(), userIdStr)) {
-                throw new ServiceException("数据验证失败，该工作流第一个用户任务的指派人并非当前用户，不能执行该操作！");
+            if (StrUtil.equals(task.getAssignee(), userIdStr)) {
+                taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginHelper.getNickName() + "发起流程申请");
+                // taskService.setAssignee(task.getId(), userIdStr);
+                taskService.complete(task.getId(), variables);
             }
-            taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginHelper.getNickName() + "发起流程申请");
-            // taskService.setAssignee(task.getId(), userIdStr);
-            taskService.complete(task.getId(), variables);
         }
     }
 }
