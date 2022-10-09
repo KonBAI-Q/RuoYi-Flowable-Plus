@@ -67,6 +67,32 @@ public class ModelUtils {
     }
 
     /**
+     * 获取结束节点
+     *
+     * @param model bpmnModel对象
+     * @return 结束节点（未找到开始节点，返回null）
+     */
+    public static EndEvent getEndEvent(BpmnModel model) {
+        Process process = model.getMainProcess();
+        return getEndEvent(process.getFlowElements());
+    }
+
+    /**
+     * 获取结束节点
+     *
+     * @param flowElements 流程元素集合
+     * @return 结束节点（未找到开始节点，返回null）
+     */
+    public static EndEvent getEndEvent(Collection<FlowElement> flowElements) {
+        for (FlowElement flowElement : flowElements) {
+            if (flowElement instanceof EndEvent) {
+                return (EndEvent) flowElement;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 获取所有用户任务节点
      *
      * @param model bpmnModel对象

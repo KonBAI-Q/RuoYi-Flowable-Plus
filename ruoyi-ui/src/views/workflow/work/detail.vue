@@ -52,7 +52,7 @@
               <el-button icon="el-icon-refresh-left" type="warning" @click="handleReturn">退回</el-button>
             </el-col>
             <el-col :span="1.5">
-              <el-button icon="el-icon-circle-close" type="danger" @click="handleReject">驳回</el-button>
+              <el-button icon="el-icon-circle-close" type="danger" @click="handleReject">拒绝</el-button>
             </el-col>
           </el-row>
         </el-card>
@@ -202,6 +202,7 @@ import { selectUser, deptTreeSelect } from '@/api/system/user'
 import ProcessViewer from '@/components/ProcessViewer'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import Treeselect from '@riophae/vue-treeselect'
+import { forceLogout } from '@/api/monitor/online';
 
 export default {
   name: "Detail",
@@ -496,11 +497,14 @@ export default {
         }
       })
     },
-    /** 驳回任务 */
+    /** 拒绝任务 */
     handleReject() {
       this.$refs["taskForm"].validate(valid => {
         if (valid) {
-          rejectTask(this.taskForm).then(res => {
+          const _this = this;
+          this.$modal.confirm('拒绝审批单流程会终止，是否继续？').then(function() {
+            return rejectTask(_this.taskForm);
+          }).then(res => {
             this.$modal.msgSuccess(res.msg);
             this.goBack();
           });

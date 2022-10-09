@@ -36,7 +36,7 @@ export function returnTask(data) {
   })
 }
 
-// 驳回任务
+// 拒绝任务
 export function rejectTask(data) {
   return request({
     url: '/workflow/task/reject',

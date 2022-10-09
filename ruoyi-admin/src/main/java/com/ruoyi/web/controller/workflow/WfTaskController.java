@@ -72,12 +72,12 @@ public class WfTaskController {
     }
 
     /**
-     * 驳回任务
+     * 拒绝任务
      */
     @PostMapping(value = "/reject")
     @SaCheckPermission("workflow:process:approval")
-    public R taskReject(@RequestBody WfTaskBo bo) {
-        flowTaskService.taskReject(bo);
+    public R taskReject(@RequestBody WfTaskBo taskBo) {
+        flowTaskService.taskReject(taskBo);
         return R.ok();
     }
 

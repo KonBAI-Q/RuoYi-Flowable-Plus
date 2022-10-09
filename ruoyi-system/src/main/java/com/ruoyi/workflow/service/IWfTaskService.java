@@ -24,11 +24,11 @@ public interface IWfTaskService {
     void complete(WfTaskBo task);
 
     /**
-     * 驳回任务
+     * 拒绝任务
      *
-     * @param bo
+     * @param taskBo
      */
-    void taskReject(WfTaskBo bo);
+    void taskReject(WfTaskBo taskBo);
 
 
     /**
