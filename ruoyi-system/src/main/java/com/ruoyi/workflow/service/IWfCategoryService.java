@@ -29,27 +29,28 @@ public interface IWfCategoryService {
     /**
      * 查询列表
      */
-    List<WfCategoryVo> queryList(WfCategoryBo bo);
+    List<WfCategoryVo> queryList(WfCategoryBo categoryBo);
 
     /**
-     * 根据新增业务对象插入【请填写功能名称】
-     * @param bo 【请填写功能名称】新增业务对象
-     * @return
+     * 新增流程分类
+     *
+     * @param categoryBo 流程分类信息
+     * @return 结果
      */
-    Boolean insertByBo(WfCategoryBo bo);
+    int insertCategory(WfCategoryBo categoryBo);
 
     /**
-     * 根据编辑业务对象修改【请填写功能名称】
-     * @param bo 【请填写功能名称】编辑业务对象
-     * @return
+     * 编辑流程分类
+     * @param categoryBo 流程分类信息
+     * @return 结果
      */
-    Boolean updateByBo(WfCategoryBo bo);
+    int updateCategory(WfCategoryBo categoryBo);
 
     /**
      * 校验并删除数据
      * @param ids 主键集合
      * @param isValid 是否校验,true-删除前校验,false-不校验
-     * @return
+     * @return 结果
      */
-    Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+    int deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 }

@@ -38,7 +38,7 @@ import java.util.List;
 @RequestMapping("/workflow/category")
 public class WfCategoryController extends BaseController {
 
-    private final IWfCategoryService flowCategoryService;
+    private final IWfCategoryService categoryService;
 
     /**
      * 查询流程分类列表
@@ -46,7 +46,7 @@ public class WfCategoryController extends BaseController {
     @SaCheckPermission("workflow:category:list")
     @GetMapping("/list")
     public TableDataInfo<WfCategoryVo> list(@Validated(QueryGroup.class) WfCategoryBo bo, PageQuery pageQuery) {
-        return flowCategoryService.queryPageList(bo, pageQuery);
+        return categoryService.queryPageList(bo, pageQuery);
     }
 
     /**
@@ -55,7 +55,7 @@ public class WfCategoryController extends BaseController {
     @SaCheckLogin
     @GetMapping("/listAll")
     public R<List<WfCategoryVo>> listAll(@Validated(QueryGroup.class) WfCategoryBo bo) {
-        return R.ok(flowCategoryService.queryList(bo));
+        return R.ok(categoryService.queryList(bo));
     }
 
     /**
@@ -65,7 +65,7 @@ public class WfCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(@Validated WfCategoryBo bo, HttpServletResponse response) {
-        List<WfCategoryVo> list = flowCategoryService.queryList(bo);
+        List<WfCategoryVo> list = categoryService.queryList(bo);
         ExcelUtil.exportExcel(list, "流程分类", WfCategoryVo.class, response);
     }
 
@@ -76,7 +76,7 @@ public class WfCategoryController extends BaseController {
     @SaCheckPermission("workflow:category:query")
     @GetMapping("/{categoryId}")
     public R<WfCategoryVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable("categoryId") Long categoryId) {
-        return R.ok(flowCategoryService.queryById(categoryId));
+        return R.ok(categoryService.queryById(categoryId));
     }
 
     /**
@@ -86,8 +86,8 @@ public class WfCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody WfCategoryBo bo) {
-        return toAjax(flowCategoryService.insertByBo(bo) ? 1 : 0);
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody WfCategoryBo categoryBo) {
+        return toAjax(categoryService.insertCategory(categoryBo));
     }
 
     /**
@@ -97,8 +97,8 @@ public class WfCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody WfCategoryBo bo) {
-        return toAjax(flowCategoryService.updateByBo(bo) ? 1 : 0);
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody WfCategoryBo categoryBo) {
+        return toAjax(categoryService.updateCategory(categoryBo));
     }
 
     /**
@@ -109,6 +109,6 @@ public class WfCategoryController extends BaseController {
     @Log(title = "流程分类" , businessType = BusinessType.DELETE)
     @DeleteMapping("/{categoryIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空") @PathVariable Long[] categoryIds) {
-        return toAjax(flowCategoryService.deleteWithValidByIds(Arrays.asList(categoryIds), true) ? 1 : 0);
+        return toAjax(categoryService.deleteWithValidByIds(Arrays.asList(categoryIds), true));
     }
 }
