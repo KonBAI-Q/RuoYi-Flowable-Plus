@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.annotation.RepeatSubmit;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
@@ -87,6 +88,9 @@ public class WfCategoryController extends BaseController {
     @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody WfCategoryBo categoryBo) {
+        if (UserConstants.NOT_UNIQUE.equals(categoryService.checkCategoryCodeUnique(categoryBo.getCode()))) {
+            return R.fail("新增流程分类'" + categoryBo.getCategoryName() + "'失败，流程编码已存在");
+        }
         return toAjax(categoryService.insertCategory(categoryBo));
     }
 
@@ -98,6 +102,9 @@ public class WfCategoryController extends BaseController {
     @RepeatSubmit()
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody WfCategoryBo categoryBo) {
+        if (UserConstants.NOT_UNIQUE.equals(categoryService.checkCategoryCodeUnique(categoryBo.getCode()))) {
+            return R.fail("修改流程分类'" + categoryBo.getCategoryName() + "'失败，流程编码已存在");
+        }
         return toAjax(categoryService.updateCategory(categoryBo));
     }
 

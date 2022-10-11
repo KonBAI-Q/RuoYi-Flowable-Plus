@@ -53,4 +53,12 @@ public interface IWfCategoryService {
      * @return 结果
      */
     int deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 校验分类编码是否唯一
+     *
+     * @param code 分类编码
+     * @return 结果
+     */
+    String checkCategoryCodeUnique(String code);
 }

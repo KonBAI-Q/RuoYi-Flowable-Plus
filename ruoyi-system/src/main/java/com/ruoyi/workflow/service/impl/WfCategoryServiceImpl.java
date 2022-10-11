@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.StringUtils;
@@ -75,5 +76,20 @@ public class WfCategoryServiceImpl implements IWfCategoryService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids);
+    }
+
+    /**
+     * 校验分类编码是否唯一
+     *
+     * @param code 分类编码
+     * @return 结果
+     */
+    @Override
+    public String checkCategoryCodeUnique(String code) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<WfCategory>().eq(WfCategory::getCode, code));
+        if (exist) {
+            return UserConstants.NOT_UNIQUE;
+        }
+        return UserConstants.UNIQUE;
     }
 }
