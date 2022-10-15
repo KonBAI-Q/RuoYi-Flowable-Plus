@@ -21,6 +21,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.core.FormConf;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
+import com.ruoyi.flowable.flow.FlowableUtils;
 import com.ruoyi.flowable.utils.ModelUtils;
 import com.ruoyi.flowable.utils.ProcessFormUtils;
 import com.ruoyi.flowable.utils.TaskUtils;
@@ -40,6 +41,7 @@ import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.StartEvent;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.history.HistoricActivityInstance;
+import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.Deployment;
@@ -57,10 +59,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -210,9 +209,12 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         if (taskIns == null) {
             throw new ServiceException("没有可办理的任务！");
         }
+        InputStream inputStream = repositoryService.getProcessModel(taskIns.getProcessDefinitionId());
+        detailVo.setBpmnXml(IoUtil.readUtf8(inputStream));
         detailVo.setTaskFormData(currTaskFormData(deployId, taskIns));
         detailVo.setHistoryProcNodeList(historyProcNodeList(procInsId));
         detailVo.setProcessFormList(processFormList(procInsId, deployId, taskIns));
+        detailVo.setFlowViewer(getFlowViewer(procInsId));
         return detailVo;
     }
 
@@ -627,5 +629,46 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             elementVoList.add(elementVo);
         }
         return elementVoList;
+    }
+
+    /**
+     * 获取流程执行过程
+     *
+     * @param procInsId
+     * @return
+     */
+    private WfViewerVo getFlowViewer(String procInsId) {
+        // 构建查询条件
+        HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery()
+            .processInstanceId(procInsId);
+        List<HistoricActivityInstance> allActivityInstanceList = query.list();
+        if (CollUtil.isEmpty(allActivityInstanceList)) {
+            return new WfViewerVo();
+        }
+        // 获取流程发布Id信息
+        String processDefinitionId = allActivityInstanceList.get(0).getProcessDefinitionId();
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        // 查询所有已完成的元素
+        List<HistoricActivityInstance> finishedElementList = allActivityInstanceList.stream()
+            .filter(item -> ObjectUtil.isNotNull(item.getEndTime())).collect(Collectors.toList());
+        // 所有已完成的连线
+        Set<String> finishedSequenceFlowSet = new HashSet<>();
+        // 所有已完成的任务节点
+        Set<String> finishedTaskSet = new HashSet<>();
+        finishedElementList.forEach(item -> {
+            if (BpmnXMLConstants.ELEMENT_SEQUENCE_FLOW.equals(item.getActivityType())) {
+                finishedSequenceFlowSet.add(item.getActivityId());
+            } else {
+                finishedTaskSet.add(item.getActivityId());
+            }
+        });
+        // 查询所有未结束的节点
+        Set<String> unfinishedTaskSet = allActivityInstanceList.stream()
+            .filter(item -> ObjectUtil.isNull(item.getEndTime()))
+            .map(HistoricActivityInstance::getActivityId)
+            .collect(Collectors.toSet());
+        // DFS 查询未通过的元素集合
+        Set<String> rejectedSet = FlowableUtils.dfsFindRejects(bpmnModel, unfinishedTaskSet, finishedSequenceFlowSet, finishedTaskSet);
+        return new WfViewerVo(finishedTaskSet, finishedSequenceFlowSet, unfinishedTaskSet, rejectedSet);
     }
 }

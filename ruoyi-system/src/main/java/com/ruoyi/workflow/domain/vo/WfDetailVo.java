@@ -31,6 +31,13 @@ public class WfDetailVo {
     private List<FormConf> processFormList;
 
     /**
+     * 流程XML
+     */
+    private String bpmnXml;
+
+    private WfViewerVo flowViewer;
+
+    /**
      * 是否存在任务表单信息
      * @return true:存在；false:不存在
      */

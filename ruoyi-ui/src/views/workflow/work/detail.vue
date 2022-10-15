@@ -196,13 +196,11 @@
 <script>
 import { detailProcess } from '@/api/workflow/process'
 import Parser from '@/utils/generator/parser'
-import { definitionStart, getFlowViewer, readXml } from '@/api/workflow/definition'
-import { complete, delegate, transfer, getNextFlowNode, rejectTask, returnList, returnTask } from '@/api/workflow/todo'
+import { complete, delegate, transfer, rejectTask, returnList, returnTask } from '@/api/workflow/todo'
 import { selectUser, deptTreeSelect } from '@/api/system/user'
 import ProcessViewer from '@/components/ProcessViewer'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import Treeselect from '@riophae/vue-treeselect'
-import { forceLogout } from '@/api/monitor/online';
 
 export default {
   name: "Detail",
@@ -314,9 +312,7 @@ export default {
     if (this.taskForm.taskId) {
       this.getProcessDetails(this.taskForm.procInsId, this.taskForm.deployId, this.taskForm.taskId);
     }
-    Promise.all([this.getFlowViewer(this.taskForm.procInsId), this.getModelDetail(this.taskForm.definitionId)]).then(() => {
-      this.loadIndex = this.taskForm.procInsId;
-    });
+    this.loadIndex = this.taskForm.procInsId;
   },
   methods: {
     /** 查询部门下拉树结构 */
@@ -344,30 +340,6 @@ export default {
     handleNodeClick(data) {
       this.queryParams.deptId = data.id;
       this.getList();
-    },
-    /** xml 文件 */
-    getModelDetail(definitionId) {
-      return new Promise(resolve => {
-        // 发送请求，获取xml
-        readXml(definitionId).then(res => {
-          this.xmlData = res.data
-          resolve()
-        })
-      })
-    },
-    getFlowViewer(procInsId) {
-      return new Promise(resolve => {
-        getFlowViewer(procInsId).then(res => {
-          let data = res.data;
-          if (data) {
-            this.finishedInfo.finishedTaskSet = data.finishedTaskSet;
-            this.finishedInfo.unfinishedTaskSet = data.unfinishedTaskSet;
-            this.finishedInfo.rejectedTaskSet = data.rejectedTaskSet;
-            this.finishedInfo.finishedSequenceFlowSet = data.finishedSequenceFlowSet;
-          }
-          resolve()
-        })
-      })
     },
     setIcon(val) {
       if (val) {
@@ -430,12 +402,14 @@ export default {
       const params = {procInsId: procInsId, deployId: deployId, taskId: taskId}
       detailProcess(params).then(res => {
         const data = res.data;
+        this.xmlData = data.bpmnXml;
         this.processFormList = data.processFormList;
         this.taskFormOpen = data.existTaskForm;
         if (this.taskFormOpen) {
           this.taskFormData = data.taskFormData;
         }
         this.historyProcNodeList = data.historyProcNodeList;
+        this.finishedInfo = data.flowViewer;
         this.formOpen = true
       })
     },
@@ -540,23 +514,6 @@ export default {
           variables.push(variableData)
         })
         this.variables = variables;
-      }
-    },
-    /** 申请流程表单数据提交 */
-    submitForm(data) {
-      if (data) {
-        const variables = data.valData;
-        const formData = data.formData;
-        formData.disabled = true;
-        formData.formBtns = false;
-        if (this.taskForm.definitionId) {
-          variables.variables = formData;
-          // 启动流程并将表单数据加入流程变量
-          definitionStart(this.taskForm.definitionId, JSON.stringify(variables)).then(res => {
-            this.$modal.msgSuccess(res.msg);
-            this.goBack();
-          })
-        }
       }
     },
     submitUserData() {
