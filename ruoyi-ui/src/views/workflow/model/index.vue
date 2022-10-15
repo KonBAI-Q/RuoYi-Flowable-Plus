@@ -289,7 +289,6 @@
 </template>
 
 <script>
-import { exportDeployment, definitionStart } from "@/api/workflow/definition";
 import { getBpmnXml, listModel, historyModel, latestModel, addModel, updateModel, saveModel, delModel, deployModel } from "@/api/workflow/model";
 import { listCategory } from '@/api/workflow/category'
 import ProcessDesigner from '@/components/ProcessDesigner';
@@ -436,12 +435,6 @@ export default {
       this.ids = selection.map(item => item.modelId)
       this.single = selection.length !== 1
       this.multiple = !selection.length
-    },
-    /** 启动流程 */
-    handleDefinitionStart(row){
-      definitionStart(row.id).then(response =>{
-        this.$modal.msgSuccess(response.msg);
-      })
     },
     /** 部署流程 */
     handleDeploy(row) {

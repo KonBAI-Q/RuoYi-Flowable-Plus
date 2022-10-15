@@ -75,19 +75,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/definition',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: 'designer',
-        component: () => import('@/views/workflow/definition/designer'),
-        name: 'Designer',
-        meta: { title: '流程设计', icon: '' }
-      }
-    ]
-  },
-  {
     path: '/work',
     component: Layout,
     hidden: true,
