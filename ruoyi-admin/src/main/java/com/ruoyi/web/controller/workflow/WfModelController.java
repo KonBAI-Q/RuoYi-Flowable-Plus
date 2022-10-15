@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.workflow;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.core.controller.BaseController;
@@ -10,17 +11,26 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.validate.AddGroup;
 import com.ruoyi.common.core.validate.EditGroup;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.workflow.domain.bo.WfCategoryBo;
 import com.ruoyi.workflow.domain.bo.WfModelBo;
+import com.ruoyi.workflow.domain.vo.WfCategoryVo;
+import com.ruoyi.workflow.domain.vo.WfModelExportVo;
 import com.ruoyi.workflow.domain.vo.WfModelVo;
+import com.ruoyi.workflow.service.IWfCategoryService;
 import com.ruoyi.workflow.service.IWfModelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 工作流流程模型管理
@@ -35,6 +45,7 @@ import java.util.Arrays;
 public class WfModelController extends BaseController {
 
     private final IWfModelService modelService;
+    private final IWfCategoryService categoryService;
 
     /**
      * 查询流程模型列表
@@ -156,4 +167,21 @@ public class WfModelController extends BaseController {
         return toAjax(modelService.deployModel(modelId));
     }
 
+    /**
+     * 导出流程模型数据
+     */
+    @Log(title = "导出流程模型数据", businessType = BusinessType.EXPORT)
+    @SaCheckPermission("workflow:model:export")
+    @PostMapping("/export")
+    public void export(WfModelBo modelBo, HttpServletResponse response) {
+        List<WfModelVo> list =  modelService.list(modelBo);
+        List<WfModelExportVo> listVo = BeanUtil.copyToList(list, WfModelExportVo.class);
+        List<WfCategoryVo> categoryVos = categoryService.queryList(new WfCategoryBo());
+        Map<String, String> categoryMap = categoryVos.stream()
+            .collect(Collectors.toMap(WfCategoryVo::getCode, WfCategoryVo::getCategoryName));
+        for (WfModelExportVo exportVo : listVo) {
+            exportVo.setCategoryName(categoryMap.get(exportVo.getCategory()));
+        }
+        ExcelUtil.exportExcel(listVo, "流程模型数据", WfModelExportVo.class, response);
+    }
 }

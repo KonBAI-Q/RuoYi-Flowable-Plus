@@ -6,6 +6,7 @@ import com.ruoyi.workflow.domain.bo.WfModelBo;
 import com.ruoyi.workflow.domain.vo.WfModelVo;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author KonBAI
@@ -17,6 +18,11 @@ public interface IWfModelService {
      * 查询流程模型列表
      */
     TableDataInfo<WfModelVo> list(WfModelBo modelBo, PageQuery pageQuery);
+
+    /**
+     * 查询流程模型列表
+     */
+    List<WfModelVo> list(WfModelBo modelBo);
 
     /**
      * 查询流程模型列表

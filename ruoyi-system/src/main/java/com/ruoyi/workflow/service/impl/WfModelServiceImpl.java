@@ -89,6 +89,40 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
     }
 
     @Override
+    public List<WfModelVo> list(WfModelBo modelBo) {
+        ModelQuery modelQuery = repositoryService.createModelQuery().latestVersion().orderByCreateTime().desc();
+        // 构建查询条件
+        if (StringUtils.isNotBlank(modelBo.getModelKey())) {
+            modelQuery.modelKey(modelBo.getModelKey());
+        }
+        if (StringUtils.isNotBlank(modelBo.getModelName())) {
+            modelQuery.modelNameLike("%" + modelBo.getModelName() + "%");
+        }
+        if (StringUtils.isNotBlank(modelBo.getCategory())) {
+            modelQuery.modelCategory(modelBo.getCategory());
+        }
+        List<Model> modelList = modelQuery.list();
+        List<WfModelVo> modelVoList = new ArrayList<>(modelList.size());
+        modelList.forEach(model -> {
+            WfModelVo modelVo = new WfModelVo();
+            modelVo.setModelId(model.getId());
+            modelVo.setModelName(model.getName());
+            modelVo.setModelKey(model.getKey());
+            modelVo.setCategory(model.getCategory());
+            modelVo.setCreateTime(model.getCreateTime());
+            modelVo.setVersion(model.getVersion());
+            WfMetaInfoDto metaInfo = JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
+            if (metaInfo != null) {
+                modelVo.setDescription(metaInfo.getDescription());
+                modelVo.setFormType(metaInfo.getFormType());
+                modelVo.setFormId(metaInfo.getFormId());
+            }
+            modelVoList.add(modelVo);
+        });
+        return modelVoList;
+    }
+
+    @Override
     public TableDataInfo<WfModelVo> historyList(WfModelBo modelBo, PageQuery pageQuery) {
         ModelQuery modelQuery = repositoryService.createModelQuery()
             .modelKey(modelBo.getModelKey())
