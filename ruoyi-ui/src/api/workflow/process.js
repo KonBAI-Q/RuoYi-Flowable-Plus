@@ -27,6 +27,14 @@ export function startProcess(processDefId, data) {
   })
 }
 
+// 获取流程图
+export function getBpmnXml(processDefId) {
+  return request({
+    url: '/workflow/process/bpmnXml/' + processDefId,
+    method: 'get'
+  })
+}
+
 export function detailProcess(query) {
   return request({
     url: '/workflow/process/detail',

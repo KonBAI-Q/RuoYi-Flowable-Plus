@@ -77,9 +77,8 @@
 </template>
 
 <script>
-import { listProcess } from "@/api/workflow/process";
+import { listProcess, getBpmnXml } from "@/api/workflow/process";
 import { listCategory } from '@/api/workflow/category'
-import { readXml } from '@/api/workflow/definition'
 import ProcessViewer from '@/components/ProcessViewer'
 
 export default {
@@ -149,7 +148,7 @@ export default {
       this.processView.title = "流程图";
       this.processView.index = definitionId;
       // 发送请求，获取xml
-      readXml(definitionId).then(res => {
+      getBpmnXml(definitionId).then(res => {
         this.processView.xmlData = res.data;
       })
       this.processView.open = true;

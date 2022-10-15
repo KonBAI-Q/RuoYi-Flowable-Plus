@@ -44,6 +44,12 @@ public interface IWfProcessService {
     void startProcessByDefKey(String procDefKey, Map<String, Object> variables);
 
     /**
+     * 读取xml文件
+     * @param processDefId 流程定义ID
+     */
+    String queryBpmnXmlById(String processDefId);
+
+    /**
      * 查询流程任务详情信息
      * @param procInsId 流程实例ID
      * @param deployId 流程部署ID

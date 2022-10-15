@@ -74,6 +74,15 @@ public class WfProcessController extends BaseController {
     }
 
     /**
+     * 读取xml文件
+     * @param processDefId 流程定义ID
+     */
+    @GetMapping("/bpmnXml/{processDefId}")
+    public R<String> getBpmnXml(@PathVariable(value = "processDefId") String processDefId) {
+        return R.ok(null, processService.queryBpmnXmlById(processDefId));
+    }
+
+    /**
      * 查询流程详情信息
      *
      * @param procInsId 流程实例ID

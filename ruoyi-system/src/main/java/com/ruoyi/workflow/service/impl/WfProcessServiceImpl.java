@@ -190,6 +190,20 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     /**
+     * 读取xml文件
+     * @param processDefId 流程定义ID
+     */
+    @Override
+    public String queryBpmnXmlById(String processDefId) {
+        InputStream inputStream = repositoryService.getProcessModel(processDefId);
+        try {
+            return IoUtil.readUtf8(inputStream);
+        } catch (IORuntimeException exception) {
+            throw new RuntimeException("加载xml文件异常");
+        }
+    }
+
+    /**
      * 流程详情信息
      *
      * @param procInsId 流程实例ID
