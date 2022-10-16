@@ -78,7 +78,7 @@
 
 <script>
 import { listProcess, getBpmnXml } from "@/api/workflow/process";
-import { listCategory } from '@/api/workflow/category'
+import { listAllCategory } from '@/api/workflow/category'
 import ProcessViewer from '@/components/ProcessViewer'
 
 export default {
@@ -122,7 +122,7 @@ export default {
   methods: {
     /** 查询流程分类列表 */
     getCategoryList() {
-      listCategory().then(response => this.categoryOptions = response.rows)
+      listAllCategory().then(response => this.categoryOptions = response.data)
     },
     /** 查询流程定义列表 */
     getList() {
