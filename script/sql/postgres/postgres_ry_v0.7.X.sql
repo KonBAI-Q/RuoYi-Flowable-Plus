@@ -381,9 +381,9 @@ insert into sys_menu values('1162', '模型修改', '123', '3', '#', '', '', 1, 
 insert into sys_menu values('1163', '模型删除', '123', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:remove',   '#', 'admin', now(), '', null, '');
 insert into sys_menu values('1164', '模型导出', '123', '5', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:export',   '#', 'admin', now(), '', null, '');
 insert into sys_menu values('1165', '模型导入', '123', '6', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:import',   '#', 'admin', now(), '', null, '');
-insert into sys_menu values('1165', '模型设计', '123', '7', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:designer', '#', 'admin', now(), '', null, '');
-insert into sys_menu values('1166', '模型保存', '123', '8', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:save',     '#', 'admin', now(), '', null, '');
-insert into sys_menu values('1167', '流程部署', '123', '9', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:deploy',   '#', 'admin', now(), '', null, '');
+insert into sys_menu values('1166', '模型设计', '123', '7', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:designer', '#', 'admin', now(), '', null, '');
+insert into sys_menu values('1167', '模型保存', '123', '8', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:save',     '#', 'admin', now(), '', null, '');
+insert into sys_menu values('1168', '流程部署', '123', '9', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:model:deploy',   '#', 'admin', now(), '', null, '');
 -- 部署管理
 insert into sys_menu values('1170', '部署查询', '124', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:deploy:query',   '#', 'admin', now(), '', null, '');
 insert into sys_menu values('1171', '部署删除', '124', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:deploy:remove',  '#', 'admin', now(), '', null, '');
@@ -1063,7 +1063,7 @@ insert into sys_oss_config values (5, 'image',  'ruoyi',            'ruoyi123', 
 drop table if exists wf_form;
 create table wf_form
 (
-    form_id       int8          default ''::varchar not null,
+    form_id       int8 not null,
     form_name     varchar(64)   default ''::varchar,
     content       text,
     create_by     varchar(64)   default ''::varchar,
@@ -1113,7 +1113,7 @@ comment on column wf_deploy_form.content   is '表单内容';
 drop table if exists wf_category;
 create table wf_category
 (
-    category_id    int8          default ''::varchar not null,
+    category_id    int8 not null,
     category_name  varchar(64)   default ''::varchar,
     code           varchar(64)   default ''::varchar,
     remark         varchar(500)  default ''::varchar,
@@ -1142,7 +1142,7 @@ comment on column wf_category.del_flag      is '删除标志（0代表存在 2�
 drop table if exists wf_copy;
 create table wf_copy
 (
-    copy_id          int8          default ''::varchar not null,,
+    copy_id          int8 not null,
     title            varchar(255)  default ''::varchar,
     process_id       varchar(64)   default ''::varchar,
     process_name     varchar(255)  default ''::varchar,
