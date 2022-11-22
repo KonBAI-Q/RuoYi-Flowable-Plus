@@ -165,6 +165,7 @@ export default {
   },
   created() {
     this.getCategoryList();
+    this.getList();
   },
   activated() {
     this.getList();
