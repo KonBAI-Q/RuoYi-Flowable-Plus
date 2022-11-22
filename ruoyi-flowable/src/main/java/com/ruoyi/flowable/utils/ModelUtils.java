@@ -1,5 +1,6 @@
 package com.ruoyi.flowable.utils;
 
+import cn.hutool.core.util.ObjectUtil;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
@@ -90,6 +91,23 @@ public class ModelUtils {
             }
         }
         return null;
+    }
+
+    public static UserTask getUserTaskByKey(BpmnModel model, String taskKey) {
+        Process process = model.getMainProcess();
+        FlowElement flowElement = process.getFlowElement(taskKey);
+        if (flowElement instanceof UserTask) {
+            return (UserTask) flowElement;
+        }
+        return null;
+    }
+
+    public static boolean isMultiInstance(BpmnModel model, String taskKey) {
+        UserTask userTask = getUserTaskByKey(model, taskKey);
+        if (ObjectUtil.isNotNull(userTask)) {
+            return userTask.hasMultiInstanceLoopCharacteristics();
+        }
+        return false;
     }
 
     /**

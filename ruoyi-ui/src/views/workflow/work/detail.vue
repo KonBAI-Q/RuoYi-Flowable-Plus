@@ -17,20 +17,31 @@
           </div>
           <el-row>
             <el-col :span="20" :offset="2">
-              <el-form ref="taskForm" :model="taskForm" :rules="rules" label-width="80px">
+              <el-form ref="taskForm" :model="taskForm" :rules="rules" label-width="120px">
                 <el-form-item label="审批意见" prop="comment">
                   <el-input type="textarea" :rows="5" v-model="taskForm.comment" placeholder="请输入 审批意见" />
                 </el-form-item>
                 <el-form-item label="抄送人" prop="copyUserIds">
                   <el-tag
                     :key="index"
-                    v-for="(item, index) in userData.copyUser"
+                    v-for="(item, index) in copyUser"
                     closable
                     :disable-transitions="false"
-                    @close="handleClose(item)">
-                    {{ item.label }}
+                    @close="handleClose('copy', item)">
+                    {{ item.nickName }}
                   </el-tag>
-                  <el-button class="button-new-tag" type="primary" icon="el-icon-plus" size="mini" circle @click="onSelectUsers" />
+                  <el-button class="button-new-tag" type="primary" icon="el-icon-plus" size="mini" circle @click="onSelectCopyUsers" />
+                </el-form-item>
+                <el-form-item label="指定审批人" prop="copyUserIds">
+                  <el-tag
+                    :key="index"
+                    v-for="(item, index) in nextUser"
+                    closable
+                    :disable-transitions="false"
+                    @close="handleClose('next', item)">
+                    {{ item.nickName }}
+                  </el-tag>
+                  <el-button class="button-new-tag" type="primary" icon="el-icon-plus" size="mini" circle @click="onSelectNextUsers" />
                 </el-form-item>
               </el-form>
             </el-col>
@@ -167,7 +178,7 @@
                     highlight-current-row
                     @current-change="changeCurrentUser"
                     @selection-change="handleSelectionChange">
-            <el-table-column v-if="userData.type === 'copy'" width="55" type="selection" />
+            <el-table-column v-if="userData.type === 'copy' || userData.type === 'next'" width="55" type="selection" />
             <el-table-column v-else width="30">
               <template slot-scope="scope">
                 <el-radio :label="scope.row.userId" v-model="currentUserId">{{''}}</el-radio>
@@ -292,11 +303,11 @@ export default {
       rejectTitle: null,
       userData: {
         title: '',
-        type: 'copy',
+        type: '',
         open: false,
-        currentUserId: null,
-        copyUser: [],
       },
+      copyUser: [],
+      nextUser: [],
       userMultipleSelection: [],
       userDialogTitle: '',
       userOpen: false
@@ -374,16 +385,27 @@ export default {
       }
     },
     // 关闭标签
-    handleClose(tag) {
+    handleClose(type, tag) {
       let userObj = this.userMultipleSelection.find(item => item.userId === tag.id);
       this.userMultipleSelection.splice(this.userMultipleSelection.indexOf(userObj), 1);
-      this.userData.copyUser.splice(this.userData.copyUser.indexOf(tag), 1);
-      // 设置抄送人ID
-      if (this.userData.copyUser && this.userData.copyUser.length > 0) {
-        const val = this.userData.copyUser.map(item => item.id);
-        this.taskForm.copyUserIds = val instanceof Array ? val.join(',') : val;
-      } else {
-        this.taskForm.copyUserIds = '';
+      if (type === 'copy') {
+        this.copyUser = this.userMultipleSelection;
+        // 设置抄送人ID
+        if (this.copyUser && this.copyUser.length > 0) {
+          const val = this.copyUser.map(item => item.id);
+          this.taskForm.copyUserIds = val instanceof Array ? val.join(',') : val;
+        } else {
+          this.taskForm.copyUserIds = '';
+        }
+      } else if (type === 'next') {
+        this.nextUser = this.userMultipleSelection;
+        // 设置抄送人ID
+        if (this.nextUser && this.nextUser.length > 0) {
+          const val = this.nextUser.map(item => item.id);
+          this.taskForm.nextUserIds = val instanceof Array ? val.join(',') : val;
+        } else {
+          this.taskForm.nextUserIds = '';
+        }
       }
     },
     /** 流程变量赋值 */
@@ -413,15 +435,20 @@ export default {
         this.formOpen = true
       })
     },
-    onSelectUsers() {
-      this.userData.title = '添加抄送人';
-      this.userData.type = 'copy';
+    onSelectCopyUsers() {
+      this.userMultipleSelection = this.copyUser;
+      this.onSelectUsers('添加抄送人', 'copy')
+    },
+    onSelectNextUsers() {
+      this.userMultipleSelection = this.nextUser;
+      this.onSelectUsers('指定审批人', 'next')
+    },
+    onSelectUsers(title, type) {
+      this.userData.title = title;
+      this.userData.type = type;
       this.getTreeSelect();
       this.getList()
       this.userData.open = true;
-      this.$nextTick(() => {
-        this.$refs.userTable.clearSelection();
-      });
     },
     /** 通过任务 */
     handleComplete() {
@@ -518,20 +545,20 @@ export default {
     },
     submitUserData() {
       let type = this.userData.type;
-      if (type === 'copy') {
+      if (type === 'copy' || type === 'next') {
         if (!this.userMultipleSelection || this.userMultipleSelection.length <= 0) {
           this.$modal.msgError("请选择用户");
           return false;
         }
-        this.userData.copyUser = this.userMultipleSelection.map(k => {
-          return { id: k.userId, label: k.nickName }
-        })
-        // 设置抄送人ID
-        if (this.userData.copyUser && this.userData.copyUser.length > 0) {
-          const val = this.userData.copyUser.map(item => item.id);
-          this.taskForm.copyUserIds = val instanceof Array ? val.join(',') : val;
-        } else {
-          this.taskForm.copyUserIds = '';
+        let userIds = this.userMultipleSelection.map(k => k.userId);
+        if (type === 'copy') {
+          // 设置抄送人ID信息
+          this.copyUser = this.userMultipleSelection;
+          this.taskForm.copyUserIds = userIds instanceof Array ? userIds.join(',') : userIds;
+        } else if (type === 'next') {
+          // 设置下一级审批人ID信息
+          this.nextUser = this.userMultipleSelection;
+          this.taskForm.nextUserIds = userIds instanceof Array ? userIds.join(',') : userIds;
         }
         this.userData.open = false;
       } else {

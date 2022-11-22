@@ -97,6 +97,10 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         }
         // 设置任务节点名称
         taskBo.setTaskName(task.getName());
+        // 处理下一级审批人
+        if (StringUtils.isNotBlank(taskBo.getNextUserIds())) {
+            this.assignNextUsers(task.getProcessDefinitionId(), taskBo.getProcInsId(), taskBo.getNextUserIds());
+        }
         // 处理抄送用户
         if (!copyService.makeCopy(taskBo)) {
             throw new RuntimeException("抄送任务失败");
@@ -681,6 +685,56 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
                 taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginHelper.getNickName() + "发起流程申请");
                 // taskService.setAssignee(task.getId(), userIdStr);
                 taskService.complete(task.getId(), variables);
+            }
+        }
+    }
+
+    /**
+     * 指派下一任务审批人
+     * @param processDefId 流程定义id
+     * @param processInsId 流程实例id
+     * @param userIds 用户ids
+     */
+    private void assignNextUsers(String processDefId, String processInsId, String userIds) {
+        // 获取所有节点信息
+        List<Task> list = taskService.createTaskQuery()
+            .processInstanceId(processInsId)
+            .list();
+        if (list.size() == 0) {
+            return;
+        }
+        Queue<String> assignIds = CollUtil.newLinkedList(userIds.split(","));
+        if (list.size() == assignIds.size()) {
+            for (Task task : list) {
+                taskService.setAssignee(task.getId(), assignIds.poll());
+            }
+            return;
+        }
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefId);
+        // 优先处理非多实例任务
+        Iterator<Task> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            Task task = iterator.next();
+            if (!ModelUtils.isMultiInstance(bpmnModel, task.getTaskDefinitionKey())) {
+                if (!assignIds.isEmpty()) {
+                    taskService.setAssignee(task.getId(), assignIds.poll());
+                }
+                iterator.remove();
+            }
+        }
+        // 若存在多实例任务，则进行动态加减签
+        if (CollUtil.isNotEmpty(list)) {
+            if (assignIds.isEmpty()) {
+                // 动态减签
+                for (Task task : list) {
+                    runtimeService.deleteMultiInstanceExecution(task.getExecutionId(), true);
+                }
+            } else {
+                // 动态加签
+                for (String assignId : assignIds) {
+                    Map<String, Object> assignVariables = Collections.singletonMap(BpmnXMLConstants.ATTRIBUTE_TASK_USER_ASSIGNEE, assignId);
+                    runtimeService.addMultiInstanceExecution(list.get(0).getTaskDefinitionKey(), list.get(0).getProcessInstanceId(), assignVariables);
+                }
             }
         }
     }

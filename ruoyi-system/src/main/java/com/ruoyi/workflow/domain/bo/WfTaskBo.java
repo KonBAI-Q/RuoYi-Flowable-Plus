@@ -57,4 +57,8 @@ public class WfTaskBo {
      * 抄送用户Id
      */
     private String copyUserIds;
+    /**
+     * 下一节点审批人
+     */
+    private String nextUserIds;
 }
