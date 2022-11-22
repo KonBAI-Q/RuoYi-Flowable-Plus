@@ -130,7 +130,7 @@
 </template>
 
 <script>
-import { listForm, getForm, delForm, addForm, updateForm, exportForm } from "@/api/workflow/form";
+import { listForm, getForm, delForm, addForm, updateForm } from "@/api/workflow/form";
 import Editor from '@/components/Editor';
 import Parser from '@/utils/generator/parser'
 export default {
@@ -287,15 +287,15 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
+      let _this = this
       this.$confirm('是否确认导出所有流程表单数据项?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function() {
-        return exportForm(queryParams);
-      }).then(response => {
-        this.download(response.msg);
+        _this.download('/workflow/form/export', {
+        ..._this.queryParams
+      }, `form_${new Date().getTime()}.xlsx`)
       })
     }
   }

@@ -53,7 +53,7 @@ public class WfFormController extends BaseController {
      */
     @SaCheckPermission("workflow:form:export")
     @Log(title = "流程表单", businessType = BusinessType.EXPORT)
-    @GetMapping("/export")
+    @PostMapping("/export")
     public void export(@Validated WfFormBo bo, HttpServletResponse response) {
         List<WfFormVo> list = formService.queryList(bo);
         ExcelUtil.exportExcel(list, "流程表单", WfFormVo.class, response);

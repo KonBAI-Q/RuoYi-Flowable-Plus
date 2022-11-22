@@ -50,12 +50,3 @@ export function delForm(formId) {
     method: 'delete'
   })
 }
-
-// 导出流程表单
-export function exportForm(query) {
-  return request({
-    url: '/workflow/form/export',
-    method: 'get',
-    params: query
-  })
-}
