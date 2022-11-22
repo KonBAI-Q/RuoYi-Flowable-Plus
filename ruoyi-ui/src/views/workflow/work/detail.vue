@@ -302,19 +302,25 @@ export default {
       userOpen: false
     };
   },
+  created() {
+    this.init();
+  },
   activated() {
-    this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
-    this.taskForm.definitionId = this.$route.query && this.$route.query.definitionId;
-    this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
-    this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
-    this.finished =  this.$route.query && this.$route.query.finished
-    // 流程任务重获取变量表单
-    if (this.taskForm.taskId) {
-      this.getProcessDetails(this.taskForm.procInsId, this.taskForm.deployId, this.taskForm.taskId);
-    }
-    this.loadIndex = this.taskForm.procInsId;
+    this.init();
   },
   methods: {
+    init() {
+      this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
+      this.taskForm.definitionId = this.$route.query && this.$route.query.definitionId;
+      this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
+      this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
+      this.finished =  this.$route.query && this.$route.query.finished
+      // 流程任务重获取变量表单
+      if (this.taskForm.taskId) {
+        this.getProcessDetails(this.taskForm.procInsId, this.taskForm.deployId, this.taskForm.taskId);
+      }
+      this.loadIndex = this.taskForm.procInsId;
+    },
     /** 查询部门下拉树结构 */
     getTreeSelect() {
       deptTreeSelect().then(response => {
