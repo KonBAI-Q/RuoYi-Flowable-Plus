@@ -60,7 +60,7 @@
 
       <el-tab-pane label="表单信息" name="form">
         <div v-if="formOpen">
-          <el-card class="box-card" shadow="never" v-for="formInfo in processFormList">
+          <el-card class="box-card" shadow="never" v-for="(formInfo, index) in processFormList" :key="index">
             <div slot="header" class="clearfix">
               <span>{{ formInfo.title }}</span>
             </div>
@@ -90,12 +90,14 @@
                       <el-descriptions-item label="办结时间">{{ item.endTime || '-' }}</el-descriptions-item>
                       <el-descriptions-item label="耗时">{{ item.duration || '-'}}</el-descriptions-item>
                     </el-descriptions>
-                    <div v-if="item.commentList && item.commentList.length > 0" v-for="comment in item.commentList">
-                      <el-divider content-position="left">
-                        <el-tag :type="approveTypeTag(comment.type)" size="mini">{{ commentType(comment.type) }}</el-tag>
-                        <el-tag type="info" effect="plain" size="mini">{{ comment.time }}</el-tag>
-                      </el-divider>
-                      <span>{{ comment.fullMessage }}</span>
+                    <div v-if="item.commentList && item.commentList.length > 0">
+                      <div v-for="(comment, index) in item.commentList" :key="index">
+                        <el-divider content-position="left">
+                          <el-tag :type="approveTypeTag(comment.type)" size="mini">{{ commentType(comment.type) }}</el-tag>
+                          <el-tag type="info" effect="plain" size="mini">{{ comment.time }}</el-tag>
+                        </el-divider>
+                        <span>{{ comment.fullMessage }}</span>
+                      </div>
                     </div>
                   </el-card>
                   <el-card v-if="item.activityType === 'endEvent'" class="box-card" shadow="hover">
