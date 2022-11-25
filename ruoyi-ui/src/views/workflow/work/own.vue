@@ -224,7 +224,7 @@ export default {
     /**  取消流程申请 */
     handleStop(row){
       const params = {
-        instanceId: row.procInsId
+        procInsId: row.procInsId
       }
       stopProcess(params).then( res => {
         this.$modal.msgSuccess(res.msg);
