@@ -122,6 +122,9 @@ export default {
       rules: {}
     };
   },
+  created() {
+    this.getList();
+  },
   activated() {
     this.getList();
   },

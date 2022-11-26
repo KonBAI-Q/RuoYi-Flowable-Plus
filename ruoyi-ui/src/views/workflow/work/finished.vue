@@ -133,6 +133,9 @@ export default {
       }
     };
   },
+  created() {
+    this.getList();
+  },
   activated() {
     this.getList();
   },
@@ -219,7 +222,7 @@ export default {
     /** 撤回任务 */
     handleRevoke(row){
       const params = {
-        instanceId: row.procInsId
+        procInsId: row.procInsId
       }
       revokeProcess(params).then( res => {
         this.$modal.msgSuccess(res.msg);

@@ -287,7 +287,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/category/export', {
+      this.download('workflow/category/export', {
         ...this.queryParams
       }, `category_${new Date().getTime()}.xlsx`)
     }
