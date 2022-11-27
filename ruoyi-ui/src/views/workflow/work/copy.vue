@@ -188,10 +188,11 @@ export default {
     },
     /** 查看详情 */
     handleFlowRecord(row){
-      this.$router.push({ path: '/work/detail',
+      console.log(row);
+      this.$router.push({
+        path: '/workflow/process/detail/' + row.instanceId,
         query: {
           definitionId: row.processId,
-          procInsId: row.instanceId,
           deployId: row.deploymentId,
           taskId: row.taskId,
           finished: false

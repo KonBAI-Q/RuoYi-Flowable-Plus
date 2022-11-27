@@ -75,25 +75,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/work',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: 'start',
-        component: () => import('@/views/workflow/work/start'),
-        name: 'start',
-        meta: { title: '发起流程', icon: '' }
-      },
-      {
-        path: 'detail',
-        component: () => import('@/views/workflow/work/detail'),
-        name: 'Detail',
-        meta: { title: '流程详情', icon: '' }
-      }
-    ]
-  },
-  {
     path: '/tool',
     component: Layout,
     hidden: true,
@@ -193,7 +174,27 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
-  }
+  },
+  {
+    path: '/workflow/process',
+    component: Layout,
+    hidden: true,
+    permissions: ['workflow:process:query'],
+    children: [
+      {
+        path: 'start/:deployId([\\w|\\-]+)',
+        component: () => import('@/views/workflow/work/start'),
+        name: 'WorkStart',
+        meta: { title: '发起流程', icon: '' }
+      },
+      {
+        path: 'detail/:procInsId([\\w|\\-]+)',
+        component: () => import('@/views/workflow/work/detail'),
+        name: 'WorkDetail',
+        meta: { title: '流程详情', activeMenu: '/work/own' }
+      }
+    ]
+  },
 ]
 
 // 防止连续点击多次路由报错

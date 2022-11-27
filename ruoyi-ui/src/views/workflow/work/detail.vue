@@ -216,7 +216,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import Treeselect from '@riophae/vue-treeselect'
 
 export default {
-  name: "Detail",
+  name: "WorkDetail",
   components: {
     ProcessViewer,
     Parser,
@@ -316,17 +316,14 @@ export default {
     };
   },
   created() {
-    this.init();
-  },
-  activated() {
-    this.init();
+    this.initData();
   },
   methods: {
-    init() {
+    initData() {
+      this.taskForm.procInsId = this.$route.params && this.$route.params.procInsId;
       this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
       this.taskForm.definitionId = this.$route.query && this.$route.query.definitionId;
       this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
-      this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
       this.finished =  this.$route.query && this.$route.query.finished
       // 流程任务重获取变量表单
       if (this.taskForm.taskId) {

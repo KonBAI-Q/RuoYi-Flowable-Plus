@@ -18,7 +18,7 @@ import { getProcessForm, startProcess } from '@/api/workflow/process'
 import Parser from '@/utils/generator/parser'
 
 export default {
-  name: 'Start',
+  name: 'WorkStart',
   components: {
     Parser
   },
@@ -30,15 +30,13 @@ export default {
       formData: {},
     }
   },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.initData()
-    })
+  created() {
+    this.initData();
   },
   methods: {
     initData() {
+      this.deployId = this.$route.params && this.$route.params.deployId;
       this.definitionId = this.$route.query && this.$route.query.definitionId;
-      this.deployId = this.$route.query && this.$route.query.deployId;
       getProcessForm({
         definitionId: this.definitionId,
         deployId: this.deployId

@@ -210,14 +210,15 @@ export default {
     },
     /** 流程流转记录 */
     handleFlowRecord(row){
-      this.$router.push({ path: '/work/detail',
+      this.$router.push({
+        path: '/workflow/process/detail/' + row.procInsId,
         query: {
           definitionId: row.procDefId,
-          procInsId: row.procInsId,
           deployId: row.deployId,
           taskId: row.taskId,
           finished: false
-        }})
+        }
+      })
     },
     /** 撤回任务 */
     handleRevoke(row){

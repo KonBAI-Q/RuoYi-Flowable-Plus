@@ -155,10 +155,9 @@ export default {
     },
     handleStart(row) {
       this.$router.push({
-        path: '/work/start',
+        path: '/workflow/process/start/' + row.deploymentId,
         query: {
           definitionId: row.definitionId,
-          deployId: row.deploymentId,
         }
       })
     },
