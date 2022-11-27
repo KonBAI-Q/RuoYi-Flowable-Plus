@@ -122,11 +122,10 @@ export default {
       rules: {}
     };
   },
-  created() {
-    this.getList();
-  },
-  activated() {
-    this.getList();
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.getList()
+    })
   },
   methods: {
     /** 查询流程定义列表 */

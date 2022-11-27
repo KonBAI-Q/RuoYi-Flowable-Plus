@@ -165,10 +165,11 @@ export default {
   },
   created() {
     this.getCategoryList();
-    this.getList();
   },
-  activated() {
-    this.getList();
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.getList()
+    })
   },
   methods: {
     /** 查询流程分类列表 */
