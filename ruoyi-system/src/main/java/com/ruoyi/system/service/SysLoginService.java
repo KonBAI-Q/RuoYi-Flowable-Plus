@@ -125,9 +125,9 @@ public class SysLoginService {
      */
     public void logout() {
         try {
-            String username = LoginHelper.getUsername();
+            LoginUser loginUser = LoginHelper.getLoginUser();
             StpUtil.logout();
-            asyncService.recordLogininfor(username, Constants.LOGOUT, MessageUtils.message("user.logout.success"), ServletUtils.getRequest());
+            asyncService.recordLogininfor(loginUser.getUsername(), Constants.LOGOUT, MessageUtils.message("user.logout.success"), ServletUtils.getRequest());
         } catch (NotLoginException e) {
         }
     }
@@ -220,7 +220,6 @@ public class SysLoginService {
         loginUser.setUserId(user.getUserId());
         loginUser.setDeptId(user.getDeptId());
         loginUser.setUsername(user.getUserName());
-        loginUser.setNickName(user.getNickName());
         loginUser.setUserType(user.getUserType());
         loginUser.setMenuPermission(permissionService.getMenuPermission(user));
         loginUser.setRolePermission(permissionService.getRolePermission(user));
