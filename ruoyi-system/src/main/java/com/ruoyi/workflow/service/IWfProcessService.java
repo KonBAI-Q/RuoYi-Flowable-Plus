@@ -2,7 +2,7 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.workflow.domain.bo.WfProcessBo;
+import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfDetailVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
@@ -73,7 +73,7 @@ public interface IWfProcessService {
      * 查询待签任务列表
      * @param pageQuery 分页参数
      */
-    TableDataInfo<WfTaskVo> queryPageClaimProcessList(WfProcessBo processBo, PageQuery pageQuery);
+    TableDataInfo<WfTaskVo> queryPageClaimProcessList(ProcessQuery processQuery, PageQuery pageQuery);
 
     /**
      * 查询已办任务列表

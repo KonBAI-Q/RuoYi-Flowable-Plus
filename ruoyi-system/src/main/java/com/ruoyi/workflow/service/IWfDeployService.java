@@ -2,7 +2,7 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.workflow.domain.bo.WfProcessBo;
+import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.vo.WfDeployVo;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface IWfDeployService {
 
-    TableDataInfo<WfDeployVo> queryPageList(WfProcessBo processBo, PageQuery pageQuery);
+    TableDataInfo<WfDeployVo> queryPageList(ProcessQuery processQuery, PageQuery pageQuery);
 
     TableDataInfo<WfDeployVo> queryPublishList(String processKey, PageQuery pageQuery);
 

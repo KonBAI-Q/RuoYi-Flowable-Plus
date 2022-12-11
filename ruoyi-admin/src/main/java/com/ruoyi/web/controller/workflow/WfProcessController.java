@@ -6,8 +6,8 @@ import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.JsonUtils;
+import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.bo.WfCopyBo;
-import com.ruoyi.workflow.domain.bo.WfProcessBo;
 import com.ruoyi.workflow.domain.vo.WfCopyVo;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
@@ -119,13 +119,13 @@ public class WfProcessController extends BaseController {
     /**
      * 获取待签列表
      *
-     * @param processBo 流程业务对象
+     * @param processQuery 流程业务对象
      * @param pageQuery 分页参数
      */
     @SaCheckPermission("workflow:process:claimList")
     @GetMapping(value = "/claimList")
-    public TableDataInfo<WfTaskVo> claimProcess(WfProcessBo processBo, PageQuery pageQuery) {
-        return processService.queryPageClaimProcessList(processBo, pageQuery);
+    public TableDataInfo<WfTaskVo> claimProcess(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.queryPageClaimProcessList(processQuery, pageQuery);
     }
 
     /**

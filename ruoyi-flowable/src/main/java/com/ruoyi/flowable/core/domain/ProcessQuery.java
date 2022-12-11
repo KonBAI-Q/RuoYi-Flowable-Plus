@@ -1,15 +1,15 @@
-package com.ruoyi.workflow.domain.bo;
+package com.ruoyi.flowable.core.domain;
 
 import lombok.Data;
 
 /**
- * 流程业务对象
+ * 流程查询实体对象
  *
  * @author KonBAI
  * @createTime 2022/6/11 01:15
  */
 @Data
-public class WfProcessBo {
+public class ProcessQuery {
 
     /**
      * 流程标识

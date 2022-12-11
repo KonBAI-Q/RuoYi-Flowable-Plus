@@ -29,7 +29,7 @@ import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.WfDeployForm;
-import com.ruoyi.workflow.domain.bo.WfProcessBo;
+import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.vo.*;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
@@ -332,7 +332,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     @Override
-    public TableDataInfo<WfTaskVo> queryPageClaimProcessList(WfProcessBo processBo, PageQuery pageQuery) {
+    public TableDataInfo<WfTaskVo> queryPageClaimProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
         Long userId = LoginHelper.getUserId();
         TaskQuery taskQuery = taskService.createTaskQuery()
@@ -341,8 +341,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .taskCandidateUser(userId.toString())
             .taskCandidateGroupIn(TaskUtils.getCandidateGroup())
             .orderByTaskCreateTime().desc();
-        if (StringUtils.isNotBlank(processBo.getProcessName())) {
-            taskQuery.processDefinitionNameLike("%" + processBo.getProcessName() + "%");
+        if (StringUtils.isNotBlank(processQuery.getProcessName())) {
+            taskQuery.processDefinitionNameLike("%" + processQuery.getProcessName() + "%");
         }
         page.setTotal(taskQuery.count());
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);

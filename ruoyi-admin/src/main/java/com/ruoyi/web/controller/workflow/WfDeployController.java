@@ -8,7 +8,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.JsonUtils;
-import com.ruoyi.workflow.domain.bo.WfProcessBo;
+import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.vo.WfDeployVo;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
 import com.ruoyi.workflow.service.IWfDeployFormService;
@@ -42,8 +42,8 @@ public class WfDeployController extends BaseController {
      */
     @SaCheckPermission("workflow:deploy:list")
     @GetMapping("/list")
-    public TableDataInfo<WfDeployVo> list(WfProcessBo processBo, PageQuery pageQuery) {
-        return deployService.queryPageList(processBo, pageQuery);
+    public TableDataInfo<WfDeployVo> list(ProcessQuery processQuery, PageQuery pageQuery) {
+        return deployService.queryPageList(processQuery, pageQuery);
     }
 
     /**

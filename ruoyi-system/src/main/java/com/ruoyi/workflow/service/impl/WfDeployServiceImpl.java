@@ -8,7 +8,7 @@ import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.workflow.domain.WfDeployForm;
-import com.ruoyi.workflow.domain.bo.WfProcessBo;
+import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.vo.WfDeployVo;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfDeployService;
@@ -38,25 +38,25 @@ public class WfDeployServiceImpl implements IWfDeployService {
     private final WfDeployFormMapper deployFormMapper;
 
     @Override
-    public TableDataInfo<WfDeployVo> queryPageList(WfProcessBo processBo, PageQuery pageQuery) {
+    public TableDataInfo<WfDeployVo> queryPageList(ProcessQuery processQuery, PageQuery pageQuery) {
         // 流程定义列表数据查询
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
             .orderByProcessDefinitionKey()
             .asc();
-        if (StringUtils.isNotBlank(processBo.getProcessKey())) {
-            processDefinitionQuery.processDefinitionKeyLike("%" + processBo.getProcessKey() + "%");
+        if (StringUtils.isNotBlank(processQuery.getProcessKey())) {
+            processDefinitionQuery.processDefinitionKeyLike("%" + processQuery.getProcessKey() + "%");
         }
-        if (StringUtils.isNotBlank(processBo.getProcessName())) {
-            processDefinitionQuery.processDefinitionNameLike("%" + processBo.getProcessName() + "%");
+        if (StringUtils.isNotBlank(processQuery.getProcessName())) {
+            processDefinitionQuery.processDefinitionNameLike("%" + processQuery.getProcessName() + "%");
         }
-        if (StringUtils.isNotBlank(processBo.getCategory())) {
-            processDefinitionQuery.processDefinitionCategory(processBo.getCategory());
+        if (StringUtils.isNotBlank(processQuery.getCategory())) {
+            processDefinitionQuery.processDefinitionCategory(processQuery.getCategory());
         }
-        if (StringUtils.isNotBlank(processBo.getState())) {
-            if (SuspensionState.ACTIVE.toString().equals(processBo.getState())) {
+        if (StringUtils.isNotBlank(processQuery.getState())) {
+            if (SuspensionState.ACTIVE.toString().equals(processQuery.getState())) {
                 processDefinitionQuery.active();
-            } else if (SuspensionState.SUSPENDED.toString().equals(processBo.getState())) {
+            } else if (SuspensionState.SUSPENDED.toString().equals(processQuery.getState())) {
                 processDefinitionQuery.suspended();
             }
         }
