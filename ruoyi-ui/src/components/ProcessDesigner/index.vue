@@ -56,6 +56,7 @@ export default {
       controlForm: {
         processId: this.designerForm.processKey || '',
         processName: this.designerForm.processName || '',
+        namespace: this.designerForm.category || '',
         simulation: false,
         labelEditing: false,
         labelVisible: false,

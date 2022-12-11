@@ -340,7 +340,8 @@ export default {
         modelId: null,
         form: {
           processName: null,
-          processKey: null
+          processKey: null,
+          namespace: null
         }
       },
       designerModelId: null,
@@ -541,7 +542,8 @@ export default {
       this.designerData.modelId = row.modelId;
       this.designerData.form = {
         processName: row.modelName,
-        processKey: row.modelKey
+        processKey: row.modelKey,
+        category: row.category
       }
       if (row.modelId) {
         this.designerData.loading = true;
