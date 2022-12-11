@@ -86,7 +86,7 @@ export default {
 
 <style lang="scss">
 body {
-  overflow: hidden;
+  overflow: auto !important;
   margin: 0;
   box-sizing: border-box;
 }
