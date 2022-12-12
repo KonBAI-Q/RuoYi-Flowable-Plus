@@ -68,7 +68,7 @@ public class WfProcessController extends BaseController {
     @SaCheckPermission("workflow:process:start")
     @PostMapping("/start/{processDefId}")
     public R<Void> start(@PathVariable(value = "processDefId") String processDefId, @RequestBody Map<String, Object> variables) {
-        processService.startProcess(processDefId, variables);
+        processService.startProcessByDefId(processDefId, variables);
         return R.ok("流程启动成功");
 
     }

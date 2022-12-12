@@ -146,18 +146,11 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void startProcess(String procDefId, Map<String, Object> variables) {
+    public void startProcessByDefId(String procDefId, Map<String, Object> variables) {
         try {
             ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionId(procDefId).singleResult();
-            if (Objects.nonNull(processDefinition) && processDefinition.isSuspended()) {
-                throw new ServiceException("流程已被挂起，请先激活流程");
-            }
-            // 设置流程发起人Id到流程中
-            this.buildProcessVariables(variables);
-            ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
-            // 第一个用户任务为发起人，则自动完成任务
-            wfTaskService.startFirstTask(processInstance, variables);
+            startProcess(processDefinition, variables);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServiceException("流程启动错误");
@@ -173,16 +166,9 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     @Transactional(rollbackFor = Exception.class)
     public void startProcessByDefKey(String procDefKey, Map<String, Object> variables) {
         try {
-            if (StringUtils.isNoneBlank(procDefKey)) {
-                ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionKey(procDefKey).latestVersion().singleResult();
-                if (processDefinition != null && processDefinition.isSuspended()) {
-                    throw new ServiceException("流程已被挂起，请先激活流程");
-                }
-                this.buildProcessVariables(variables);
-                ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(procDefKey, variables);
-                wfTaskService.startFirstTask(processInstance, variables);
-            }
+            ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(procDefKey).latestVersion().singleResult();
+            startProcess(processDefinition, variables);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServiceException("流程启动错误");
@@ -438,13 +424,20 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     /**
-     * 扩展参数构建
-     * @param variables 扩展参数
+     * 启动流程实例
      */
-    private void buildProcessVariables(Map<String, Object> variables) {
-        String userIdStr = LoginHelper.getUserId().toString();
+    private void startProcess(ProcessDefinition procDef, Map<String, Object> variables) {
+        if (ObjectUtil.isNotNull(procDef) && procDef.isSuspended()) {
+            throw new ServiceException("流程已被挂起，请先激活流程");
+        }
+        // 设置流程发起人Id到流程中
+        String userIdStr = TaskUtils.getUserId();
         identityService.setAuthenticatedUserId(userIdStr);
         variables.put(BpmnXMLConstants.ATTRIBUTE_EVENT_START_INITIATOR, userIdStr);
+        // 发起流程实例
+        ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDef.getId(), variables);
+        // 第一个用户任务为发起人，则自动完成任务
+        wfTaskService.startFirstTask(processInstance, variables);
     }
 
 
