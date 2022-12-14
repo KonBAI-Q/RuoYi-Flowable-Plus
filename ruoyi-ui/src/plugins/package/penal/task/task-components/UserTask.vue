@@ -41,7 +41,7 @@
           checkStrictly
           nodeKey="id"
           :checkedKeys="deptIds"
-          @checked-change="checkedDeptChange">
+          @change="checkedDeptChange">
         </tree-select>
       </div>
     </el-row>
@@ -348,22 +348,53 @@ export default {
       this.userOpen = false;
     },
     changeSelectRoles(val) {
-      userTaskForm.dataType = 'ROLES';
-      userTaskForm.candidateGroups = val.join() || null;
-      let textArr = this.roleOptions.filter(k => val.indexOf(`ROLE${k.roleId}`) >= 0);
-      userTaskForm.text = textArr?.map(k => k.roleName).join() || null;
+      let groups = null;
+      let text = null;
+      if (val && val.length > 0) {
+        userTaskForm.dataType = 'ROLES';
+        groups = val.join() || null;
+        let textArr = this.roleOptions.filter(k => val.indexOf(`ROLE${k.roleId}`) >= 0);
+        text = textArr?.map(k => k.roleName).join() || null;
+      } else {
+        userTaskForm.dataType = null;
+        this.multiLoopType = 'Null';
+      }
+      userTaskForm.candidateGroups = groups;
+      userTaskForm.text = text;
       this.updateElementTask();
+      this.changeMultiLoopType(this.multiLoopType);
     },
-    checkedDeptChange(checkedIds, checkedData) {
-      userTaskForm.dataType = 'DEPTS';
+    checkedDeptChange(checkedIds) {
+      let groups = null;
+      let text = null;
+      this.deptIds = checkedIds;
       if (checkedIds && checkedIds.length > 0) {
-        this.deptIds = checkedIds;
+        userTaskForm.dataType = 'DEPTS';
+        groups = checkedIds.join() || null;
+        let textArr = []
+        let treeStarkData = JSON.parse(JSON.stringify(this.deptTreeData));
+        checkedIds.forEach(id => {
+          let stark = []
+          stark = stark.concat(treeStarkData);
+          while(stark.length) {
+            let temp = stark.shift();
+            if(temp.children) {
+              stark = temp.children.concat(stark);
+            }
+            if(id === temp.id) {
+              textArr.push(temp);
+            }
+          }
+        })
+        text = textArr?.map(k => k.label).join() || null;
+      } else {
+        userTaskForm.dataType = null;
+        this.multiLoopType = 'Null';
       }
-      if (checkedData && checkedData.length > 0) {
-        userTaskForm.candidateGroups = checkedData.map(k => k.id).join() || null
-        userTaskForm.text = checkedData.map(k => k.label).join() || null
-        this.updateElementTask();
-      }
+      userTaskForm.candidateGroups = groups;
+      userTaskForm.text = text;
+      this.updateElementTask();
+      this.changeMultiLoopType(this.multiLoopType);
     },
     changeDataType(val) {
       // 清空 userTaskForm 所有属性值
@@ -437,7 +468,7 @@ export default {
     changeMultiLoopType(type) {
       // 取消多实例配置
       if (type === "Null") {
-        window.bpmnInstances.modeling.updateProperties(this.bpmnElement, { loopCharacteristics: null });
+        window.bpmnInstances.modeling.updateProperties(this.bpmnElement, { loopCharacteristics: null, assignee: null });
         return;
       }
       this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: this.isSequential });
