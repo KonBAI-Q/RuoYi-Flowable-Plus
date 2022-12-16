@@ -397,6 +397,12 @@ export default {
       this.changeMultiLoopType(this.multiLoopType);
     },
     changeDataType(val) {
+      if (val === 'ROLES' || val === 'DEPTS' || (val === 'USERS' && this.selectedUser.ids.length > 1)) {
+        this.showMultiFlog = true;
+      } else {
+        this.showMultiFlog = false;
+      }
+      this.changeMultiLoopType('Null');
       // 清空 userTaskForm 所有属性值
       Object.keys(userTaskForm).forEach(key => userTaskForm[key] = null);
       userTaskForm.dataType = val;
@@ -442,13 +448,6 @@ export default {
         userTaskForm.text = "流程发起人";
       }
       this.updateElementTask();
-      if (val === 'ROLES' || val === 'DEPTS' || (val === 'USERS' && this.selectedUser.ids.length > 1)) {
-        this.showMultiFlog = true;
-      } else {
-        this.showMultiFlog = false;
-      }
-      this.multiLoopType = 'Null';
-      this.changeMultiLoopType(this.multiLoopType);
     },
     getElementLoop(businessObject) {
       if (!businessObject.loopCharacteristics) {
@@ -466,6 +465,7 @@ export default {
       }
     },
     changeMultiLoopType(type) {
+      this.multiLoopType = type;
       // 取消多实例配置
       if (type === "Null") {
         window.bpmnInstances.modeling.updateProperties(this.bpmnElement, { loopCharacteristics: null, assignee: null });
