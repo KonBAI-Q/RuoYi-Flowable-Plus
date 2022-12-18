@@ -20,16 +20,17 @@ import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.core.FormConf;
+import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.flow.FlowableUtils;
 import com.ruoyi.flowable.utils.ModelUtils;
 import com.ruoyi.flowable.utils.ProcessFormUtils;
+import com.ruoyi.flowable.utils.ProcessUtils;
 import com.ruoyi.flowable.utils.TaskUtils;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.WfDeployForm;
-import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.vo.*;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
@@ -83,7 +84,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
      * @return 流程定义分页列表数据
      */
     @Override
-    public TableDataInfo<WfDefinitionVo> processList(PageQuery pageQuery) {
+    public TableDataInfo<WfDefinitionVo> processList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfDefinitionVo> page = new Page<>();
         // 流程定义列表数据查询
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
@@ -91,6 +92,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .active()
             .orderByProcessDefinitionKey()
             .asc();
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(processDefinitionQuery, processQuery);
         long pageTotal = processDefinitionQuery.count();
         if (pageTotal <= 0) {
             return TableDataInfo.build();
@@ -219,13 +222,15 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     @Override
-    public TableDataInfo<WfTaskVo> queryPageOwnProcessList(PageQuery pageQuery) {
+    public TableDataInfo<WfTaskVo> queryPageOwnProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
         Long userId = LoginHelper.getUserId();
         HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery()
             .startedBy(userId.toString())
             .orderByProcessInstanceStartTime()
             .desc();
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(historicProcessInstanceQuery, processQuery);
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<HistoricProcessInstance> historicProcessInstances = historicProcessInstanceQuery
             .listPage(offset, pageQuery.getPageSize());
@@ -269,7 +274,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     @Override
-    public TableDataInfo<WfTaskVo> queryPageTodoProcessList(PageQuery pageQuery) {
+    public TableDataInfo<WfTaskVo> queryPageTodoProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
         Long userId = LoginHelper.getUserId();
         TaskQuery taskQuery = taskService.createTaskQuery()
@@ -278,6 +283,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .taskCandidateOrAssigned(userId.toString())
             .taskCandidateGroupIn(TaskUtils.getCandidateGroup())
             .orderByTaskCreateTime().desc();
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(taskQuery, processQuery);
         page.setTotal(taskQuery.count());
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<Task> taskList = taskQuery.listPage(offset, pageQuery.getPageSize());
@@ -327,9 +334,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .taskCandidateUser(userId.toString())
             .taskCandidateGroupIn(TaskUtils.getCandidateGroup())
             .orderByTaskCreateTime().desc();
-        if (StringUtils.isNotBlank(processQuery.getProcessName())) {
-            taskQuery.processDefinitionNameLike("%" + processQuery.getProcessName() + "%");
-        }
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(taskQuery, processQuery);
         page.setTotal(taskQuery.count());
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<Task> taskList = taskQuery.listPage(offset, pageQuery.getPageSize());
@@ -367,7 +373,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     @Override
-    public TableDataInfo<WfTaskVo> queryPageFinishedProcessList(PageQuery pageQuery) {
+    public TableDataInfo<WfTaskVo> queryPageFinishedProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
         Long userId = LoginHelper.getUserId();
         HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery()
@@ -376,6 +382,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .taskAssignee(userId.toString())
             .orderByHistoricTaskInstanceEndTime()
             .desc();
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(taskInstanceQuery, processQuery);
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<HistoricTaskInstance> historicTaskInstanceList = taskInstanceQuery.listPage(offset, pageQuery.getPageSize());
         List<WfTaskVo> hisTaskList = new ArrayList<>();

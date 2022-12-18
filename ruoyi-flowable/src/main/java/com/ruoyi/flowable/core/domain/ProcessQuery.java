@@ -2,6 +2,9 @@ package com.ruoyi.flowable.core.domain;
 
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 流程查询实体对象
  *
@@ -30,4 +33,9 @@ public class ProcessQuery {
      * 状态
      */
     private String state;
+
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params = new HashMap<>();
 }

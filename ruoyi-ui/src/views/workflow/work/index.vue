@@ -1,22 +1,33 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="流程标识" prop="processKey">
         <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
+          v-model="queryParams.processKey"
+          placeholder="请输入流程标识"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="开始时间" prop="deployTime">
-        <el-date-picker clearable size="small"
-                        v-model="queryParams.deployTime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择时间">
-        </el-date-picker>
+      <el-form-item label="流程名称" prop="processName">
+        <el-input
+          v-model="queryParams.processName"
+          placeholder="请输入流程名称"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="流程分类" prop="category">
+        <el-select v-model="queryParams.category" clearable placeholder="请选择" size="small">
+          <el-option
+            v-for="item in categoryOptions"
+            :key="item.categoryId"
+            :label="item.categoryName"
+            :value="item.code">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -94,6 +105,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        processKey: undefined,
+        processName: undefined,
+        category: undefined
       },
       // 显示搜索条件
       showSearch: true,
@@ -126,6 +140,7 @@ export default {
     },
     /** 查询流程定义列表 */
     getList() {
+      this.loading = true;
       listProcess(this.queryParams).then(response => {
         this.processList = response.rows;
         this.total = response.total;

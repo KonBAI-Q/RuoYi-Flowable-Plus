@@ -20,7 +20,7 @@ public interface IWfProcessService {
      * @param pageQuery 分页参数
      * @return
      */
-    TableDataInfo<WfDefinitionVo> processList(PageQuery pageQuery);
+    TableDataInfo<WfDefinitionVo> processList(ProcessQuery processQuery, PageQuery pageQuery);
 
     /**
      * 查询流程部署关联表单信息
@@ -61,13 +61,13 @@ public interface IWfProcessService {
      * 查询我的流程列表
      * @param pageQuery 分页参数
      */
-    TableDataInfo<WfTaskVo> queryPageOwnProcessList(PageQuery pageQuery);
+    TableDataInfo<WfTaskVo> queryPageOwnProcessList(ProcessQuery processQuery, PageQuery pageQuery);
 
     /**
      * 查询代办任务列表
      * @param pageQuery 分页参数
      */
-    TableDataInfo<WfTaskVo> queryPageTodoProcessList(PageQuery pageQuery);
+    TableDataInfo<WfTaskVo> queryPageTodoProcessList(ProcessQuery processQuery, PageQuery pageQuery);
 
     /**
      * 查询待签任务列表
@@ -79,5 +79,5 @@ public interface IWfProcessService {
      * 查询已办任务列表
      * @param pageQuery 分页参数
      */
-    TableDataInfo<WfTaskVo> queryPageFinishedProcessList(PageQuery pageQuery);
+    TableDataInfo<WfTaskVo> queryPageFinishedProcessList(ProcessQuery processQuery, PageQuery pageQuery);
 }

@@ -41,8 +41,8 @@ public class WfProcessController extends BaseController {
      */
     @GetMapping(value = "/list")
     @SaCheckPermission("workflow:process:startList")
-    public TableDataInfo<WfDefinitionVo> list(PageQuery pageQuery) {
-        return processService.processList(pageQuery);
+    public TableDataInfo<WfDefinitionVo> list(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.processList(processQuery, pageQuery);
     }
 
     /**
@@ -96,24 +96,20 @@ public class WfProcessController extends BaseController {
 
     /**
      * 我拥有的流程
-     *
-     * @param pageQuery 分页参数
      */
     @SaCheckPermission("workflow:process:ownList")
     @GetMapping(value = "/ownList")
-    public TableDataInfo<WfTaskVo> ownProcess(PageQuery pageQuery) {
-        return processService.queryPageOwnProcessList(pageQuery);
+    public TableDataInfo<WfTaskVo> ownProcess(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.queryPageOwnProcessList(processQuery, pageQuery);
     }
 
     /**
      * 获取待办列表
-     *
-     * @param pageQuery 分页参数
      */
     @SaCheckPermission("workflow:process:todoList")
     @GetMapping(value = "/todoList")
-    public TableDataInfo<WfTaskVo> todoProcess(PageQuery pageQuery) {
-        return processService.queryPageTodoProcessList(pageQuery);
+    public TableDataInfo<WfTaskVo> todoProcess(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.queryPageTodoProcessList(processQuery, pageQuery);
     }
 
     /**
@@ -135,8 +131,8 @@ public class WfProcessController extends BaseController {
      */
     @SaCheckPermission("workflow:process:finishedList")
     @GetMapping(value = "/finishedList")
-    public TableDataInfo<WfTaskVo> finishedProcess(PageQuery pageQuery) {
-        return processService.queryPageFinishedProcessList(pageQuery);
+    public TableDataInfo<WfTaskVo> finishedProcess(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.queryPageFinishedProcessList(processQuery, pageQuery);
     }
 
     /**
