@@ -6,9 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.flowable.core.domain.ProcessQuery;
+import com.ruoyi.flowable.utils.ProcessUtils;
+import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.vo.WfDeployVo;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfDeployService;
@@ -44,22 +44,8 @@ public class WfDeployServiceImpl implements IWfDeployService {
             .latestVersion()
             .orderByProcessDefinitionKey()
             .asc();
-        if (StringUtils.isNotBlank(processQuery.getProcessKey())) {
-            processDefinitionQuery.processDefinitionKeyLike("%" + processQuery.getProcessKey() + "%");
-        }
-        if (StringUtils.isNotBlank(processQuery.getProcessName())) {
-            processDefinitionQuery.processDefinitionNameLike("%" + processQuery.getProcessName() + "%");
-        }
-        if (StringUtils.isNotBlank(processQuery.getCategory())) {
-            processDefinitionQuery.processDefinitionCategory(processQuery.getCategory());
-        }
-        if (StringUtils.isNotBlank(processQuery.getState())) {
-            if (SuspensionState.ACTIVE.toString().equals(processQuery.getState())) {
-                processDefinitionQuery.active();
-            } else if (SuspensionState.SUSPENDED.toString().equals(processQuery.getState())) {
-                processDefinitionQuery.suspended();
-            }
-        }
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(processDefinitionQuery, processQuery);
         long pageTotal = processDefinitionQuery.count();
         if (pageTotal <= 0) {
             return TableDataInfo.build();
