@@ -576,12 +576,10 @@ export default {
       this.designerData.loading = true;
       saveModel(Object.assign(body, {
         newVersion: newVersion
-      })).then(res => {
-        this.$modal.msgSuccess(res.msg)
+      })).then(() => {
         this.designerOpen = false;
         this.getList();
-      }).catch(res => {
-        this.$modal.msgError(res.msg)
+      }).finally(() => {
         this.designerData.loading = false;
       })
     },
