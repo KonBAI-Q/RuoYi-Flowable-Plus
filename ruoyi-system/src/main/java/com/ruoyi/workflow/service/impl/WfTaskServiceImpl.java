@@ -678,13 +678,14 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
     @Override
     public void startFirstTask(ProcessInstance processInstance, Map<String, Object> variables) {
         // 若第一个用户任务为发起人，则自动完成任务
-        Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
-        if (ObjectUtil.isNotEmpty(task)) {
+        List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).list();
+        if (CollUtil.isNotEmpty(tasks)) {
             String userIdStr = (String) variables.get(TaskConstants.PROCESS_INITIATOR);
-            if (StrUtil.equals(task.getAssignee(), userIdStr)) {
-                taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginHelper.getNickName() + "发起流程申请");
-                // taskService.setAssignee(task.getId(), userIdStr);
-                taskService.complete(task.getId(), variables);
+            for (Task task : tasks) {
+                if (StrUtil.equals(task.getAssignee(), userIdStr)) {
+                    taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginHelper.getNickName() + "发起流程申请");
+                    taskService.complete(task.getId(), variables);
+                }
             }
         }
     }
