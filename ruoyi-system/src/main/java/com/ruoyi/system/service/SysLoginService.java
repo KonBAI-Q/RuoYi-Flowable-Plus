@@ -220,6 +220,7 @@ public class SysLoginService {
         loginUser.setUserId(user.getUserId());
         loginUser.setDeptId(user.getDeptId());
         loginUser.setUsername(user.getUserName());
+        loginUser.setNickName(user.getNickName());
         loginUser.setUserType(user.getUserType());
         loginUser.setMenuPermission(permissionService.getMenuPermission(user));
         loginUser.setRolePermission(permissionService.getRolePermission(user));
