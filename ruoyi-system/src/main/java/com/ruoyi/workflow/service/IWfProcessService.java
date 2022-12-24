@@ -20,7 +20,31 @@ public interface IWfProcessService {
      * @param pageQuery 分页参数
      * @return
      */
-    TableDataInfo<WfDefinitionVo> processList(ProcessQuery processQuery, PageQuery pageQuery);
+    TableDataInfo<WfDefinitionVo> selectPageStartProcessList(ProcessQuery processQuery, PageQuery pageQuery);
+
+    /**
+     * 查询我的流程列表
+     * @param pageQuery 分页参数
+     */
+    TableDataInfo<WfTaskVo> selectPageOwnProcessList(ProcessQuery processQuery, PageQuery pageQuery);
+
+    /**
+     * 查询代办任务列表
+     * @param pageQuery 分页参数
+     */
+    TableDataInfo<WfTaskVo> selectPageTodoProcessList(ProcessQuery processQuery, PageQuery pageQuery);
+
+    /**
+     * 查询待签任务列表
+     * @param pageQuery 分页参数
+     */
+    TableDataInfo<WfTaskVo> selectPageClaimProcessList(ProcessQuery processQuery, PageQuery pageQuery);
+
+    /**
+     * 查询已办任务列表
+     * @param pageQuery 分页参数
+     */
+    TableDataInfo<WfTaskVo> selectPageFinishedProcessList(ProcessQuery processQuery, PageQuery pageQuery);
 
     /**
      * 查询流程部署关联表单信息
@@ -43,11 +67,13 @@ public interface IWfProcessService {
      */
     void startProcessByDefKey(String procDefKey, Map<String, Object> variables);
 
+
     /**
      * 读取xml文件
      * @param processDefId 流程定义ID
      */
     String queryBpmnXmlById(String processDefId);
+
 
     /**
      * 查询流程任务详情信息
@@ -56,28 +82,4 @@ public interface IWfProcessService {
      * @param taskId 任务ID
      */
     WfDetailVo queryProcessDetail(String procInsId, String deployId, String taskId);
-
-    /**
-     * 查询我的流程列表
-     * @param pageQuery 分页参数
-     */
-    TableDataInfo<WfTaskVo> queryPageOwnProcessList(ProcessQuery processQuery, PageQuery pageQuery);
-
-    /**
-     * 查询代办任务列表
-     * @param pageQuery 分页参数
-     */
-    TableDataInfo<WfTaskVo> queryPageTodoProcessList(ProcessQuery processQuery, PageQuery pageQuery);
-
-    /**
-     * 查询待签任务列表
-     * @param pageQuery 分页参数
-     */
-    TableDataInfo<WfTaskVo> queryPageClaimProcessList(ProcessQuery processQuery, PageQuery pageQuery);
-
-    /**
-     * 查询已办任务列表
-     * @param pageQuery 分页参数
-     */
-    TableDataInfo<WfTaskVo> queryPageFinishedProcessList(ProcessQuery processQuery, PageQuery pageQuery);
 }

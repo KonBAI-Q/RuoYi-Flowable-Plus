@@ -30,7 +30,7 @@ public interface IWfCopyService {
      * @param wfCopy 流程抄送
      * @return 流程抄送集合
      */
-    TableDataInfo<WfCopyVo> queryPageList(WfCopyBo wfCopy, PageQuery pageQuery);
+    TableDataInfo<WfCopyVo> selectPageList(WfCopyBo wfCopy, PageQuery pageQuery);
 
     /**
      * 查询流程抄送列表
@@ -38,7 +38,7 @@ public interface IWfCopyService {
      * @param wfCopy 流程抄送
      * @return 流程抄送集合
      */
-    List<WfCopyVo> queryList(WfCopyBo wfCopy);
+    List<WfCopyVo> selectList(WfCopyBo wfCopy);
 
     /**
      * 抄送

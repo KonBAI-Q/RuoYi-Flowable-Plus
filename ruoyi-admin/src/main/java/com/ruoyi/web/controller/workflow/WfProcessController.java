@@ -41,8 +41,62 @@ public class WfProcessController extends BaseController {
      */
     @GetMapping(value = "/list")
     @SaCheckPermission("workflow:process:startList")
-    public TableDataInfo<WfDefinitionVo> list(ProcessQuery processQuery, PageQuery pageQuery) {
-        return processService.processList(processQuery, pageQuery);
+    public TableDataInfo<WfDefinitionVo> startProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.selectPageStartProcessList(processQuery, pageQuery);
+    }
+
+    /**
+     * 我拥有的流程
+     */
+    @SaCheckPermission("workflow:process:ownList")
+    @GetMapping(value = "/ownList")
+    public TableDataInfo<WfTaskVo> ownProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.selectPageOwnProcessList(processQuery, pageQuery);
+    }
+
+    /**
+     * 获取待办列表
+     */
+    @SaCheckPermission("workflow:process:todoList")
+    @GetMapping(value = "/todoList")
+    public TableDataInfo<WfTaskVo> todoProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.selectPageTodoProcessList(processQuery, pageQuery);
+    }
+
+    /**
+     * 获取待签列表
+     *
+     * @param processQuery 流程业务对象
+     * @param pageQuery 分页参数
+     */
+    @SaCheckPermission("workflow:process:claimList")
+    @GetMapping(value = "/claimList")
+    public TableDataInfo<WfTaskVo> claimProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.selectPageClaimProcessList(processQuery, pageQuery);
+    }
+
+    /**
+     * 获取已办列表
+     *
+     * @param pageQuery 分页参数
+     */
+    @SaCheckPermission("workflow:process:finishedList")
+    @GetMapping(value = "/finishedList")
+    public TableDataInfo<WfTaskVo> finishedProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
+        return processService.selectPageFinishedProcessList(processQuery, pageQuery);
+    }
+
+    /**
+     * 获取抄送列表
+     *
+     * @param copyBo 流程抄送对象
+     * @param pageQuery 分页参数
+     */
+    @SaCheckPermission("workflow:process:copyList")
+    @GetMapping(value = "/copyList")
+    public TableDataInfo<WfCopyVo> copyProcessList(WfCopyBo copyBo, PageQuery pageQuery) {
+        copyBo.setUserId(getUserId());
+        return copyService.selectPageList(copyBo, pageQuery);
     }
 
     /**
@@ -92,59 +146,5 @@ public class WfProcessController extends BaseController {
     @GetMapping("/detail")
     public R detail(String procInsId, String deployId, String taskId) {
         return R.ok(processService.queryProcessDetail(procInsId, deployId, taskId));
-    }
-
-    /**
-     * 我拥有的流程
-     */
-    @SaCheckPermission("workflow:process:ownList")
-    @GetMapping(value = "/ownList")
-    public TableDataInfo<WfTaskVo> ownProcess(ProcessQuery processQuery, PageQuery pageQuery) {
-        return processService.queryPageOwnProcessList(processQuery, pageQuery);
-    }
-
-    /**
-     * 获取待办列表
-     */
-    @SaCheckPermission("workflow:process:todoList")
-    @GetMapping(value = "/todoList")
-    public TableDataInfo<WfTaskVo> todoProcess(ProcessQuery processQuery, PageQuery pageQuery) {
-        return processService.queryPageTodoProcessList(processQuery, pageQuery);
-    }
-
-    /**
-     * 获取待签列表
-     *
-     * @param processQuery 流程业务对象
-     * @param pageQuery 分页参数
-     */
-    @SaCheckPermission("workflow:process:claimList")
-    @GetMapping(value = "/claimList")
-    public TableDataInfo<WfTaskVo> claimProcess(ProcessQuery processQuery, PageQuery pageQuery) {
-        return processService.queryPageClaimProcessList(processQuery, pageQuery);
-    }
-
-    /**
-     * 获取已办列表
-     *
-     * @param pageQuery 分页参数
-     */
-    @SaCheckPermission("workflow:process:finishedList")
-    @GetMapping(value = "/finishedList")
-    public TableDataInfo<WfTaskVo> finishedProcess(ProcessQuery processQuery, PageQuery pageQuery) {
-        return processService.queryPageFinishedProcessList(processQuery, pageQuery);
-    }
-
-    /**
-     * 获取抄送列表
-     *
-     * @param copyBo 流程抄送对象
-     * @param pageQuery 分页参数
-     */
-    @SaCheckPermission("workflow:process:copyList")
-    @GetMapping(value = "/copyList")
-    public TableDataInfo<WfCopyVo> copyProcess(WfCopyBo copyBo, PageQuery pageQuery) {
-        copyBo.setUserId(getUserId());
-        return copyService.queryPageList(copyBo, pageQuery);
     }
 }

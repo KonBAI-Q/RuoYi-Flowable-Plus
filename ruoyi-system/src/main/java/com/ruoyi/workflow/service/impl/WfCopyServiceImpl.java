@@ -54,7 +54,7 @@ public class WfCopyServiceImpl implements IWfCopyService {
      * @return 流程抄送
      */
     @Override
-    public TableDataInfo<WfCopyVo> queryPageList(WfCopyBo bo, PageQuery pageQuery) {
+    public TableDataInfo<WfCopyVo> selectPageList(WfCopyBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<WfCopy> lqw = buildQueryWrapper(bo);
         lqw.orderByDesc(WfCopy::getCreateTime);
         Page<WfCopyVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
@@ -68,7 +68,7 @@ public class WfCopyServiceImpl implements IWfCopyService {
      * @return 流程抄送
      */
     @Override
-    public List<WfCopyVo> queryList(WfCopyBo bo) {
+    public List<WfCopyVo> selectList(WfCopyBo bo) {
         LambdaQueryWrapper<WfCopy> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
     }
