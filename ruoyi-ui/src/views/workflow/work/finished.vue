@@ -29,17 +29,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['workflow:process:remove']"
-        >删除</el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -89,7 +78,7 @@
 
 <script>
 import { listFinishedProcess } from '@/api/workflow/process';
-import { delDeployment, revokeProcess } from "@/api/workflow/finished";
+import { revokeProcess } from "@/api/workflow/finished";
 
 export default {
   name: "Finished",
@@ -234,20 +223,6 @@ export default {
         this.$modal.msgSuccess(res.msg);
         this.getList();
       });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$confirm('是否确认删除流程定义编号为"' + ids + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function() {
-        return delDeployment(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      })
     }
   }
 };

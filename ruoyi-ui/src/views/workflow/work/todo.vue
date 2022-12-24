@@ -29,17 +29,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-        >删除
-        </el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -85,10 +74,6 @@
 
 <script>
 import { listTodoProcess } from '@/api/workflow/process';
-import {
-  delDeployment,
-  exportDeployment
-} from "@/api/workflow/todo";
 
 export default {
   name: "Todo",
@@ -198,20 +183,6 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加流程定义";
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$confirm('是否确认删除流程定义编号为"' + ids + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return delDeployment(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      })
     },
     /** 导出按钮操作 */
     handleExport() {
