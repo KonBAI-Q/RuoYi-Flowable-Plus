@@ -14,7 +14,6 @@ import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -125,9 +124,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     @Override
     public TableDataInfo<WfTaskVo> selectPageOwnProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
-        Long userId = LoginHelper.getUserId();
         HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery()
-            .startedBy(userId.toString())
+            .startedBy(TaskUtils.getUserId())
             .orderByProcessInstanceStartTime()
             .desc();
         // 构建搜索条件
@@ -177,11 +175,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     @Override
     public TableDataInfo<WfTaskVo> selectPageTodoProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
-        Long userId = LoginHelper.getUserId();
         TaskQuery taskQuery = taskService.createTaskQuery()
             .active()
             .includeProcessVariables()
-            .taskCandidateOrAssigned(userId.toString())
+            .taskCandidateOrAssigned(TaskUtils.getUserId())
             .taskCandidateGroupIn(TaskUtils.getCandidateGroup())
             .orderByTaskCreateTime().desc();
         // 构建搜索条件
@@ -228,11 +225,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     @Override
     public TableDataInfo<WfTaskVo> selectPageClaimProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
-        Long userId = LoginHelper.getUserId();
         TaskQuery taskQuery = taskService.createTaskQuery()
             .active()
             .includeProcessVariables()
-            .taskCandidateUser(userId.toString())
+            .taskCandidateUser(TaskUtils.getUserId())
             .taskCandidateGroupIn(TaskUtils.getCandidateGroup())
             .orderByTaskCreateTime().desc();
         // 构建搜索条件
@@ -276,11 +272,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     @Override
     public TableDataInfo<WfTaskVo> selectPageFinishedProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
-        Long userId = LoginHelper.getUserId();
         HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery()
             .includeProcessVariables()
             .finished()
-            .taskAssignee(userId.toString())
+            .taskAssignee(TaskUtils.getUserId())
             .orderByHistoricTaskInstanceEndTime()
             .desc();
         // 构建搜索条件

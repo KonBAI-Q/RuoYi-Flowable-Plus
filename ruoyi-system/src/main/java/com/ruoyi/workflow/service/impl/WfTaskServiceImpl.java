@@ -87,8 +87,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             taskService.resolveTask(taskBo.getTaskId());
         } else {
             taskService.addComment(taskBo.getTaskId(), taskBo.getProcInsId(), FlowComment.NORMAL.getType(), taskBo.getComment());
-            Long userId = LoginHelper.getUserId();
-            taskService.setAssignee(taskBo.getTaskId(), userId.toString());
+            taskService.setAssignee(taskBo.getTaskId(), TaskUtils.getUserId());
             if (ObjectUtil.isNotEmpty(taskBo.getVariables())) {
                 taskService.complete(taskBo.getTaskId(), taskBo.getVariables(), true);
             } else {
@@ -348,7 +347,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         // 添加审批意见
         taskService.addComment(bo.getTaskId(), task.getProcessInstanceId(), FlowComment.DELEGATE.getType(), commentBuilder.toString());
         // 设置办理人为当前登录人
-        taskService.setOwner(bo.getTaskId(), LoginHelper.getUserId().toString());
+        taskService.setOwner(bo.getTaskId(), TaskUtils.getUserId());
         // 执行委派
         taskService.delegateTask(bo.getTaskId(), bo.getUserId());
         // 设置任务节点名称
@@ -387,7 +386,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         // 添加审批意见
         taskService.addComment(bo.getTaskId(), task.getProcessInstanceId(), FlowComment.TRANSFER.getType(), commentBuilder.toString());
         // 设置拥有者为当前登录人
-        taskService.setOwner(bo.getTaskId(), LoginHelper.getUserId().toString());
+        taskService.setOwner(bo.getTaskId(), TaskUtils.getUserId());
         // 转办任务
         taskService.setAssignee(bo.getTaskId(), bo.getUserId());
         // 设置任务节点名称
@@ -418,7 +417,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             Process process = bpmnModel.getMainProcess();
             List<EndEvent> endNodes = process.findFlowElementsOfType(EndEvent.class, false);
             if (CollectionUtils.isNotEmpty(endNodes)) {
-                Authentication.setAuthenticatedUserId(LoginHelper.getUserId().toString());
+                Authentication.setAuthenticatedUserId(TaskUtils.getUserId());
 //                taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.STOP.getType(),
 //                        StringUtils.isBlank(flowTaskVo.getComment()) ? "取消申请" : flowTaskVo.getComment());
                 // 获取当前流程最后一个节点
@@ -455,7 +454,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         String myTaskId = null;
         HistoricTaskInstance myTask = null;
         for (HistoricTaskInstance hti : htiList) {
-            if (LoginHelper.getUserId().toString().equals(hti.getAssignee())) {
+            if (TaskUtils.getUserId().equals(hti.getAssignee())) {
                 myTaskId = hti.getId();
                 myTask = hti;
                 break;
