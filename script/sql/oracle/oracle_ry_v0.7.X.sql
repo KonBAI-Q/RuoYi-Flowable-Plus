@@ -386,19 +386,24 @@ insert into sys_menu values('1170', '部署查询', '124', '1', '#', '', '', 1, 
 insert into sys_menu values('1171', '部署删除', '124', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:deploy:remove',  '#', 'admin', sysdate, '', null, '');
 insert into sys_menu values('1172', '更新状态', '124', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:deploy:status',  '#', 'admin', sysdate, '', null, '');
 -- 新建流程
-insert into sys_menu values('1180', '发起流程', '125', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:start',  '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1180', '发起流程',    '125', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:start',       '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1181', '新建流程导出', '125', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:startExport', '#', 'admin', sysdate, '', null, '');
 -- 我的流程
-insert into sys_menu values('1190', '流程详情', '126', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:query',  '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1191', '流程删除', '126', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:remove', '#', 'admin', sysdate, '', null, '');
-insert into sys_menu values('1192', '流程取消', '126', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:cancel', '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1190', '流程详情',    '126', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:query',     '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1191', '流程删除',    '126', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:remove',    '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1192', '流程取消',    '126', '3', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:cancel',    '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1193', '我的流程导出', '126', '4', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:ownExport', '#', 'admin', sysdate, '', null, '');
 -- 待办任务
-insert into sys_menu values('1200', '流程办理', '127', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:approval', '#', 'admin', sysdate, '', null, '');
--- 代签任务
-insert into sys_menu values('1210', '流程签收', '128', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:claim',  '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1200', '流程办理',    '127', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:approval',   '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1201', '待办流程导出', '127', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:todoExport', '#', 'admin', sysdate, '', null, '');
+-- 待签任务
+insert into sys_menu values('1210', '流程签收',    '128', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:claim',        '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1211', '待签流程导出', '128', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:claimExport',  '#', 'admin', sysdate, '', null, '');
 -- 已办任务
-insert into sys_menu values('1220', '流程撤回', '129', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:revoke', '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1220', '流程撤回',    '129', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:revoke',         '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1221', '已办流程导出', '129', '2', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:finishedExport', '#', 'admin', sysdate, '', null, '');
 -- 抄送我的
-insert into sys_menu values('1230', '流程导出', '130', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:export', '#', 'admin', sysdate, '', null, '');
+insert into sys_menu values('1230', '抄送流程导出', '130', '1', '#', '', '', 1, 0, 'F', '0', '0', 'workflow:process:copyExport', '#', 'admin', sysdate, '', null, '');
 
 -- ----------------------------
 -- 6、用户和角色关联表  用户N-1角色
@@ -556,12 +561,17 @@ insert into sys_role_menu values ('2', '1170');
 insert into sys_role_menu values ('2', '1171');
 insert into sys_role_menu values ('2', '1172');
 insert into sys_role_menu values ('2', '1180');
+insert into sys_role_menu values ('2', '1181');
 insert into sys_role_menu values ('2', '1190');
 insert into sys_role_menu values ('2', '1191');
 insert into sys_role_menu values ('2', '1192');
+insert into sys_role_menu values ('2', '1193');
 insert into sys_role_menu values ('2', '1200');
+insert into sys_role_menu values ('2', '1201');
 insert into sys_role_menu values ('2', '1210');
+insert into sys_role_menu values ('2', '1211');
 insert into sys_role_menu values ('2', '1220');
+insert into sys_role_menu values ('2', '1221');
 insert into sys_role_menu values ('2', '1230');
 
 -- ----------------------------
