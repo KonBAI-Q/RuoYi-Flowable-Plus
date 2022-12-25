@@ -2,6 +2,8 @@ package com.ruoyi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.ruoyi.common.annotation.ExcelDictFormat;
+import com.ruoyi.common.convert.ExcelDictConvert;
 import lombok.Data;
 
 import java.util.Date;
@@ -69,9 +71,10 @@ public class WfDefinitionVo {
     private String deploymentId;
 
     /**
-     * 流程定义状态: 1:激活 , 2:中止
+     * 流程是否暂停（true:挂起 false:激活 ）
      */
-    @ExcelProperty(value = "流程定义状态: 1:激活 , 2:中止")
+    @ExcelProperty(value = "流程是否挂起", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(readConverterExp = "true=挂起,false=激活")
     private Boolean suspended;
 
     /**

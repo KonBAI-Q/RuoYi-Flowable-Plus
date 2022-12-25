@@ -29,6 +29,16 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          v-hasPermi="['workflow:process:todoExport']"
+          @click="handleExport"
+        >导出</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -186,16 +196,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有流程定义数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return exportDeployment(queryParams);
-      }).then(response => {
-        this.download(response.msg);
-      })
+      this.download('workflow/process/todoExport', {
+        ...this.queryParams
+      }, `wf_todo_process_${new Date().getTime()}.xlsx`)
     }
   }
 };

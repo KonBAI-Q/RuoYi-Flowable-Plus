@@ -29,6 +29,16 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          v-hasPermi="['workflow:process:finishedExport']"
+          @click="handleExport"
+        >导出</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -223,6 +233,12 @@ export default {
         this.$modal.msgSuccess(res.msg);
         this.getList();
       });
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download('workflow/process/finishedExport', {
+        ...this.queryParams
+      }, `wf_finished_process_${new Date().getTime()}.xlsx`)
     }
   }
 };

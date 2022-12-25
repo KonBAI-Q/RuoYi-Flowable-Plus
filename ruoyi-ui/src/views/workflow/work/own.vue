@@ -64,6 +64,7 @@
           plain
           icon="el-icon-download"
           size="mini"
+          v-hasPermi="['workflow:process:ownExport']"
           @click="handleExport"
         >导出</el-button>
       </el-col>
@@ -280,16 +281,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有流程定义数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function() {
-        // return exportDeployment(queryParams);
-      }).then(response => {
-        this.download(response.msg);
-      })
+      this.download('workflow/process/ownExport', {
+        ...this.queryParams
+      }, `wf_own_process_${new Date().getTime()}.xlsx`)
     },
     categoryFormat(row, column) {
       return this.categoryOptions.find(k => k.code === row.category)?.categoryName ?? '';

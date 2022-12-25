@@ -30,8 +30,8 @@
           plain
           icon="el-icon-download"
           size="mini"
+          v-hasPermi="['workflow:process:copyExport']"
           @click="handleExport"
-          v-hasPermi="['workflow:process:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -201,9 +201,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('workflow/copy/export', {
+      this.download('workflow/process/copyExport', {
         ...this.queryParams
-      }, `copy_${new Date().getTime()}.xlsx`)
+      }, `wf_copy_process_${new Date().getTime()}.xlsx`)
     }
   }
 };

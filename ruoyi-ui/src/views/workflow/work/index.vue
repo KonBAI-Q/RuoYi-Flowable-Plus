@@ -35,6 +35,16 @@
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          v-hasPermi="['workflow:process:startExport']"
+          @click="handleExport"
+        >导出</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
     <el-table v-loading="loading" fit :data="processList">
@@ -175,6 +185,12 @@ export default {
           definitionId: row.definitionId,
         }
       })
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download('workflow/process/startExport', {
+        ...this.queryParams
+      }, `wf_start_process_${new Date().getTime()}.xlsx`)
     },
     categoryFormat(row, column) {
       return this.categoryOptions.find(k => k.code === row.category)?.categoryName ?? '';

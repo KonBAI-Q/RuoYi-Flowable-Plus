@@ -1,22 +1,28 @@
 package com.ruoyi.web.controller.workflow;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.JsonUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.bo.WfCopyBo;
-import com.ruoyi.workflow.domain.vo.WfCopyVo;
-import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
-import com.ruoyi.workflow.domain.vo.WfTaskVo;
+import com.ruoyi.workflow.domain.vo.*;
 import com.ruoyi.workflow.service.IWfCopyService;
 import com.ruoyi.workflow.service.IWfProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -97,6 +103,80 @@ public class WfProcessController extends BaseController {
     public TableDataInfo<WfCopyVo> copyProcessList(WfCopyBo copyBo, PageQuery pageQuery) {
         copyBo.setUserId(getUserId());
         return copyService.selectPageList(copyBo, pageQuery);
+    }
+
+    /**
+     * 导出可发起流程列表
+     */
+    @SaCheckPermission("workflow:process:startExport")
+    @Log(title = "可发起流程", businessType = BusinessType.EXPORT)
+    @PostMapping("/startExport")
+    public void startExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
+        List<WfDefinitionVo> list = processService.selectStartProcessList(processQuery);
+        ExcelUtil.exportExcel(list, "可发起流程", WfDefinitionVo.class, response);
+    }
+
+    /**
+     * 导出我拥有流程列表
+     */
+    @SaCheckPermission("workflow:process:ownExport")
+    @Log(title = "我拥有流程", businessType = BusinessType.EXPORT)
+    @PostMapping("/ownExport")
+    public void ownExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
+        List<WfTaskVo> list = processService.selectOwnProcessList(processQuery);
+        List<WfOwnTaskExportVo> listVo = BeanUtil.copyToList(list, WfOwnTaskExportVo.class);
+        for (WfOwnTaskExportVo exportVo : listVo) {
+            exportVo.setStatus(ObjectUtil.isNull(exportVo.getFinishTime()) ? "进行中" : "已完成");
+        }
+        ExcelUtil.exportExcel(listVo, "我拥有流程", WfOwnTaskExportVo.class, response);
+    }
+
+    /**
+     * 导出待办流程列表
+     */
+    @SaCheckPermission("workflow:process:todoExport")
+    @Log(title = "待办流程", businessType = BusinessType.EXPORT)
+    @PostMapping("/todoExport")
+    public void todoExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
+        List<WfTaskVo> list = processService.selectTodoProcessList(processQuery);
+        List<WfTodoTaskExportVo> listVo = BeanUtil.copyToList(list, WfTodoTaskExportVo.class);
+        ExcelUtil.exportExcel(listVo, "待办流程", WfTodoTaskExportVo.class, response);
+    }
+
+    /**
+     * 导出待签流程列表
+     */
+    @SaCheckPermission("workflow:process:claimExport")
+    @Log(title = "待签流程", businessType = BusinessType.EXPORT)
+    @PostMapping("/claimExport")
+    public void claimExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
+        List<WfTaskVo> list = processService.selectClaimProcessList(processQuery);
+        List<WfClaimTaskExportVo> listVo = BeanUtil.copyToList(list, WfClaimTaskExportVo.class);
+        ExcelUtil.exportExcel(listVo, "待签流程", WfClaimTaskExportVo.class, response);
+    }
+
+    /**
+     * 导出已办流程列表
+     */
+    @SaCheckPermission("workflow:process:finishedExport")
+    @Log(title = "已办流程", businessType = BusinessType.EXPORT)
+    @PostMapping("/finishedExport")
+    public void finishedExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
+        List<WfTaskVo> list = processService.selectFinishedProcessList(processQuery);
+        List<WfFinishedTaskExportVo> listVo = BeanUtil.copyToList(list, WfFinishedTaskExportVo.class);
+        ExcelUtil.exportExcel(listVo, "已办流程", WfFinishedTaskExportVo.class, response);
+    }
+
+    /**
+     * 导出抄送流程列表
+     */
+    @SaCheckPermission("workflow:process:copyExport")
+    @Log(title = "抄送流程", businessType = BusinessType.EXPORT)
+    @PostMapping("/copyExport")
+    public void copyExport(WfCopyBo copyBo, HttpServletResponse response) {
+        copyBo.setUserId(getUserId());
+        List<WfCopyVo> list = copyService.selectList(copyBo);
+        ExcelUtil.exportExcel(list, "抄送流程", WfCopyVo.class, response);
     }
 
     /**

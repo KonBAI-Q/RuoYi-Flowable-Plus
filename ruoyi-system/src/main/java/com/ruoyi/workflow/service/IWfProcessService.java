@@ -7,6 +7,7 @@ import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfDetailVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,10 +24,20 @@ public interface IWfProcessService {
     TableDataInfo<WfDefinitionVo> selectPageStartProcessList(ProcessQuery processQuery, PageQuery pageQuery);
 
     /**
+     * 查询可发起流程列表
+     */
+    List<WfDefinitionVo> selectStartProcessList(ProcessQuery processQuery);
+
+    /**
      * 查询我的流程列表
      * @param pageQuery 分页参数
      */
     TableDataInfo<WfTaskVo> selectPageOwnProcessList(ProcessQuery processQuery, PageQuery pageQuery);
+
+    /**
+     * 查询我的流程列表
+     */
+    List<WfTaskVo> selectOwnProcessList(ProcessQuery processQuery);
 
     /**
      * 查询代办任务列表
@@ -35,16 +46,31 @@ public interface IWfProcessService {
     TableDataInfo<WfTaskVo> selectPageTodoProcessList(ProcessQuery processQuery, PageQuery pageQuery);
 
     /**
+     * 查询代办任务列表
+     */
+    List<WfTaskVo> selectTodoProcessList(ProcessQuery processQuery);
+
+    /**
      * 查询待签任务列表
      * @param pageQuery 分页参数
      */
     TableDataInfo<WfTaskVo> selectPageClaimProcessList(ProcessQuery processQuery, PageQuery pageQuery);
 
     /**
+     * 查询待签任务列表
+     */
+    List<WfTaskVo> selectClaimProcessList(ProcessQuery processQuery);
+
+    /**
      * 查询已办任务列表
      * @param pageQuery 分页参数
      */
     TableDataInfo<WfTaskVo> selectPageFinishedProcessList(ProcessQuery processQuery, PageQuery pageQuery);
+
+    /**
+     * 查询已办任务列表
+     */
+    List<WfTaskVo> selectFinishedProcessList(ProcessQuery processQuery);
 
     /**
      * 查询流程部署关联表单信息

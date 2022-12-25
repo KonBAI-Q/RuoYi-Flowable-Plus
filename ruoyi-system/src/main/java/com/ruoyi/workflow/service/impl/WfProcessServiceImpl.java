@@ -122,6 +122,38 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     @Override
+    public List<WfDefinitionVo> selectStartProcessList(ProcessQuery processQuery) {
+        // 流程定义列表数据查询
+        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
+                .latestVersion()
+                .active()
+                .orderByProcessDefinitionKey()
+                .asc();
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(processDefinitionQuery, processQuery);
+
+        List<ProcessDefinition> definitionList = processDefinitionQuery.list();
+
+        List<WfDefinitionVo> definitionVoList = new ArrayList<>();
+        for (ProcessDefinition processDefinition : definitionList) {
+            String deploymentId = processDefinition.getDeploymentId();
+            Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
+            WfDefinitionVo vo = new WfDefinitionVo();
+            vo.setDefinitionId(processDefinition.getId());
+            vo.setProcessKey(processDefinition.getKey());
+            vo.setProcessName(processDefinition.getName());
+            vo.setVersion(processDefinition.getVersion());
+            vo.setDeploymentId(processDefinition.getDeploymentId());
+            vo.setSuspended(processDefinition.isSuspended());
+            // 流程定义时间
+            vo.setCategory(deployment.getCategory());
+            vo.setDeploymentTime(deployment.getDeploymentTime());
+            definitionVoList.add(vo);
+        }
+        return definitionVoList;
+    }
+
+    @Override
     public TableDataInfo<WfTaskVo> selectPageOwnProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
         HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery()
@@ -170,6 +202,52 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         }
         page.setRecords(taskVoList);
         return TableDataInfo.build(page);
+    }
+
+    @Override
+    public List<WfTaskVo> selectOwnProcessList(ProcessQuery processQuery) {
+        HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery()
+                .startedBy(TaskUtils.getUserId())
+                .orderByProcessInstanceStartTime()
+                .desc();
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(historicProcessInstanceQuery, processQuery);
+        List<HistoricProcessInstance> historicProcessInstances = historicProcessInstanceQuery.list();
+        List<WfTaskVo> taskVoList = new ArrayList<>();
+        for (HistoricProcessInstance hisIns : historicProcessInstances) {
+            WfTaskVo taskVo = new WfTaskVo();
+            taskVo.setCreateTime(hisIns.getStartTime());
+            taskVo.setFinishTime(hisIns.getEndTime());
+            taskVo.setProcInsId(hisIns.getId());
+
+            // 计算耗时
+            if (Objects.nonNull(hisIns.getEndTime())) {
+                taskVo.setDuration(DateUtils.getDatePoor(hisIns.getEndTime(), hisIns.getStartTime()));
+            } else {
+                taskVo.setDuration(DateUtils.getDatePoor(DateUtils.getNowDate(), hisIns.getStartTime()));
+            }
+            // 流程部署实例信息
+            Deployment deployment = repositoryService.createDeploymentQuery()
+                    .deploymentId(hisIns.getDeploymentId()).singleResult();
+            taskVo.setDeployId(hisIns.getDeploymentId());
+            taskVo.setProcDefId(hisIns.getProcessDefinitionId());
+            taskVo.setProcDefName(hisIns.getProcessDefinitionName());
+            taskVo.setProcDefVersion(hisIns.getProcessDefinitionVersion());
+            taskVo.setCategory(deployment.getCategory());
+            // 当前所处流程
+            List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
+            if (CollUtil.isNotEmpty(taskList)) {
+                taskVo.setTaskId(taskList.get(0).getId());
+            } else {
+                List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
+                        .processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
+                if (CollUtil.isNotEmpty(historicTaskInstance)) {
+                    taskVo.setTaskId(historicTaskInstance.get(0).getId());
+                }
+            }
+            taskVoList.add(taskVo);
+        }
+        return taskVoList;
     }
 
     @Override
@@ -223,6 +301,51 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     @Override
+    public List<WfTaskVo> selectTodoProcessList(ProcessQuery processQuery) {
+        TaskQuery taskQuery = taskService.createTaskQuery()
+                .active()
+                .includeProcessVariables()
+                .taskCandidateOrAssigned(TaskUtils.getUserId())
+                .taskCandidateGroupIn(TaskUtils.getCandidateGroup())
+                .orderByTaskCreateTime().desc();
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(taskQuery, processQuery);
+        List<Task> taskList = taskQuery.list();
+        List<WfTaskVo> taskVoList = new ArrayList<>();
+        for (Task task : taskList) {
+            WfTaskVo taskVo = new WfTaskVo();
+            // 当前流程信息
+            taskVo.setTaskId(task.getId());
+            taskVo.setTaskDefKey(task.getTaskDefinitionKey());
+            taskVo.setCreateTime(task.getCreateTime());
+            taskVo.setProcDefId(task.getProcessDefinitionId());
+            taskVo.setTaskName(task.getName());
+            // 流程定义信息
+            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionId(task.getProcessDefinitionId())
+                    .singleResult();
+            taskVo.setDeployId(pd.getDeploymentId());
+            taskVo.setProcDefName(pd.getName());
+            taskVo.setProcDefVersion(pd.getVersion());
+            taskVo.setProcInsId(task.getProcessInstanceId());
+
+            // 流程发起人信息
+            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                    .processInstanceId(task.getProcessInstanceId())
+                    .singleResult();
+            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
+            taskVo.setStartUserId(startUser.getNickName());
+            taskVo.setStartUserName(startUser.getNickName());
+            taskVo.setStartDeptName(startUser.getDept().getDeptName());
+            // 流程变量
+            taskVo.setProcVars(this.getProcessVariables(task.getId()));
+
+            taskVoList.add(taskVo);
+        }
+        return taskVoList;
+    }
+
+    @Override
     public TableDataInfo<WfTaskVo> selectPageClaimProcessList(ProcessQuery processQuery, PageQuery pageQuery) {
         Page<WfTaskVo> page = new Page<>();
         TaskQuery taskQuery = taskService.createTaskQuery()
@@ -267,6 +390,49 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         }
         page.setRecords(flowList);
         return TableDataInfo.build(page);
+    }
+
+    @Override
+    public List<WfTaskVo> selectClaimProcessList(ProcessQuery processQuery) {
+        TaskQuery taskQuery = taskService.createTaskQuery()
+                .active()
+                .includeProcessVariables()
+                .taskCandidateUser(TaskUtils.getUserId())
+                .taskCandidateGroupIn(TaskUtils.getCandidateGroup())
+                .orderByTaskCreateTime().desc();
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(taskQuery, processQuery);
+        List<Task> taskList = taskQuery.list();
+        List<WfTaskVo> flowList = new ArrayList<>();
+        for (Task task : taskList) {
+            WfTaskVo flowTask = new WfTaskVo();
+            // 当前流程信息
+            flowTask.setTaskId(task.getId());
+            flowTask.setTaskDefKey(task.getTaskDefinitionKey());
+            flowTask.setCreateTime(task.getCreateTime());
+            flowTask.setProcDefId(task.getProcessDefinitionId());
+            flowTask.setTaskName(task.getName());
+            // 流程定义信息
+            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionId(task.getProcessDefinitionId())
+                    .singleResult();
+            flowTask.setDeployId(pd.getDeploymentId());
+            flowTask.setProcDefName(pd.getName());
+            flowTask.setProcDefVersion(pd.getVersion());
+            flowTask.setProcInsId(task.getProcessInstanceId());
+
+            // 流程发起人信息
+            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                    .processInstanceId(task.getProcessInstanceId())
+                    .singleResult();
+            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
+            flowTask.setStartUserId(startUser.getNickName());
+            flowTask.setStartUserName(startUser.getNickName());
+            flowTask.setStartDeptName(startUser.getDept().getDeptName());
+
+            flowList.add(flowTask);
+        }
+        return flowList;
     }
 
     @Override
@@ -325,6 +491,57 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
 //        result.put("result",page);
 //        result.put("finished",true);
         return TableDataInfo.build(page);
+    }
+
+    @Override
+    public List<WfTaskVo> selectFinishedProcessList(ProcessQuery processQuery) {
+        HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery()
+                .includeProcessVariables()
+                .finished()
+                .taskAssignee(TaskUtils.getUserId())
+                .orderByHistoricTaskInstanceEndTime()
+                .desc();
+        // 构建搜索条件
+        ProcessUtils.buildProcessSearch(taskInstanceQuery, processQuery);
+        List<HistoricTaskInstance> historicTaskInstanceList = taskInstanceQuery.list();
+        List<WfTaskVo> hisTaskList = new ArrayList<>();
+        for (HistoricTaskInstance histTask : historicTaskInstanceList) {
+            WfTaskVo flowTask = new WfTaskVo();
+            // 当前流程信息
+            flowTask.setTaskId(histTask.getId());
+            // 审批人员信息
+            flowTask.setCreateTime(histTask.getCreateTime());
+            flowTask.setFinishTime(histTask.getEndTime());
+            flowTask.setDuration(DateUtil.formatBetween(histTask.getDurationInMillis(), BetweenFormatter.Level.SECOND));
+            flowTask.setProcDefId(histTask.getProcessDefinitionId());
+            flowTask.setTaskDefKey(histTask.getTaskDefinitionKey());
+            flowTask.setTaskName(histTask.getName());
+
+            // 流程定义信息
+            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionId(histTask.getProcessDefinitionId())
+                    .singleResult();
+            flowTask.setDeployId(pd.getDeploymentId());
+            flowTask.setProcDefName(pd.getName());
+            flowTask.setProcDefVersion(pd.getVersion());
+            flowTask.setProcInsId(histTask.getProcessInstanceId());
+            flowTask.setHisProcInsId(histTask.getProcessInstanceId());
+
+            // 流程发起人信息
+            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                    .processInstanceId(histTask.getProcessInstanceId())
+                    .singleResult();
+            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
+            flowTask.setStartUserId(startUser.getNickName());
+            flowTask.setStartUserName(startUser.getNickName());
+            flowTask.setStartDeptName(startUser.getDept().getDeptName());
+
+            // 流程变量
+            flowTask.setProcVars(this.getProcessVariables(histTask.getId()));
+
+            hisTaskList.add(flowTask);
+        }
+        return hisTaskList;
     }
 
     @Override

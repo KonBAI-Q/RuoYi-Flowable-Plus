@@ -30,6 +30,16 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          v-hasPermi="['workflow:process:claimExport']"
+          @click="handleExport"
+        >导出</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -149,6 +159,12 @@ export default {
           path: '/work/todo'
         })
       })
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download('workflow/process/claimExport', {
+        ...this.queryParams
+      }, `wf_claim_process_${new Date().getTime()}.xlsx`)
     }
   }
 };
