@@ -159,6 +159,7 @@ public class WfTaskController {
     /**
      * 获取下一节点
      */
+    @Deprecated
     @PostMapping(value = "/nextFlowNode")
     @SaCheckPermission("workflow:process:query")
     public R getNextFlowNode(@RequestBody WfTaskBo bo) {
@@ -203,6 +204,7 @@ public class WfTaskController {
      *
      * @param procInsId 任务ID
      */
+    @Deprecated
     @RequestMapping("/flowViewer/{procInsId}")
     public R getFlowViewer(@PathVariable("procInsId") String procInsId) {
         return R.ok(flowTaskService.getFlowViewer(procInsId));
