@@ -209,7 +209,7 @@
 <script>
 import { detailProcess } from '@/api/workflow/process'
 import Parser from '@/utils/generator/parser'
-import { complete, delegate, transfer, rejectTask, returnList, returnTask } from '@/api/workflow/todo'
+import { complete, delegate, transfer, rejectTask, returnList, returnTask } from '@/api/workflow/task'
 import { selectUser, deptTreeSelect } from '@/api/system/user'
 import ProcessViewer from '@/components/ProcessViewer'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'

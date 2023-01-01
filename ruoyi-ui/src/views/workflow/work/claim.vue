@@ -85,7 +85,7 @@
 
 <script>
 import { listClaimProcess } from '@/api/workflow/process';
-import { claimTask } from '@/api/workflow/todo';
+import { claimTask } from '@/api/workflow/task';
 
 export default {
   name: 'Claim',
