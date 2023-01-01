@@ -232,6 +232,8 @@ export default {
           case '3': return '驳回'
           case '4': return '委派'
           case '5': return '转办'
+          case '6': return '终止'
+          case '7': return '撤回'
         }
       }
     },
@@ -243,6 +245,8 @@ export default {
           case '3': return 'danger'
           case '4': return 'primary'
           case '5': return 'success'
+          case '6': return 'danger'
+          case '7': return 'info'
         }
       }
     }
