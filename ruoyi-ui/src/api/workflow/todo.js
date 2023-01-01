@@ -62,20 +62,3 @@ export function returnList(data) {
     data: data
   })
 }
-
-// 下一节点
-export function getNextFlowNode(data) {
-  return request({
-    url: '/workflow/task/nextFlowNode',
-    method: 'post',
-    data: data
-  })
-}
-
-// 部署流程实例
-export function deployStart(deployId) {
-  return request({
-    url: '/workflow/process/startFlow/' + deployId,
-    method: 'get',
-  })
-}
