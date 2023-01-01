@@ -50,9 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -434,63 +431,71 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
     }
 
     /**
-     * 撤回流程  目前存在错误
+     * 撤回流程
      *
-     * @param bo
-     * @return
+     * @param taskBo 请求实体参数
      */
     @Override
-    public void revokeProcess(WfTaskBo bo) {
-        Task task = taskService.createTaskQuery().processInstanceId(bo.getProcInsId()).singleResult();
-        if (task == null) {
-            throw new RuntimeException("流程未启动或已执行完成，无法撤回");
+    @Transactional(rollbackFor = Exception.class)
+    public void revokeProcess(WfTaskBo taskBo) {
+        String procInsId = taskBo.getProcInsId();
+        String taskId = taskBo.getTaskId();
+        // 校验流程是否结束
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+            .processInstanceId(procInsId)
+            .active()
+            .singleResult();
+        if(ObjectUtil.isNull(processInstance)) {
+            throw new RuntimeException("流程已结束或已挂起，无法执行撤回操作");
         }
+        // 获取待撤回任务实例
+        HistoricTaskInstance currTaskIns = historyService.createHistoricTaskInstanceQuery()
+            .taskId(taskId)
+            .taskAssignee(TaskUtils.getUserId())
+            .singleResult();
+        if (ObjectUtil.isNull(currTaskIns)) {
+            throw new RuntimeException("当前任务不存在，无法执行撤回操作");
+        }
+        // 获取 bpmn 模型
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(currTaskIns.getProcessDefinitionId());
+        UserTask currUserTask = ModelUtils.getUserTaskByKey(bpmnModel, currTaskIns.getTaskDefinitionKey());
+        // 查找下一级用户任务列表
+        List<UserTask> nextUserTaskList = ModelUtils.findNextUserTasks(currUserTask);
+        List<String> nextUserTaskKeys = nextUserTaskList.stream().map(UserTask::getId).collect(Collectors.toList());
 
-        List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()
-            .processInstanceId(task.getProcessInstanceId())
-            .orderByTaskCreateTime()
-            .asc()
+        // 获取当前节点之后已完成的流程历史节点
+        List<HistoricTaskInstance> finishedTaskInsList = historyService.createHistoricTaskInstanceQuery()
+            .processInstanceId(procInsId)
+            .taskCreatedAfter(currTaskIns.getEndTime())
+            .finished()
             .list();
-        String myTaskId = null;
-        HistoricTaskInstance myTask = null;
-        for (HistoricTaskInstance hti : htiList) {
-            if (TaskUtils.getUserId().equals(hti.getAssignee())) {
-                myTaskId = hti.getId();
-                myTask = hti;
-                break;
+        for (HistoricTaskInstance finishedTaskInstance : finishedTaskInsList) {
+            // 检查已完成流程历史节点是否存在下一级中
+            if (CollUtil.contains(nextUserTaskKeys, finishedTaskInstance.getTaskDefinitionKey())) {
+                throw new RuntimeException("下一流程已处理，无法执行撤回操作");
             }
         }
-        if (null == myTaskId) {
-            throw new RuntimeException("该任务非当前用户提交，无法撤回");
-        }
-
-        String processDefinitionId = myTask.getProcessDefinitionId();
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-
-        //变量
-//      Map<String, VariableInstance> variables = runtimeService.getVariableInstances(currentTask.getExecutionId());
-        String myActivityId = null;
-        List<HistoricActivityInstance> haiList = historyService.createHistoricActivityInstanceQuery()
-            .executionId(myTask.getExecutionId()).finished().list();
-        for (HistoricActivityInstance hai : haiList) {
-            if (myTaskId.equals(hai.getTaskId())) {
-                myActivityId = hai.getActivityId();
-                break;
+        // 获取所有激活的任务节点，找到需要撤回的任务
+        List<Task> activateTaskList = taskService.createTaskQuery().processInstanceId(procInsId).list();
+        List<String> revokeExecutionIds = new ArrayList<>();
+        for (Task task : activateTaskList) {
+            // 检查激活的任务节点是否存在下一级中，如果存在，则加入到需要撤回的节点
+            if (CollUtil.contains(nextUserTaskKeys, task.getTaskDefinitionKey())) {
+                // 添加撤回审批信息
+                taskService.setAssignee(task.getId(), TaskUtils.getUserId());
+                taskService.addComment(task.getId(), task.getProcessInstanceId(), FlowComment.REVOKE.getType(), LoginHelper.getNickName() + "撤回流程审批");
+                revokeExecutionIds.add(task.getExecutionId());
             }
         }
-        FlowNode myFlowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(myActivityId);
-
-        Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
-        String activityId = execution.getActivityId();
-        FlowNode flowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(activityId);
-
-        //记录原活动方向
-        List<SequenceFlow> oriSequenceFlows = new ArrayList<>(flowNode.getOutgoingFlows());
-    }
-
-    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Set<Object> seen = ConcurrentHashMap.newKeySet();
-        return t -> seen.add(keyExtractor.apply(t));
+        try {
+            runtimeService.createChangeActivityStateBuilder()
+                .processInstanceId(procInsId)
+                .moveExecutionsToSingleActivityId(revokeExecutionIds, currTaskIns.getTaskDefinitionKey()).changeState();
+        } catch (FlowableObjectNotFoundException e) {
+            throw new RuntimeException("未找到流程实例，流程可能已发生变化");
+        } catch (FlowableException e) {
+            throw new RuntimeException("执行撤回操作失败");
+        }
     }
 
     /**

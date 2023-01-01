@@ -225,11 +225,12 @@ export default {
       })
     },
     /** 撤回任务 */
-    handleRevoke(row){
+    handleRevoke(row) {
       const params = {
-        procInsId: row.procInsId
-      }
-      revokeProcess(params).then( res => {
+        procInsId: row.procInsId,
+        taskId: row.taskId
+      };
+      revokeProcess(params).then(res => {
         this.$modal.msgSuccess(res.msg);
         this.getList();
       });
