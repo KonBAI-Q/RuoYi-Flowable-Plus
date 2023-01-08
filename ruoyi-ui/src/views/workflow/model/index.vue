@@ -121,10 +121,8 @@
             v-hasPermi="['workflow:model:deploy']"
             @click.native="handleDeploy(scope.row)"
           >部署</el-button>
-          <el-dropdown>
-          <span class="el-dropdown-link">
-            <i class="el-icon-d-arrow-right el-icon--right"></i>更多
-          </span>
+          <el-dropdown size="mini" v-hasPermi="['workflow:model:query', 'workflow:model:list', 'workflow:model:remove']">
+            <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
                 icon="el-icon-view"
