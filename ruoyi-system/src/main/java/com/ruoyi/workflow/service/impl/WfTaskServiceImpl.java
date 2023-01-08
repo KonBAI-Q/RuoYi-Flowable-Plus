@@ -1,28 +1,21 @@
 package com.ruoyi.workflow.service.impl;
 
-
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.common.enums.FlowComment;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
-import com.ruoyi.flowable.flow.FindNextNodeUtil;
 import com.ruoyi.flowable.flow.FlowableUtils;
 import com.ruoyi.flowable.utils.ModelUtils;
 import com.ruoyi.flowable.utils.TaskUtils;
-import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
-import com.ruoyi.workflow.domain.dto.WfNextDto;
-import com.ruoyi.workflow.domain.vo.WfViewerVo;
 import com.ruoyi.workflow.service.IWfCopyService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +29,6 @@ import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.history.HistoricActivityInstance;
-import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.Execution;
@@ -62,8 +54,6 @@ import java.util.stream.Collectors;
 public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskService {
 
     private final ISysUserService sysUserService;
-
-    private final ISysRoleService sysRoleService;
 
     private final IWfCopyService copyService;
 
@@ -548,48 +538,6 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
     }
 
     /**
-     * 获取流程执行过程
-     *
-     * @param procInsId
-     * @return
-     */
-    @Override
-    public WfViewerVo getFlowViewer(String procInsId) {
-        // 构建查询条件
-        HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery()
-            .processInstanceId(procInsId);
-        List<HistoricActivityInstance> allActivityInstanceList = query.list();
-        if (CollUtil.isEmpty(allActivityInstanceList)) {
-            return new WfViewerVo();
-        }
-        // 获取流程发布Id信息
-        String processDefinitionId = allActivityInstanceList.get(0).getProcessDefinitionId();
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        // 查询所有已完成的元素
-        List<HistoricActivityInstance> finishedElementList = allActivityInstanceList.stream()
-            .filter(item -> ObjectUtil.isNotNull(item.getEndTime())).collect(Collectors.toList());
-        // 所有已完成的连线
-        Set<String> finishedSequenceFlowSet = new HashSet<>();
-        // 所有已完成的任务节点
-        Set<String> finishedTaskSet = new HashSet<>();
-        finishedElementList.forEach(item -> {
-            if (BpmnXMLConstants.ELEMENT_SEQUENCE_FLOW.equals(item.getActivityType())) {
-                finishedSequenceFlowSet.add(item.getActivityId());
-            } else {
-                finishedTaskSet.add(item.getActivityId());
-            }
-        });
-        // 查询所有未结束的节点
-        Set<String> unfinishedTaskSet = allActivityInstanceList.stream()
-            .filter(item -> ObjectUtil.isNull(item.getEndTime()))
-            .map(HistoricActivityInstance::getActivityId)
-            .collect(Collectors.toSet());
-        // DFS 查询未通过的元素集合
-        Set<String> rejectedSet = FlowableUtils.dfsFindRejects(bpmnModel, unfinishedTaskSet, finishedSequenceFlowSet, finishedTaskSet);
-        return new WfViewerVo(finishedTaskSet, finishedSequenceFlowSet, unfinishedTaskSet, rejectedSet);
-    }
-
-    /**
      * 获取流程变量
      *
      * @param taskId 任务ID
@@ -606,72 +554,6 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             return historicTaskInstance.getProcessVariables();
         }
         return taskService.getVariables(taskId);
-    }
-
-    /**
-     * 获取下一节点
-     *
-     * @param bo 任务
-     * @return
-     */
-    @Override
-    public WfNextDto getNextFlowNode(WfTaskBo bo) {
-        // Step 1. 获取当前节点并找到下一步节点
-        Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
-        WfNextDto nextDto = new WfNextDto();
-        if (Objects.nonNull(task)) {
-            // Step 2. 获取当前流程所有流程变量(网关节点时需要校验表达式)
-            Map<String, Object> variables = taskService.getVariables(task.getId());
-            List<UserTask> nextUserTask = FindNextNodeUtil.getNextUserTasks(repositoryService, task, variables);
-            if (CollectionUtils.isNotEmpty(nextUserTask)) {
-                for (UserTask userTask : nextUserTask) {
-                    MultiInstanceLoopCharacteristics multiInstance = userTask.getLoopCharacteristics();
-                    // 会签节点
-                    if (Objects.nonNull(multiInstance)) {
-                        List<SysUser> list = sysUserService.selectUserList(new SysUser());
-
-                        nextDto.setVars(ProcessConstants.PROCESS_MULTI_INSTANCE_USER);
-                        nextDto.setType(ProcessConstants.PROCESS_MULTI_INSTANCE);
-                        nextDto.setUserList(list);
-                    } else {
-
-                        // 读取自定义节点属性 判断是否是否需要动态指定任务接收人员、组
-                        String dataType = userTask.getAttributeValue(ProcessConstants.NAMASPASE, ProcessConstants.PROCESS_CUSTOM_DATA_TYPE);
-                        String userType = userTask.getAttributeValue(ProcessConstants.NAMASPASE, ProcessConstants.PROCESS_CUSTOM_USER_TYPE);
-
-                        if (ProcessConstants.DATA_TYPE.equals(dataType)) {
-                            // 指定单个人员
-                            if (ProcessConstants.USER_TYPE_ASSIGNEE.equals(userType)) {
-                                List<SysUser> list = sysUserService.selectUserList(new SysUser());
-
-                                nextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
-                                nextDto.setType(ProcessConstants.USER_TYPE_ASSIGNEE);
-                                nextDto.setUserList(list);
-                            }
-                            // 候选人员(多个)
-                            if (ProcessConstants.USER_TYPE_USERS.equals(userType)) {
-                                List<SysUser> list = sysUserService.selectUserList(new SysUser());
-
-                                nextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
-                                nextDto.setType(ProcessConstants.USER_TYPE_USERS);
-                                nextDto.setUserList(list);
-                            }
-                            // 候选组
-                            if (ProcessConstants.USER_TYPE_ROUPS.equals(userType)) {
-                                List<SysRole> sysRoles = sysRoleService.selectRoleAll();
-
-                                nextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
-                                nextDto.setType(ProcessConstants.USER_TYPE_ROUPS);
-                                nextDto.setRoleList(sysRoles);
-                            }
-                        }
-                    }
-                }
-            } else {
-                return null;
-            }
-        }
-        return nextDto;
     }
 
     /**

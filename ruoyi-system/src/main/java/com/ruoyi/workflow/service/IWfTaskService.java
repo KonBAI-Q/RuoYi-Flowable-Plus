@@ -1,8 +1,6 @@
 package com.ruoyi.workflow.service;
 
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
-import com.ruoyi.workflow.domain.dto.WfNextDto;
-import com.ruoyi.workflow.domain.vo.WfViewerVo;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.runtime.ProcessInstance;
 
@@ -104,25 +102,11 @@ public interface IWfTaskService {
     InputStream diagram(String processId);
 
     /**
-     * 获取流程执行过程
-     * @param procInsId
-     * @return
-     */
-    WfViewerVo getFlowViewer(String procInsId);
-
-    /**
      * 获取流程变量
      * @param taskId 任务ID
      * @return 流程变量
      */
     Map<String, Object> getProcessVariables(String taskId);
-
-    /**
-     * 获取下一节点
-     * @param bo 任务
-     * @return
-     */
-    WfNextDto getNextFlowNode(WfTaskBo bo);
 
     /**
      * 启动第一个任务

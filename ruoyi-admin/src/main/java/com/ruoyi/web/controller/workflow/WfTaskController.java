@@ -4,7 +4,6 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
-import com.ruoyi.workflow.domain.dto.WfNextDto;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -157,17 +156,6 @@ public class WfTaskController {
     }
 
     /**
-     * 获取下一节点
-     */
-    @Deprecated
-    @PostMapping(value = "/nextFlowNode")
-    @SaCheckPermission("workflow:process:query")
-    public R getNextFlowNode(@RequestBody WfTaskBo bo) {
-        WfNextDto wfNextDto = flowTaskService.getNextFlowNode(bo);
-        return wfNextDto != null ? R.ok(wfNextDto) : R.ok("流程已完结", null);
-    }
-
-    /**
      * 生成流程图
      *
      * @param processId 任务ID
@@ -197,16 +185,5 @@ public class WfTaskController {
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * 生成流程图
-     *
-     * @param procInsId 任务ID
-     */
-    @Deprecated
-    @RequestMapping("/flowViewer/{procInsId}")
-    public R getFlowViewer(@PathVariable("procInsId") String procInsId) {
-        return R.ok(flowTaskService.getFlowViewer(procInsId));
     }
 }
