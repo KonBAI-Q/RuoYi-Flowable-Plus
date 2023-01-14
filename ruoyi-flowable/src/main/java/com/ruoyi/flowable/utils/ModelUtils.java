@@ -130,6 +130,61 @@ public class ModelUtils {
         return null;
     }
 
+    /**
+     * 获取开始节点属性值
+     * @param model bpmnModel对象
+     * @param name 属性名
+     * @return 属性值
+     */
+    public static String getStartEventAttributeValue(BpmnModel model, String name) {
+        StartEvent startEvent = getStartEvent(model);
+        return getElementAttributeValue(startEvent, name);
+    }
+
+    /**
+     * 获取结束节点属性值
+     * @param model bpmnModel对象
+     * @param name 属性名
+     * @return 属性值
+     */
+    public static String getEndEventAttributeValue(BpmnModel model, String name) {
+        EndEvent endEvent = getEndEvent(model);
+        return getElementAttributeValue(endEvent, name);
+    }
+
+    /**
+     * 获取用户任务节点属性值
+     * @param model bpmnModel对象
+     * @param taskKey 任务Key
+     * @param name 属性名
+     * @return 属性值
+     */
+    public static String getUserTaskAttributeValue(BpmnModel model, String taskKey, String name) {
+        UserTask userTask = getUserTaskByKey(model, taskKey);
+        return getElementAttributeValue(userTask, name);
+    }
+
+    /**
+     * 获取元素属性值
+     * @param baseElement 流程元素
+     * @param name 属性名
+     * @return 属性值
+     */
+    public static String getElementAttributeValue(BaseElement baseElement, String name) {
+        if (baseElement != null) {
+            List<ExtensionAttribute> attributes = baseElement.getAttributes().get(name);
+            if (attributes != null && !attributes.isEmpty()) {
+                attributes.iterator().next().getValue();
+                Iterator<ExtensionAttribute> attrIterator = attributes.iterator();
+                if(attrIterator.hasNext()) {
+                    ExtensionAttribute attribute = attrIterator.next();
+                    return attribute.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
     public static boolean isMultiInstance(BpmnModel model, String taskKey) {
         UserTask userTask = getUserTaskByKey(model, taskKey);
         if (ObjectUtil.isNotNull(userTask)) {
