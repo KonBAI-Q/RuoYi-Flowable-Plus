@@ -1,10 +1,19 @@
 <template>
   <div class="panel-tab__content">
-    <el-form size="mini" label-width="80px" @submit.native.prevent>
+    <el-form size="mini" label-width="90px" @submit.native.prevent>
       <el-form-item label="表单" prop="formKey">
         <el-select v-model="formKey" placeholder="请选择表单" @change="updateElementFormKey" clearable>
           <el-option v-for="item in formOptions" :key="item.formId" :label="item.formName" :value="`key_${item.formId}`" />
         </el-select>
+      </el-form-item>
+      <el-form-item prop="localScope">
+        <span slot="label">
+          <el-tooltip content="若为节点表单，则表单信息仅在此节点可用，默认为全局表单，表单信息在整个流程实例中可用" placement="top-start">
+            <i class="header-icon el-icon-info"></i>
+          </el-tooltip>
+          <span>节点表单</span>
+        </span>
+        <el-switch :disabled="type === 'StartEvent'" v-model="localScope" active-text="是" inactive-text="否" @change="updateElementFormScope()" />
       </el-form-item>
 <!--      <el-form-item label="表单标识">-->
 <!--        <el-input v-model="formKey" clearable @change="updateElementFormKey" />-->
@@ -169,6 +178,7 @@ export default {
     return {
       formOptions: [],
       formKey: "",
+      localScope: false,
       businessKey: "",
       optionModelTitle: "",
       fieldList: [],
@@ -212,6 +222,7 @@ export default {
     resetFormList() {
       this.bpmnELement = window.bpmnInstances.bpmnElement;
       this.formKey = this.bpmnELement.businessObject.formKey;
+      this.localScope = this.bpmnELement.businessObject.localScope;
       // 获取元素扩展属性 或者 创建扩展属性
       this.elExtensionElements =
         this.bpmnELement.businessObject.get("extensionElements") || window.bpmnInstances.moddle.create("bpmn:ExtensionElements", { values: [] });
@@ -233,6 +244,9 @@ export default {
     },
     updateElementFormKey() {
       window.bpmnInstances.modeling.updateProperties(this.bpmnELement, { formKey: this.formKey });
+    },
+    updateElementFormScope() {
+      window.bpmnInstances.modeling.updateProperties(this.bpmnELement, { localScope: this.localScope });
     },
     updateElementBusinessKey() {
       window.bpmnInstances.modeling.updateModdleProperties(this.bpmnELement, this.formData, { businessKey: this.businessKey });

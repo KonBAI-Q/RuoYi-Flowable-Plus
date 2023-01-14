@@ -62,6 +62,11 @@ public class ProcessConstants {
      */
     public static final String PROCESS_CUSTOM_USER_TYPE = "userType";
 
+    /**
+     * 自定义属性 localScope
+     */
+    public static final String PROCESS_FORM_LOCAL_SCOPE = "localScope";
+
 
     /**
      * 流程跳过

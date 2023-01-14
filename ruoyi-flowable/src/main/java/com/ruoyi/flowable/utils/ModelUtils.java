@@ -131,6 +131,35 @@ public class ModelUtils {
     }
 
     /**
+     * 获取流程元素信息
+     *
+     * @param model bpmnModel对象
+     * @param flowElementId 元素ID
+     * @return 元素信息
+     */
+    public static FlowElement getFlowElementById(BpmnModel model, String flowElementId) {
+        Process process = model.getMainProcess();
+        return process.getFlowElement(flowElementId);
+    }
+
+    /**
+     * 获取元素表单Key（限开始节点和用户节点可用）
+     *
+     * @param flowElement 元素
+     * @return 表单Key
+     */
+    public static String getFormKey(FlowElement flowElement) {
+        if (flowElement != null) {
+            if (flowElement instanceof StartEvent) {
+                return ((StartEvent) flowElement).getFormKey();
+            } else if (flowElement instanceof UserTask) {
+                return ((UserTask) flowElement).getFormKey();
+            }
+        }
+        return null;
+    }
+
+    /**
      * 获取开始节点属性值
      * @param model bpmnModel对象
      * @param name 属性名

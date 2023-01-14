@@ -1,12 +1,14 @@
 package com.ruoyi.workflow.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.common.enums.FlowComment;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
@@ -69,6 +71,8 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         if (Objects.isNull(task)) {
             throw new ServiceException("任务不存在");
         }
+        // 获取 bpmn 模型
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(task.getProcessDefinitionId());
         if (DelegationState.PENDING.equals(task.getDelegationState())) {
             taskService.addComment(taskBo.getTaskId(), taskBo.getProcInsId(), FlowComment.DELEGATE.getType(), taskBo.getComment());
             taskService.resolveTask(taskBo.getTaskId());
@@ -76,7 +80,10 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             taskService.addComment(taskBo.getTaskId(), taskBo.getProcInsId(), FlowComment.NORMAL.getType(), taskBo.getComment());
             taskService.setAssignee(taskBo.getTaskId(), TaskUtils.getUserId());
             if (ObjectUtil.isNotEmpty(taskBo.getVariables())) {
-                taskService.complete(taskBo.getTaskId(), taskBo.getVariables(), true);
+                // 获取模型信息
+                String localScopeValue = ModelUtils.getUserTaskAttributeValue(bpmnModel, task.getTaskDefinitionKey(), ProcessConstants.PROCESS_FORM_LOCAL_SCOPE);
+                boolean localScope = Convert.toBool(localScopeValue, false);
+                taskService.complete(taskBo.getTaskId(), taskBo.getVariables(), localScope);
             } else {
                 taskService.complete(taskBo.getTaskId());
             }
@@ -85,7 +92,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         taskBo.setTaskName(task.getName());
         // 处理下一级审批人
         if (StringUtils.isNotBlank(taskBo.getNextUserIds())) {
-            this.assignNextUsers(task.getProcessDefinitionId(), taskBo.getProcInsId(), taskBo.getNextUserIds());
+            this.assignNextUsers(bpmnModel, taskBo.getProcInsId(), taskBo.getNextUserIds());
         }
         // 处理抄送用户
         if (!copyService.makeCopy(taskBo)) {
@@ -578,11 +585,11 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
 
     /**
      * 指派下一任务审批人
-     * @param processDefId 流程定义id
+     * @param bpmnModel bpmn模型
      * @param processInsId 流程实例id
      * @param userIds 用户ids
      */
-    private void assignNextUsers(String processDefId, String processInsId, String userIds) {
+    private void assignNextUsers(BpmnModel bpmnModel, String processInsId, String userIds) {
         // 获取所有节点信息
         List<Task> list = taskService.createTaskQuery()
             .processInstanceId(processInsId)
@@ -597,7 +604,6 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             }
             return;
         }
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefId);
         // 优先处理非多实例任务
         Iterator<Task> iterator = list.iterator();
         while (iterator.hasNext()) {

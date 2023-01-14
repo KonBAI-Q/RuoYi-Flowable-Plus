@@ -1,6 +1,7 @@
 package com.ruoyi.workflow.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IORuntimeException;
@@ -17,6 +18,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.core.FormConf;
 import com.ruoyi.flowable.core.domain.ProcessQuery;
@@ -36,10 +38,8 @@ import com.ruoyi.workflow.service.IWfProcessService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
 import org.flowable.bpmn.constants.BpmnXMLConstants;
-import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.Process;
-import org.flowable.bpmn.model.StartEvent;
-import org.flowable.bpmn.model.UserTask;
+import org.flowable.bpmn.model.*;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -638,7 +638,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         detailVo.setBpmnXml(IoUtil.readUtf8(inputStream));
         detailVo.setTaskFormData(currTaskFormData(deployId, taskIns));
         detailVo.setHistoryProcNodeList(historyProcNodeList(procInsId));
-        detailVo.setProcessFormList(processFormList(procInsId, deployId, taskIns));
+        detailVo.setProcessFormList(processFormList(procInsId, deployId));
         detailVo.setFlowViewer(getFlowViewer(procInsId));
         return detailVo;
     }
@@ -699,18 +699,64 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     /**
-     * 获取流程表单信息（不包括当前任务节点）
+     * 获取历史流程表单信息
      */
-    private List<FormConf> processFormList(String procInsId, String deployId, HistoricTaskInstance taskIns) {
+    private List<FormConf> processFormList(String procInsId, String deployId) {
         List<FormConf> procFormList = new ArrayList<>();
         HistoricProcessInstance historicProcIns = historyService.createHistoricProcessInstanceQuery().processInstanceId(procInsId).includeProcessVariables().singleResult();
-        Process process = repositoryService.getBpmnModel(historicProcIns.getProcessDefinitionId()).getMainProcess();
-
-        buildStartFormData(historicProcIns, process, deployId, procFormList);
-        buildUserTaskFormData(procInsId, deployId, process, procFormList);
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(historicProcIns.getProcessDefinitionId());
+        List<HistoricActivityInstance> activityInstanceList = historyService.createHistoricActivityInstanceQuery()
+            .processInstanceId(procInsId).finished()
+            .activityTypes(CollUtil.newHashSet(BpmnXMLConstants.ELEMENT_EVENT_START, BpmnXMLConstants.ELEMENT_TASK_USER))
+            .orderByHistoricActivityInstanceStartTime().asc()
+            .list();
+        List<String> processFormKeys = new ArrayList<>();
+        for (HistoricActivityInstance activityInstance : activityInstanceList) {
+            // 获取当前节点流程元素信息
+            FlowElement flowElement = ModelUtils.getFlowElementById(bpmnModel, activityInstance.getActivityId());
+            // 获取当前节点表单Key
+            String formKey = ModelUtils.getFormKey(flowElement);
+            if (formKey == null) {
+                continue;
+            }
+            boolean localScope = Convert.toBool(ModelUtils.getElementAttributeValue(flowElement, ProcessConstants.PROCESS_FORM_LOCAL_SCOPE), false);
+            Map<String, Object> variables;
+            if (localScope) {
+                // 查询任务节点参数，并转换成Map
+                variables = historyService.createHistoricVariableInstanceQuery()
+                    .processInstanceId(procInsId)
+                    .taskId(activityInstance.getTaskId())
+                    .list()
+                    .stream()
+                    .collect(Collectors.toMap(HistoricVariableInstance::getVariableName, HistoricVariableInstance::getValue));
+            } else {
+                if (processFormKeys.contains(formKey)) {
+                    continue;
+                }
+                variables = historicProcIns.getProcessVariables();
+                processFormKeys.add(formKey);
+            }
+            // 兼容旧版数据，旧版此处查询可能出现多条
+            List<WfDeployFormVo> formInfoList = deployFormMapper.selectVoList(new LambdaQueryWrapper<WfDeployForm>()
+                .eq(WfDeployForm::getDeployId, deployId)
+                .eq(WfDeployForm::getFormKey, formKey)
+                .eq(localScope, WfDeployForm::getNodeKey, flowElement.getId()));
+            if (CollUtil.isNotEmpty(formInfoList)) {
+                WfDeployFormVo formInfo = formInfoList.get(0);
+                FormConf formConf = JsonUtils.parseObject(formInfo.getContent(), FormConf.class);
+                if (null != formConf) {
+                    formConf.setTitle(flowElement.getName());
+                    formConf.setDisabled(true);
+                    formConf.setFormBtns(false);
+                    ProcessFormUtils.fillFormData(formConf, variables);
+                    procFormList.add(formConf);
+                }
+            }
+        }
         return procFormList;
     }
 
+    @Deprecated
     private void buildStartFormData(HistoricProcessInstance historicProcIns, Process process, String deployId, List<FormConf> procFormList) {
         procFormList = procFormList == null ? new ArrayList<>() : procFormList;
         HistoricActivityInstance startInstance = historyService.createHistoricActivityInstanceQuery()
@@ -734,6 +780,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         }
     }
 
+    @Deprecated
     private void buildUserTaskFormData(String procInsId, String deployId, Process process, List<FormConf> procFormList) {
         procFormList = procFormList == null ? new ArrayList<>() : procFormList;
         List<HistoricActivityInstance> activityInstanceList = historyService.createHistoricActivityInstanceQuery()
