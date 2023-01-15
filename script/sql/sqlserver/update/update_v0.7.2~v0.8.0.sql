@@ -7,3 +7,14 @@ EXEC sp_addextendedproperty
 'TABLE', N'sys_oss_config',
 'COLUMN', N'access_policy'
 GO
+
+
+ALTER TABLE [wf_deploy_form] ADD [form_name] nvarchar(64) DEFAULT '' NULL
+GO
+
+EXEC sp_addextendedproperty
+    'MS_Description', N'表单名称',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_deploy_form',
+    'COLUMN', N'form_name'
+GO

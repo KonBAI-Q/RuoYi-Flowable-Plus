@@ -1091,6 +1091,7 @@ create table wf_deploy_form (
     deploy_id  varchar(64)    not null,
     form_key   varchar(64)    not null,
     node_key   varchar(64)    not null,
+    form_name  varchar(64)    default '',
     node_name  varchar(255)   default '',
     content    nclob          default null
 );
@@ -1101,6 +1102,7 @@ comment on table wf_deploy_form is '流程实例关联表单';
 comment on column wf_deploy_form.deploy_id is '流程实例主键';
 comment on column wf_deploy_form.form_key is '表单Key';
 comment on column wf_deploy_form.node_key is '节点Key';
+comment on column wf_deploy_form.form_name is '表单名称';
 comment on column wf_deploy_form.node_name is '节点名称';
 comment on column wf_deploy_form.content is '表单内容';
 

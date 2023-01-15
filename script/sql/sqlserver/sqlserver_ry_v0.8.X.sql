@@ -2687,6 +2687,7 @@ CREATE TABLE [wf_deploy_form]
     [deploy_id]  nvarchar(64)              NOT NULL,
     [form_key]   nvarchar(64)              NOT NULL,
     [node_key]   nvarchar(64)              NOT NULL,
+    [form_name]  nvarchar(64)   DEFAULT '' NULL,
     [node_name]  nvarchar(64)   DEFAULT '' NULL,
     [content]    nvarchar(max)             NULL,
     CONSTRAINT [PK__wf_deploy_form] PRIMARY KEY CLUSTERED ([deploy_id], [form_key], [node_key])
@@ -2712,6 +2713,12 @@ EXEC sp_addextendedproperty
     'SCHEMA', N'dbo',
     'TABLE', N'wf_deploy_form',
     'COLUMN', N'node_key'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'表单名称',
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_deploy_form',
+    'COLUMN', N'form_name'
 GO
 EXEC sp_addextendedproperty
     'MS_Description', N'节点名称',
