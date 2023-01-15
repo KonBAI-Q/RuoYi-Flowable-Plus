@@ -113,12 +113,7 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
      * @return 部署表单关联对象。若无表单信息（formKey），则返回null
      */
     private WfDeployForm buildDeployForm(String deployId, FlowNode node) {
-        String formKey = null;
-        if (node instanceof StartEvent) {
-            formKey = ((StartEvent) node).getFormKey();
-        } else if (node instanceof UserTask) {
-            formKey = ((UserTask) node).getFormKey();
-        }
+        String formKey = ModelUtils.getFormKey(node);
         if (StringUtils.isEmpty(formKey)) {
             return null;
         }
@@ -129,9 +124,10 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
         }
         WfDeployForm deployForm = new WfDeployForm();
         deployForm.setDeployId(deployId);
-        deployForm.setNodeKey(node.getId());
-        deployForm.setNodeName(node.getName());
         deployForm.setFormKey(formKey);
+        deployForm.setNodeKey(node.getId());
+        deployForm.setFormName(wfForm.getFormName());
+        deployForm.setNodeName(node.getName());
         deployForm.setContent(wfForm.getContent());
         return deployForm;
     }

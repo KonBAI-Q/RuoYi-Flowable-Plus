@@ -30,6 +30,11 @@ public class WfDeployForm {
     private String nodeKey;
 
     /**
+     * 表单名称
+     */
+    private String formName;
+
+    /**
      * 节点名称
      */
     private String nodeName;

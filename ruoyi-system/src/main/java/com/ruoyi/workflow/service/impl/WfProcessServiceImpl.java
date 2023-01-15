@@ -736,16 +736,19 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                 variables = historicProcIns.getProcessVariables();
                 processFormKeys.add(formKey);
             }
-            // 兼容旧版数据，旧版此处查询可能出现多条
+            // 非节点表单此处查询结果可能有多条，只获取第一条信息
             List<WfDeployFormVo> formInfoList = deployFormMapper.selectVoList(new LambdaQueryWrapper<WfDeployForm>()
                 .eq(WfDeployForm::getDeployId, deployId)
                 .eq(WfDeployForm::getFormKey, formKey)
                 .eq(localScope, WfDeployForm::getNodeKey, flowElement.getId()));
-            if (CollUtil.isNotEmpty(formInfoList)) {
-                WfDeployFormVo formInfo = formInfoList.get(0);
+            WfDeployFormVo formInfo = formInfoList.iterator().next();
+            if (ObjectUtil.isNotNull(formInfo)) {
+                // 旧数据 formInfo.getFormName() 为 null
+                String formName = Optional.ofNullable(formInfo.getFormName()).orElse(StringUtils.EMPTY);
+                String title = localScope ? formName.concat("(" + flowElement.getName() + ")") : formName;
                 FormConf formConf = JsonUtils.parseObject(formInfo.getContent(), FormConf.class);
                 if (null != formConf) {
-                    formConf.setTitle(flowElement.getName());
+                    formConf.setTitle(title);
                     formConf.setDisabled(true);
                     formConf.setFormBtns(false);
                     ProcessFormUtils.fillFormData(formConf, variables);
