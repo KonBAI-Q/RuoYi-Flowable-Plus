@@ -546,14 +546,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
 
     @Override
     public String selectFormContent(String definitionId, String deployId) {
-        InputStream inputStream = repositoryService.getProcessModel(definitionId);
-        String bpmnString;
-        try {
-            bpmnString = IoUtil.readUtf8(inputStream);
-        } catch (IORuntimeException exception) {
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(definitionId);
+        if (ObjectUtil.isNull(bpmnModel)) {
             throw new RuntimeException("获取流程设计失败！");
         }
-        BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnString);
         StartEvent startEvent = ModelUtils.getStartEvent(bpmnModel);
         WfDeployFormVo deployFormVo = deployFormMapper.selectVoOne(new LambdaQueryWrapper<WfDeployForm>()
             .eq(WfDeployForm::getDeployId, deployId)
@@ -634,12 +630,13 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         if (taskIns == null) {
             throw new ServiceException("没有可办理的任务！");
         }
-        InputStream inputStream = repositoryService.getProcessModel(taskIns.getProcessDefinitionId());
-        detailVo.setBpmnXml(IoUtil.readUtf8(inputStream));
+        // 获取Bpmn模型信息
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(taskIns.getProcessDefinitionId());
+        detailVo.setBpmnXml(ModelUtils.getBpmnXmlStr(bpmnModel));
         detailVo.setTaskFormData(currTaskFormData(deployId, taskIns));
         detailVo.setHistoryProcNodeList(historyProcNodeList(procInsId));
-        detailVo.setProcessFormList(processFormList(procInsId, deployId));
-        detailVo.setFlowViewer(getFlowViewer(procInsId));
+        detailVo.setProcessFormList(processFormList(bpmnModel, procInsId, deployId));
+        detailVo.setFlowViewer(getFlowViewer(bpmnModel, procInsId));
         return detailVo;
     }
 
@@ -701,10 +698,9 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     /**
      * 获取历史流程表单信息
      */
-    private List<FormConf> processFormList(String procInsId, String deployId) {
+    private List<FormConf> processFormList(BpmnModel bpmnModel, String procInsId, String deployId) {
         List<FormConf> procFormList = new ArrayList<>();
         HistoricProcessInstance historicProcIns = historyService.createHistoricProcessInstanceQuery().processInstanceId(procInsId).includeProcessVariables().singleResult();
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(historicProcIns.getProcessDefinitionId());
         List<HistoricActivityInstance> activityInstanceList = historyService.createHistoricActivityInstanceQuery()
             .processInstanceId(procInsId).finished()
             .activityTypes(CollUtil.newHashSet(BpmnXMLConstants.ELEMENT_EVENT_START, BpmnXMLConstants.ELEMENT_TASK_USER))
@@ -914,7 +910,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
      * @param procInsId
      * @return
      */
-    private WfViewerVo getFlowViewer(String procInsId) {
+    private WfViewerVo getFlowViewer(BpmnModel bpmnModel, String procInsId) {
         // 构建查询条件
         HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery()
             .processInstanceId(procInsId);
@@ -922,9 +918,6 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         if (CollUtil.isEmpty(allActivityInstanceList)) {
             return new WfViewerVo();
         }
-        // 获取流程发布Id信息
-        String processDefinitionId = allActivityInstanceList.get(0).getProcessDefinitionId();
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         // 查询所有已完成的元素
         List<HistoricActivityInstance> finishedElementList = allActivityInstanceList.stream()
             .filter(item -> ObjectUtil.isNotNull(item.getEndTime())).collect(Collectors.toList());

@@ -1,6 +1,7 @@
 package com.ruoyi.flowable.utils;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
@@ -24,6 +25,16 @@ public class ModelUtils {
      */
     public static BpmnModel getBpmnModel(String xml) {
         return bpmnXMLConverter.convertToBpmnModel(new StringStreamSource(xml), false, false);
+    }
+
+    /**
+     * bpmnModel转xml字符串
+     *
+     * @param bpmnModel bpmnModel对象
+     * @return xml字符串
+     */
+    public static String getBpmnXmlStr(BpmnModel bpmnModel) {
+        return StrUtil.utf8Str(getBpmnXml(bpmnModel));
     }
 
     /**
