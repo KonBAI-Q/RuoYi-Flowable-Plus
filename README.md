@@ -34,8 +34,8 @@
 ## 技术交流群
                                 
 | 交流①群（已满）                                                                                                                                                           | 开发②群                                                                                                                                                                   |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [![加入QQ群](https://img.shields.io/badge/QQ群️-1007207992-blue.svg?style=flat)](https://jq.qq.com/?_wv=1027\&k=PYDZa1tA)                                                  | [![加入QQ群](https://img.shields.io/badge/QQ群-725502135-blue.svg?style=flat)](https://jq.qq.com/?_wv=1027&k=J4zeZaKo)                                                     |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [![加入QQ群](https://img.shields.io/badge/QQ群-1007207992-blue.svg?style=flat)](https://jq.qq.com/?_wv=1027\&k=PYDZa1tA)                                                  | [![加入QQ群](https://img.shields.io/badge/QQ群-725502135-blue.svg?style=flat)](https://jq.qq.com/?_wv=1027&k=J4zeZaKo)                                                     |
 | <a data-fancybox href="http://qiniu-flowable.konbai.work/group-QR-1.jpg" target="_blank"><img height="250" src="http://qiniu-flowable.konbai.work/group-QR-1.jpg" /></a> | <a data-fancybox href="http://qiniu-flowable.konbai.work/group-QR-2.jpg" target="_blank"><img height="250" src="http://qiniu-flowable.konbai.work/group-QR-2.jpg" /></a> |
 
 ## 参与开源
@@ -50,6 +50,10 @@
 ## 支持项目
 如果项目对你有帮助，请给项目点个Star。也可以通过下方二维码请作者喝一杯奶茶！
 ![输入图片说明](http://qiniu-flowable.konbai.work/Collection-Code.jpg)
+
+## 友情链接
+- [玩转RuoYi-Cloud-Plus - Flowable基础](https://www.yuque.com/xiaoqiang-qgsmv/rfgglm/qlsb8ganw8weupax#tCnYs)：文档包含Flowable基础知识、项目使用说明、源码解析等。（新人必看）
+- [基于若依的Flowable工作流实战](https://space.bilibili.com/400188320/channel/collectiondetail?sid=1002899)：Flowable视频学习专栏，项目基本覆盖了Flowable的方方面面，也拓展了很多为了达到生产级别项目而附加的表结构，工具类等知识点！
 
 ## 演示图例
 <table style="width:100%; text-align:center">
