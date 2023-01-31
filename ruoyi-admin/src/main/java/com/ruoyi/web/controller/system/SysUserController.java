@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.hutool.core.bean.BeanUtil;
@@ -62,6 +63,15 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("system:user:list")
     @GetMapping("/list")
     public TableDataInfo<SysUser> list(SysUser user, PageQuery pageQuery) {
+        return userService.selectPageUserList(user, pageQuery);
+    }
+
+    /**
+     * 查询用户列表，用于用户选择场景
+     */
+    @SaCheckLogin
+    @GetMapping("/selectUser")
+    public TableDataInfo<SysUser> selectUser(SysUser user, PageQuery pageQuery) {
         return userService.selectPageUserList(user, pageQuery);
     }
 
