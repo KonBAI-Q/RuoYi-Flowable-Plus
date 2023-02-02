@@ -208,11 +208,23 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateModel(WfModelBo modelBo) {
         // 根据模型Key查询模型信息
         Model model = repositoryService.getModel(modelBo.getModelId());
         if (ObjectUtil.isNull(model)) {
             throw new RuntimeException("流程模型不存在！");
+        }
+        // 修改模型分类信息
+        if (ObjectUtil.notEqual(model.getCategory(), modelBo.getCategory())) {
+            byte[] bpmnBytes = repositoryService.getModelEditorSource(model.getId());
+            if (ObjectUtil.isNotEmpty(bpmnBytes)) {
+                BpmnModel bpmnModel = ModelUtils.getBpmnModel(StrUtil.utf8Str(bpmnBytes));
+                // 设置最新流程分类编码
+                bpmnModel.setTargetNamespace(model.getCategory());
+                // 保存 BPMN XML
+                repositoryService.addModelEditorSource(model.getId(), ModelUtils.getBpmnXml(bpmnModel));
+            }
         }
         model.setCategory(modelBo.getCategory());
         WfMetaInfoDto metaInfoDto = JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
