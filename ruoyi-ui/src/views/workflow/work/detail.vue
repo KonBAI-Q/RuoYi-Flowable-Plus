@@ -7,9 +7,10 @@
           <div slot="header" class="clearfix">
             <span>填写表单</span>
           </div>
-          <el-col :span="20" :offset="2">
-            <parser :form-conf="taskFormData" ref="taskFormParser"/>
-          </el-col>
+          <div class="cu-content">
+            <v-form-render :form-json="taskFormData.formModel" :form-data="{}"
+                           ref="taskFormParser"></v-form-render>
+          </div>
         </el-card>
         <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
@@ -73,9 +74,10 @@
               <span>{{ formInfo.title }}</span>
             </div>
             <!--流程处理表单模块-->
-            <el-col :span="20" :offset="2">
-              <parser :form-conf="formInfo"/>
-            </el-col>
+            <div class="cu-content">
+              <v-form-render :form-json="formInfo.formModel" :form-data="formInfo.formData"
+                             ref="vFormRef"></v-form-render>
+            </div>
           </el-card>
         </div>
       </el-tab-pane >
@@ -205,7 +207,6 @@
 
 <script>
 import { detailProcess } from '@/api/workflow/process'
-import Parser from '@/utils/generator/parser'
 import { complete, delegate, transfer, rejectTask, returnList, returnTask } from '@/api/workflow/task'
 import { selectUser, deptTreeSelect } from '@/api/system/user'
 import ProcessViewer from '@/components/ProcessViewer'
@@ -216,7 +217,6 @@ export default {
   name: "WorkDetail",
   components: {
     ProcessViewer,
-    Parser,
     Treeselect
   },
   props: {},
@@ -435,6 +435,13 @@ export default {
         this.historyProcNodeList = data.historyProcNodeList;
         this.finishedInfo = data.flowViewer;
         this.formOpen = true
+        this.$nextTick(() => {
+          this.processFormList.forEach((item, index) => {
+            if (item.disabled) {
+              this.$refs.vFormRef[index].disableForm()
+            }
+          })
+        })
       })
     },
     onSelectCopyUsers() {
@@ -458,8 +465,8 @@ export default {
       const taskFormRef = this.$refs.taskFormParser;
       const isExistTaskForm = taskFormRef !== undefined;
       // 若无任务表单，则 taskFormPromise 为 true，即不需要校验
-      const taskFormPromise = !isExistTaskForm ? true : new Promise((resolve, reject) => {
-        taskFormRef.$refs[taskFormRef.formConfCopy.formRef].validate(valid => {
+      const taskFormPromise = !isExistTaskForm ? true : new Promise(async (resolve, reject) => {
+        taskFormRef.validateForm(valid => {
           valid ? resolve() : reject()
         })
       });
@@ -468,9 +475,9 @@ export default {
           valid ? resolve() : reject()
         })
       });
-      Promise.all([taskFormPromise, approvalPromise]).then(() => {
+      Promise.all([taskFormPromise, approvalPromise]).then(async () => {
         if (isExistTaskForm) {
-          this.taskForm.variables = taskFormRef[taskFormRef.formConfCopy.formModel]
+          this.taskForm.variables =await taskFormRef.getFormData(false)
         }
         complete(this.taskForm).then(response => {
           this.$modal.msgSuccess(response.msg);
@@ -650,5 +657,14 @@ export default {
 
 .button-new-tag {
   margin-left: 10px;
+}
+
+.cu-submit {
+  margin-top: 15px;
+  text-align: center;
+}
+.cu-content{
+  width: 80%;
+  margin: 15px auto;
 }
 </style>

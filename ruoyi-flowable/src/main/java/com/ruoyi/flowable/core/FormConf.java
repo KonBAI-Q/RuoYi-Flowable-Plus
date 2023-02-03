@@ -2,7 +2,6 @@ package com.ruoyi.flowable.core;
 
 import lombok.Data;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,48 +17,23 @@ public class FormConf {
      * 标题
      */
     private String title;
-    /**
-     * 表单名
-     */
-    private String formRef;
-    /**
-     * 表单模型
-     */
-    private String formModel;
-    /**
-     * 表单尺寸
-     */
-    private String size;
-    /**
-     * 标签对齐
-     */
-    private String labelPosition;
-    /**
-     * 标签宽度
-     */
-    private Integer labelWidth;
-    /**
-     * 校验模型
-     */
-    private String formRules;
-    /**
-     * 栅格间隔
-     */
-    private Integer gutter;
+
     /**
      * 禁用表单
      */
     private Boolean disabled = false;
     /**
-     * 栅格占据的列数
-     */
-    private Integer span;
-    /**
      * 表单按钮
      */
     private Boolean formBtns = true;
+
     /**
-     * 表单项
+     * 表单模型
      */
-    private List<Map<String, Object>> fields;
+    private Map<String, Object> formModel;
+
+    /**
+     * 表单数据
+     */
+    private Map<String, Object> formData;
 }

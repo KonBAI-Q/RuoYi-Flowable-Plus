@@ -27,20 +27,27 @@ import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.flow.FlowableUtils;
 import com.ruoyi.flowable.utils.ModelUtils;
-import com.ruoyi.flowable.utils.ProcessFormUtils;
 import com.ruoyi.flowable.utils.ProcessUtils;
 import com.ruoyi.flowable.utils.TaskUtils;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.workflow.domain.WfDeployForm;
-import com.ruoyi.workflow.domain.vo.*;
+import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
+import com.ruoyi.workflow.domain.vo.WfDeployFormVo;
+import com.ruoyi.workflow.domain.vo.WfDetailVo;
+import com.ruoyi.workflow.domain.vo.WfProcNodeVo;
+import com.ruoyi.workflow.domain.vo.WfTaskVo;
+import com.ruoyi.workflow.domain.vo.WfViewerVo;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
 import org.flowable.bpmn.constants.BpmnXMLConstants;
+import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.Process;
-import org.flowable.bpmn.model.*;
+import org.flowable.bpmn.model.StartEvent;
+import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -60,7 +67,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -723,10 +736,12 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .eq(WfDeployForm::getFormKey, taskIns.getFormKey())
             .eq(WfDeployForm::getNodeKey, taskIns.getTaskDefinitionKey()));
         if (ObjectUtil.isNotEmpty(deployFormVo)) {
-            FormConf currTaskFormData = JsonUtils.parseObject(deployFormVo.getContent(), FormConf.class);
-            if (null != currTaskFormData) {
+            FormConf currTaskFormData = new FormConf();
+            Map<String, Object> formModel = JsonUtils.parseObject(deployFormVo.getContent(), Map.class);
+            if (null != formModel && !formModel.isEmpty()) {
                 currTaskFormData.setFormBtns(false);
-                ProcessFormUtils.fillFormData(currTaskFormData, taskIns.getTaskLocalVariables());
+                currTaskFormData.setFormModel(formModel);
+                currTaskFormData.setFormData(taskIns.getTaskLocalVariables());
                 return currTaskFormData;
             }
         }
@@ -783,12 +798,14 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                 // 旧数据 formInfo.getFormName() 为 null
                 String formName = Optional.ofNullable(formInfo.getFormName()).orElse(StringUtils.EMPTY);
                 String title = localScope ? formName.concat("(" + flowElement.getName() + ")") : formName;
-                FormConf formConf = JsonUtils.parseObject(formInfo.getContent(), FormConf.class);
-                if (null != formConf) {
+                FormConf formConf = new FormConf();
+                Map<String, Object> formModel = JsonUtils.parseObject(formInfo.getContent(), Map.class);
+                if (null != formModel && !formModel.isEmpty()) {
                     formConf.setTitle(title);
                     formConf.setDisabled(true);
                     formConf.setFormBtns(false);
-                    ProcessFormUtils.fillFormData(formConf, variables);
+                    formConf.setFormModel(formModel);
+                    formConf.setFormData(variables);
                     procFormList.add(formConf);
                 }
             }
@@ -809,12 +826,14 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .eq(WfDeployForm::getFormKey, startEvent.getFormKey())
             .eq(WfDeployForm::getNodeKey, startEvent.getId()));
         if (ObjectUtil.isNotNull(startFormInfo)) {
-            FormConf formConf = JsonUtils.parseObject(startFormInfo.getContent(), FormConf.class);
-            if (null != formConf) {
+            FormConf formConf = new FormConf();
+            Map<String, Object> formModel = JsonUtils.parseObject(startFormInfo.getContent(), Map.class);
+            if (null != formModel && !formModel.isEmpty()) {
                 formConf.setTitle(startEvent.getName());
                 formConf.setDisabled(true);
                 formConf.setFormBtns(false);
-                ProcessFormUtils.fillFormData(formConf, historicProcIns.getProcessVariables());
+                formConf.setFormModel(formModel);
+                formConf.setFormData(historicProcIns.getProcessVariables());
                 procFormList.add(formConf);
             }
         }
@@ -846,12 +865,14 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                 .eq(WfDeployForm::getFormKey, formKey)
                 .eq(WfDeployForm::getNodeKey, userTask.getId()));
             if (ObjectUtil.isNotNull(deployFormVo)) {
-                FormConf formConf = JsonUtils.parseObject(deployFormVo.getContent(), FormConf.class);
-                if (null != formConf) {
+                FormConf formConf = new FormConf();
+                Map<String, Object> formModel = JsonUtils.parseObject(deployFormVo.getContent(), Map.class);
+                if (null != formModel && !formModel.isEmpty()) {
                     formConf.setTitle(userTask.getName());
                     formConf.setDisabled(true);
                     formConf.setFormBtns(false);
-                    ProcessFormUtils.fillFormData(formConf, variables);
+                    formConf.setFormModel(formModel);
+                    formConf.setFormData(variables);
                     procFormList.add(formConf);
                 }
             }

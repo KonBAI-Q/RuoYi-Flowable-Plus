@@ -4,31 +4,29 @@
       <div slot="header" class="clearfix">
         <span>发起流程</span>
       </div>
-      <el-col :span="18" :offset="3">
-        <div class="form-conf" v-if="formOpen">
-          <parser :key="new Date().getTime()" :form-conf="formData" @submit="submit" ref="parser" @getData="getData"/>
+      <div class="form-conf" v-if="formOpen">
+        <v-form-render :form-json="formModel" :form-data="{}" ref="vFormRef"></v-form-render>
+        <div class="cu-submit">
+          <el-button type="primary" @click="submit">提交</el-button>
+          <el-button @click="reset">重置</el-button>
         </div>
-      </el-col>
+      </div>
     </el-card>
   </div>
 </template>
 
 <script>
 import { getProcessForm, startProcess } from '@/api/workflow/process'
-import Parser from '@/utils/generator/parser'
 
 export default {
   name: 'WorkStart',
-  components: {
-    Parser
-  },
   data() {
     return {
       definitionId: null,
       deployId: null,
       procInsId: null,
       formOpen: false,
-      formData: {},
+      formModel: {},
     }
   },
   created() {
@@ -45,8 +43,11 @@ export default {
         procInsId: this.procInsId
       }).then(res => {
         if (res.data) {
-          this.formData = res.data;
+          this.formModel = res.data;
           this.formOpen = true
+          this.$nextTick(() => {
+            this.$refs.vFormRef.setFormJson(res.data || {formConfig: {}, widgetList: []})
+          })
         }
       })
     },
@@ -72,17 +73,24 @@ export default {
         this.variables = variables;
       }
     },
-    submit(data) {
-      if (data && this.definitionId) {
-        // 启动流程并将表单数据加入流程变量
-        startProcess(this.definitionId, JSON.stringify(data.valData)).then(res => {
-          this.$modal.msgSuccess(res.msg);
-          this.$tab.closeOpenPage({
-            path: '/work/own'
+    submit() {
+      this.$refs.vFormRef.getFormData().then(formData => {
+        if (this.definitionId) {
+          // 启动流程并将表单数据加入流程变量
+          startProcess(this.definitionId, JSON.stringify(formData)).then(res => {
+            this.$modal.msgSuccess(res.msg);
+            this.$tab.closeOpenPage({
+              path: '/work/own'
+            })
           })
-        })
-      }
-    }
+        }
+      }).catch(err=>{
+        this.$modal.msgError(err);
+      })
+    },
+    reset() {
+      this.$refs.vFormRef.resetForm()
+    },
   }
 }
 </script>
@@ -91,6 +99,11 @@ export default {
 .form-conf {
   margin: 15px auto;
   width: 80%;
-  padding: 15px;
+  /*padding: 15px;*/
+}
+
+.cu-submit {
+  margin-top: 15px;
+  text-align: center;
 }
 </style>

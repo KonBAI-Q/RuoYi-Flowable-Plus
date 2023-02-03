@@ -145,4 +145,10 @@ export function download(url, params, filename, config) {
   })
 }
 
+//存放全局
+if (getToken()) {
+  window.axios = service
+  window.axios.defaults.headers['Authorization'] = 'Bearer ' + getToken()
+}
+
 export default service
