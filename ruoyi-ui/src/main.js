@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
-
+import '@/components/VForm/VFormDesigner.css'  //引入VForm样式
 import '@/assets/styles/index.scss' // global css
 import '@/assets/styles/ruoyi.scss' // ruoyi css
 import App from './App'
@@ -37,6 +37,8 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
+// VForm表单组件
+import VForm from '@/components/VForm/VFormDesigner.umd.min'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -62,6 +64,7 @@ Vue.component('ImagePreview', ImagePreview)
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
+Vue.use(VForm)
 DictData.install()
 
 /**

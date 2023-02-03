@@ -102,13 +102,10 @@
     />
 
     <!-- 添加或修改流程表单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog title="表单信息" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="表单名称" prop="formName">
           <el-input v-model="form.formName" placeholder="请输入表单名称" />
-        </el-form-item>
-        <el-form-item label="表单内容">
-          <editor v-model="form.content" :min-height="192"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
@@ -116,15 +113,24 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button @click="open=false">取 消</el-button>
       </div>
     </el-dialog>
 
-    <!--表单配置详情-->
-    <el-dialog :title="formTitle" :visible.sync="formConfOpen" width="60%" append-to-body>
-      <div class="test-form">
-        <parser :key="new Date().getTime()"  :form-conf="formConf" />
-      </div>
+    <!-- 设计表单对话框 -->
+    <el-dialog :title="formTitle" :visible.sync="designerFormOpen" width="100%"
+               :destroy-on-close="true" append-to-body>
+      <v-form-designer ref="vfDesigner" :resetFormJson="true">
+        <!-- 自定义按钮插槽 -->
+        <template #customToolButtons>
+          <el-button type="text" @click="open=true"><i class="el-icon-finished"/>保存</el-button>
+        </template>
+      </v-form-designer>
+    </el-dialog>
+
+    <!-- 预览表单对话框 -->
+    <el-dialog title="表单预览" :visible.sync="renderFormOpen" width="60%" append-to-body>
+      <v-form-render :form-json="{}" :form-data="{}" ref="vFormRef"></v-form-render>
     </el-dialog>
   </div>
 </template>
@@ -132,12 +138,11 @@
 <script>
 import { listForm, getForm, delForm, addForm, updateForm } from "@/api/workflow/form";
 import Editor from '@/components/Editor';
-import Parser from '@/utils/generator/parser'
+
 export default {
   name: "Form",
   components: {
-    Editor,
-    Parser
+    Editor
   },
   data() {
     return {
@@ -157,8 +162,8 @@ export default {
       formList: [],
       // 弹出层标题
       title: "",
-      formConf: {}, // 默认表单数据
-      formConfOpen: false,
+      designerFormOpen: false,
+      renderFormOpen: false,
       formTitle: "",
       // 是否显示弹出层
       open: false,
@@ -173,6 +178,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        formName: [
+          {required: true, message: "表单名称不能为空", trigger: "blur"}
+        ]
       }
     };
   },
@@ -192,11 +200,6 @@ export default {
         this.loading = false;
       });
     },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
     // 表单重置
     reset() {
       this.form = {
@@ -210,6 +213,11 @@ export default {
         remark: null
       };
       this.resetForm("form");
+    },
+    clearDesigner() {
+      this.$nextTick(() => {
+        this.$refs.vfDesigner.clearDesigner()
+      })
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -228,43 +236,57 @@ export default {
       this.multiple = !selection.length
     },
     /** 表单配置信息 */
-    handleDetail(row){
-      this.formConfOpen = true;
+    handleDetail(row) {
+      this.renderFormOpen = true;
       this.formTitle = "流程表单配置详细";
-      this.formConf = JSON.parse(row.content)
+      this.$nextTick(() => {
+        this.$refs.vFormRef.setFormJson(row.content || {formConfig: {}, widgetList: []})
+      })
     },
     /** 新增按钮操作 */
     handleAdd() {
-      // this.reset();
-      // this.open = true;
-      // this.title = "添加流程表单";
-      this.$router.push({ path: '/tool/build/index', query: {formId: null }})
+      this.reset();
+      this.designerFormOpen = true;
+      this.formTitle = "添加流程表单";
+      //清理表单设计器
+      this.clearDesigner()
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      // this.reset();
-      // const formId = row.formId || this.ids
-      // getForm(formId).then(response => {
-      //   this.form = response.data;
-      //   this.open = true;
-      //   this.title = "修改流程表单";
-      // });
-      this.$router.push({ path: '/tool/build/index', query: {formId: row.formId }})
+      this.reset();
+      const formId = row.formId || this.ids
+      getForm(formId).then(response => {
+        this.form = response.data;
+        this.designerFormOpen = true;
+        this.formTitle = "修改流程表单";
+        //清理表单设计器
+        this.clearDesigner()
+        this.$nextTick(() => {
+          let {content} = this.form
+          if (content) {
+            this.$refs.vfDesigner.setFormJson(content)
+          }
+        })
+      });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          let formJson = this.$refs.vfDesigner.getFormJson();
+          this.form.content = JSON.stringify(formJson)
           if (this.form.formId != null) {
             updateForm(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
+              this.designerFormOpen=false
               this.getList();
             });
           } else {
             addForm(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
+              this.designerFormOpen=false
               this.getList();
             });
           }
