@@ -188,15 +188,9 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             taskVo.setProcDefVersion(hisIns.getProcessDefinitionVersion());
             taskVo.setCategory(deployment.getCategory());
             // 当前所处流程
-            List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
+            List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).includeIdentityLinks().list();
             if (CollUtil.isNotEmpty(taskList)) {
-                taskVo.setTaskId(taskList.get(0).getId());
-            } else {
-                List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
-                    .processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
-                if (CollUtil.isNotEmpty(historicTaskInstance)) {
-                    taskVo.setTaskId(historicTaskInstance.get(0).getId());
-                }
+                taskVo.setTaskName(taskList.stream().map(Task::getName).filter(StringUtils::isNotEmpty).collect(Collectors.joining(",")));
             }
             taskVoList.add(taskVo);
         }
@@ -235,15 +229,9 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             taskVo.setProcDefVersion(hisIns.getProcessDefinitionVersion());
             taskVo.setCategory(deployment.getCategory());
             // 当前所处流程
-            List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
+            List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).includeIdentityLinks().list();
             if (CollUtil.isNotEmpty(taskList)) {
-                taskVo.setTaskId(taskList.get(0).getId());
-            } else {
-                List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
-                        .processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
-                if (CollUtil.isNotEmpty(historicTaskInstance)) {
-                    taskVo.setTaskId(historicTaskInstance.get(0).getId());
-                }
+                taskVo.setTaskName(taskList.stream().map(Task::getName).filter(StringUtils::isNotEmpty).collect(Collectors.joining(",")));
             }
             taskVoList.add(taskVo);
         }
