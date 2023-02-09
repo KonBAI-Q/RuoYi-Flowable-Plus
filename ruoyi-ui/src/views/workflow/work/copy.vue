@@ -192,10 +192,7 @@ export default {
       this.$router.push({
         path: '/workflow/process/detail/' + row.instanceId,
         query: {
-          definitionId: row.processId,
-          deployId: row.deploymentId,
-          taskId: row.taskId,
-          finished: false
+          processed: false
         }
       })
     },

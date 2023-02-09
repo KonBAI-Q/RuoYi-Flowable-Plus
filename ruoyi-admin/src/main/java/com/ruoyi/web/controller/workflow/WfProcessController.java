@@ -220,11 +220,10 @@ public class WfProcessController extends BaseController {
      * 查询流程详情信息
      *
      * @param procInsId 流程实例ID
-     * @param deployId 部署ID
      * @param taskId 任务ID
      */
     @GetMapping("/detail")
-    public R detail(String procInsId, String deployId, String taskId) {
-        return R.ok(processService.queryProcessDetail(procInsId, deployId, taskId));
+    public R detail(String procInsId, String taskId) {
+        return R.ok(processService.queryProcessDetail(procInsId, taskId));
     }
 }

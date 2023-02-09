@@ -104,8 +104,7 @@ public interface IWfProcessService {
     /**
      * 查询流程任务详情信息
      * @param procInsId 流程实例ID
-     * @param deployId 流程部署ID
      * @param taskId 任务ID
      */
-    WfDetailVo queryProcessDetail(String procInsId, String deployId, String taskId);
+    WfDetailVo queryProcessDetail(String procInsId, String taskId);
 }

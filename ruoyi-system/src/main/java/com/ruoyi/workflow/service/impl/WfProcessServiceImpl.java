@@ -614,28 +614,34 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
      * 流程详情信息
      *
      * @param procInsId 流程实例ID
-     * @param deployId 流程部署ID
      * @param taskId 任务ID
      * @return
      */
     @Override
-    public WfDetailVo queryProcessDetail(String procInsId, String deployId, String taskId) {
+    public WfDetailVo queryProcessDetail(String procInsId, String taskId) {
         WfDetailVo detailVo = new WfDetailVo();
-        HistoricTaskInstance taskIns = historyService.createHistoricTaskInstanceQuery()
-            .taskId(taskId)
-            .includeIdentityLinks()
+        // 获取流程实例
+        HistoricProcessInstance historicProcIns = historyService.createHistoricProcessInstanceQuery()
+            .processInstanceId(procInsId)
             .includeProcessVariables()
-            .includeTaskLocalVariables()
             .singleResult();
-        if (taskIns == null) {
-            throw new ServiceException("没有可办理的任务！");
+        if (StringUtils.isNotBlank(taskId)) {
+            HistoricTaskInstance taskIns = historyService.createHistoricTaskInstanceQuery()
+                .taskId(taskId)
+                .includeIdentityLinks()
+                .includeProcessVariables()
+                .includeTaskLocalVariables()
+                .singleResult();
+            if (taskIns == null) {
+                throw new ServiceException("没有可办理的任务！");
+            }
+            detailVo.setTaskFormData(currTaskFormData(historicProcIns.getDeploymentId(), taskIns));
         }
         // 获取Bpmn模型信息
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(taskIns.getProcessDefinitionId());
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(historicProcIns.getProcessDefinitionId());
         detailVo.setBpmnXml(ModelUtils.getBpmnXmlStr(bpmnModel));
-        detailVo.setTaskFormData(currTaskFormData(deployId, taskIns));
-        detailVo.setHistoryProcNodeList(historyProcNodeList(procInsId));
-        detailVo.setProcessFormList(processFormList(bpmnModel, procInsId, deployId));
+        detailVo.setHistoryProcNodeList(historyProcNodeList(historicProcIns));
+        detailVo.setProcessFormList(processFormList(bpmnModel, historicProcIns));
         detailVo.setFlowViewer(getFlowViewer(bpmnModel, procInsId));
         return detailVo;
     }
@@ -698,11 +704,11 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     /**
      * 获取历史流程表单信息
      */
-    private List<FormConf> processFormList(BpmnModel bpmnModel, String procInsId, String deployId) {
+    private List<FormConf> processFormList(BpmnModel bpmnModel, HistoricProcessInstance historicProcIns) {
         List<FormConf> procFormList = new ArrayList<>();
-        HistoricProcessInstance historicProcIns = historyService.createHistoricProcessInstanceQuery().processInstanceId(procInsId).includeProcessVariables().singleResult();
+
         List<HistoricActivityInstance> activityInstanceList = historyService.createHistoricActivityInstanceQuery()
-            .processInstanceId(procInsId).finished()
+            .processInstanceId(historicProcIns.getId()).finished()
             .activityTypes(CollUtil.newHashSet(BpmnXMLConstants.ELEMENT_EVENT_START, BpmnXMLConstants.ELEMENT_TASK_USER))
             .orderByHistoricActivityInstanceStartTime().asc()
             .list();
@@ -720,7 +726,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             if (localScope) {
                 // 查询任务节点参数，并转换成Map
                 variables = historyService.createHistoricVariableInstanceQuery()
-                    .processInstanceId(procInsId)
+                    .processInstanceId(historicProcIns.getId())
                     .taskId(activityInstance.getTaskId())
                     .list()
                     .stream()
@@ -734,7 +740,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             }
             // 非节点表单此处查询结果可能有多条，只获取第一条信息
             List<WfDeployFormVo> formInfoList = deployFormMapper.selectVoList(new LambdaQueryWrapper<WfDeployForm>()
-                .eq(WfDeployForm::getDeployId, deployId)
+                .eq(WfDeployForm::getDeployId, historicProcIns.getDeploymentId())
                 .eq(WfDeployForm::getFormKey, formKey)
                 .eq(localScope, WfDeployForm::getNodeKey, flowElement.getId()));
             WfDeployFormVo formInfo = formInfoList.iterator().next();
@@ -820,17 +826,14 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     /**
      * 获取历史任务信息列表
      */
-    private List<WfProcNodeVo> historyProcNodeList(String procInsId) {
+    private List<WfProcNodeVo> historyProcNodeList(HistoricProcessInstance historicProcIns) {
+        String procInsId = historicProcIns.getId();
         List<HistoricActivityInstance> historicActivityInstanceList =  historyService.createHistoricActivityInstanceQuery()
             .processInstanceId(procInsId)
             .activityTypes(CollUtil.newHashSet(BpmnXMLConstants.ELEMENT_EVENT_START, BpmnXMLConstants.ELEMENT_EVENT_END, BpmnXMLConstants.ELEMENT_TASK_USER))
             .orderByHistoricActivityInstanceStartTime().desc()
             .orderByHistoricActivityInstanceEndTime().desc()
             .list();
-
-        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-            .processInstanceId(procInsId)
-            .singleResult();
 
         List<Comment> commentList = taskService.getProcessInstanceComments(procInsId);
 
@@ -848,8 +851,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             }
 
             if (BpmnXMLConstants.ELEMENT_EVENT_START.equals(activityInstance.getActivityType())) {
-                if (ObjectUtil.isNotNull(historicProcessInstance)) {
-                    Long userId = Long.parseLong(historicProcessInstance.getStartUserId());
+                if (ObjectUtil.isNotNull(historicProcIns)) {
+                    Long userId = Long.parseLong(historicProcIns.getStartUserId());
                     SysUser user = userService.selectUserById(userId);
                     if (user != null) {
                         elementVo.setAssigneeId(user.getUserId());

@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
-    <el-tabs tab-position="top" :value="finished === 'true' ? 'approval' : 'form'">
+    <el-tabs tab-position="top" :value="processed === true ? 'approval' : 'form'">
 
-      <el-tab-pane label="任务办理" name="approval" v-if="finished === 'true'">
+      <el-tab-pane label="任务办理" name="approval" v-if="processed === true">
         <el-card class="box-card" shadow="hover" v-if="taskFormOpen">
           <div slot="header" class="clearfix">
             <span>填写表单</span>
@@ -56,9 +56,6 @@
             <el-col :span="1.5">
               <el-button icon="el-icon-thumb" type="success" @click="handleTransfer">转办</el-button>
             </el-col>
-<!--            <el-col :span="2">-->
-<!--              <el-button  icon="el-icon-edit-outline" type="primary"" @click="handle">签收</el-button>-->
-<!--            </el-col>-->
             <el-col :span="1.5">
               <el-button icon="el-icon-refresh-left" type="warning" @click="handleReturn">退回</el-button>
             </el-col>
@@ -285,9 +282,7 @@ export default {
       taskForm:{
         comment:"", // 意见内容
         procInsId: "", // 流程实例编号
-        deployId: "",  // 流程定义编号
         taskId: "" ,// 流程任务编号
-        definitionId: "",  // 流程编号
         copyUserIds: "", // 抄送人Id
         vars: "",
         targetKey:""
@@ -302,7 +297,7 @@ export default {
       processFormList: [], // 流程变量数据
       formOpen: false, // 是否加载流程变量数据
       returnTaskList: [],  // 回退列表数据
-      finished: 'false',
+      processed: false,
       returnTitle: null,
       returnOpen: false,
       rejectOpen: false,
@@ -325,14 +320,10 @@ export default {
   methods: {
     initData() {
       this.taskForm.procInsId = this.$route.params && this.$route.params.procInsId;
-      this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
-      this.taskForm.definitionId = this.$route.query && this.$route.query.definitionId;
       this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
-      this.finished =  this.$route.query && this.$route.query.finished
+      this.processed = this.$route.query && this.$route.query.processed;
       // 流程任务重获取变量表单
-      if (this.taskForm.taskId) {
-        this.getProcessDetails(this.taskForm.procInsId, this.taskForm.deployId, this.taskForm.taskId);
-      }
+      this.getProcessDetails(this.taskForm.procInsId, this.taskForm.taskId);
       this.loadIndex = this.taskForm.procInsId;
     },
     /** 查询部门下拉树结构 */
@@ -429,8 +420,8 @@ export default {
         }
       }
     },
-    getProcessDetails(procInsId, deployId, taskId) {
-      const params = {procInsId: procInsId, deployId: deployId, taskId: taskId}
+    getProcessDetails(procInsId, taskId) {
+      const params = {procInsId: procInsId, taskId: taskId}
       detailProcess(params).then(res => {
         const data = res.data;
         this.xmlData = data.bpmnXml;
