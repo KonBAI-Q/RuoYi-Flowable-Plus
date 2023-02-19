@@ -50,7 +50,7 @@
         <el-divider />
         <h4><b>多实例审批方式</b></h4>
         <el-row>
-          <el-radio-group v-model="multiLoopType" @change="changeMultiLoopType">
+          <el-radio-group v-model="multiLoopType" @change="changeMultiLoopType()">
             <el-row><el-radio label="Null">无</el-radio></el-row>
             <el-row><el-radio label="SequentialMultiInstance">会签（需所有审批人同意）</el-radio></el-row>
             <el-row><el-radio label="ParallelMultiInstance">或签（一名审批人同意即可）</el-radio></el-row>
@@ -61,7 +61,7 @@
             <i class="header-icon el-icon-info"></i>
           </el-tooltip>
           <span class="custom-label">顺序审批：</span>
-          <el-switch v-model="isSequential" @change="changeMultiLoopType" />
+          <el-switch v-model="isSequential" @change="changeMultiLoopType()" />
         </el-row>
       </div>
     </el-row>
@@ -337,7 +337,7 @@ export default {
         userTaskForm.candidateUsers = null;
         this.showMultiFlog = false;
         this.multiLoopType = 'Null';
-        this.changeMultiLoopType(this.multiLoopType);
+        this.changeMultiLoopType();
       } else {
         userTaskForm.candidateUsers = this.selectedUserDate.map(k => k.userId).join() || null;
         userTaskForm.text = this.selectedUserDate.map(k => k.nickName).join() || null;
@@ -362,7 +362,7 @@ export default {
       userTaskForm.candidateGroups = groups;
       userTaskForm.text = text;
       this.updateElementTask();
-      this.changeMultiLoopType(this.multiLoopType);
+      this.changeMultiLoopType();
     },
     checkedDeptChange(checkedIds) {
       let groups = null;
@@ -394,7 +394,7 @@ export default {
       userTaskForm.candidateGroups = groups;
       userTaskForm.text = text;
       this.updateElementTask();
-      this.changeMultiLoopType(this.multiLoopType);
+      this.changeMultiLoopType();
     },
     changeDataType(val) {
       if (val === 'ROLES' || val === 'DEPTS' || (val === 'USERS' && this.selectedUser.ids.length > 1)) {
@@ -402,7 +402,8 @@ export default {
       } else {
         this.showMultiFlog = false;
       }
-      this.changeMultiLoopType('Null');
+      this.multiLoopType = 'Null';
+      this.changeMultiLoopType();
       // 清空 userTaskForm 所有属性值
       Object.keys(userTaskForm).forEach(key => userTaskForm[key] = null);
       userTaskForm.dataType = val;
@@ -464,10 +465,9 @@ export default {
         }
       }
     },
-    changeMultiLoopType(type) {
-      this.multiLoopType = type;
+    changeMultiLoopType() {
       // 取消多实例配置
-      if (type === "Null") {
+      if (this.multiLoopType === "Null") {
         window.bpmnInstances.modeling.updateProperties(this.bpmnElement, { loopCharacteristics: null, assignee: null });
         return;
       }
@@ -480,11 +480,11 @@ export default {
       // 完成条件
       let completionCondition = null;
       // 会签
-      if (type === "SequentialMultiInstance") {
+      if (this.multiLoopType === "SequentialMultiInstance") {
         completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances >= nrOfInstances}" });
       }
       // 或签
-      if (type === "ParallelMultiInstance") {
+      if (this.multiLoopType === "ParallelMultiInstance") {
         completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances > 0}" });
       }
       // 更新模块属性信息
