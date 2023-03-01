@@ -52,7 +52,7 @@
 ![输入图片说明](http://qiniu-flowable.konbai.work/Collection-Code.jpg)
 
 ## 友情链接
-- [玩转RuoYi-Cloud-Plus - Flowable基础](https://www.yuque.com/xiaoqiang-qgsmv/rfgglm/qlsb8ganw8weupax#tCnYs)：文档包含Flowable基础知识、项目使用说明、源码解析等。（新人必看）
+- [玩转RuoYi-Cloud-Plus - Flowable基础](https://blog.csdn.net/zhaozhiqiang1981/article/details/129240406)：文档包含Flowable基础知识、项目使用说明、源码解析等。（新人必看）
 - [基于若依的Flowable工作流实战](https://space.bilibili.com/400188320/channel/collectiondetail?sid=1002899)：Flowable视频学习专栏，项目基本覆盖了Flowable的方方面面，也拓展了很多为了达到生产级别项目而附加的表结构，工具类等知识点！
 
 ## 演示图例
