@@ -116,7 +116,6 @@ export default {
     value: String, // xml 字符串
     processId: String,
     processName: String,
-    namespace: String,
     translations: Object, // 自定义的翻译文件
     additionalModel: [Object, Array], // 自定义model
     moddleExtension: Object, // 自定义moddle
@@ -308,7 +307,7 @@ export default {
       // 将字符串转换成图显示出来
       let newId = this.processId || `Process_${new Date().getTime()}`;
       let newName = this.processName || `业务流程_${new Date().getTime()}`;
-      let xmlString = xml || DefaultEmptyXML(newId, newName, this.namespace);
+      let xmlString = xml || DefaultEmptyXML(newId, newName, this.prefix);
       try {
         let { warnings } = await this.bpmnModeler.importXML(xmlString);
         if (warnings && warnings.length) {
