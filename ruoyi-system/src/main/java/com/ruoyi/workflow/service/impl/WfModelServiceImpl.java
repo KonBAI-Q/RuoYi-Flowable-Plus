@@ -26,9 +26,11 @@ import org.flowable.bpmn.model.StartEvent;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.Model;
 import org.flowable.engine.repository.ModelQuery;
+import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -215,17 +217,6 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         if (ObjectUtil.isNull(model)) {
             throw new RuntimeException("流程模型不存在！");
         }
-        // 修改模型分类信息
-        if (ObjectUtil.notEqual(model.getCategory(), modelBo.getCategory())) {
-            byte[] bpmnBytes = repositoryService.getModelEditorSource(model.getId());
-            if (ObjectUtil.isNotEmpty(bpmnBytes)) {
-                BpmnModel bpmnModel = ModelUtils.getBpmnModel(StrUtil.utf8Str(bpmnBytes));
-                // 设置最新流程分类编码
-                bpmnModel.setTargetNamespace(model.getCategory());
-                // 保存 BPMN XML
-                repositoryService.addModelEditorSource(model.getId(), ModelUtils.getBpmnXml(bpmnModel));
-            }
-        }
         model.setCategory(modelBo.getCategory());
         WfMetaInfoDto metaInfoDto = JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
         String metaInfo = buildMetaInfo(metaInfoDto, modelBo.getDescription());
@@ -272,7 +263,8 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         // 保存流程模型
         repositoryService.saveModel(newModel);
         // 保存 BPMN XML
-        repositoryService.addModelEditorSource(newModel.getId(), ModelUtils.getBpmnXml(bpmnModel));
+        byte[] bpmnXmlBytes = StringUtils.getBytes(modelBo.getBpmnXml(), StandardCharsets.UTF_8);
+        repositoryService.addModelEditorSource(newModel.getId(), bpmnXmlBytes);
     }
 
     @Override
@@ -283,7 +275,6 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         if (ObjectUtil.isNull(model)) {
             throw new RuntimeException("流程模型不存在！");
         }
-        String bpmnXml = queryBpmnXmlById(modelId);
         Integer latestVersion = repositoryService.createModelQuery()
             .modelKey(model.getKey())
             .latestVersion()
@@ -292,6 +283,8 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         if (model.getVersion().equals(latestVersion)) {
             throw new RuntimeException("当前版本已是最新版！");
         }
+        // 获取 BPMN XML
+        byte[] bpmnBytes = repositoryService.getModelEditorSource(modelId);
         Model newModel = repositoryService.newModel();
         newModel.setName(model.getName());
         newModel.setKey(model.getKey());
@@ -301,7 +294,7 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         // 保存流程模型
         repositoryService.saveModel(newModel);
         // 保存 BPMN XML
-        repositoryService.addModelEditorSource(newModel.getId(), StrUtil.utf8Bytes(bpmnXml));
+        repositoryService.addModelEditorSource(newModel.getId(), bpmnBytes);
     }
 
     @Override
@@ -325,16 +318,22 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
             throw new RuntimeException("流程模型不存在！");
         }
         // 获取流程图
-        String bpmnXml = queryBpmnXmlById(modelId);
+        byte[] bpmnBytes = repositoryService.getModelEditorSource(modelId);
+        String bpmnXml = StringUtils.toEncodedString(bpmnBytes, StandardCharsets.UTF_8);
         BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnXml);
         String processName = model.getName() + ProcessConstants.SUFFIX;
         // 部署流程
         Deployment deployment = repositoryService.createDeployment()
             .name(model.getName())
             .key(model.getKey())
-            .addBpmnModel(processName, bpmnModel)
             .category(model.getCategory())
+            .addBytes(processName, bpmnBytes)
             .deploy();
+        ProcessDefinition procDef = repositoryService.createProcessDefinitionQuery()
+            .deploymentId(deployment.getId())
+            .singleResult();
+        // 修改流程定义的分类，便于搜索流程
+        repositoryService.setProcessDefinitionCategory(procDef.getId(), model.getCategory());
         // 保存部署表单
         return deployFormService.saveInternalDeployForm(deployment.getId(), bpmnModel);
     }

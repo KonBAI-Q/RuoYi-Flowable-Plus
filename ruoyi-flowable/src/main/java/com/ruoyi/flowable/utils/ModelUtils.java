@@ -30,9 +30,11 @@ public class ModelUtils {
     /**
      * bpmnModel转xml字符串
      *
+     * @deprecated 存在会丢失 bpmn 连线问题
      * @param bpmnModel bpmnModel对象
      * @return xml字符串
      */
+    @Deprecated
     public static String getBpmnXmlStr(BpmnModel bpmnModel) {
         return StrUtil.utf8Str(getBpmnXml(bpmnModel));
     }
@@ -40,9 +42,11 @@ public class ModelUtils {
     /**
      * bpmnModel转xml对象
      *
+     * @deprecated 存在丢失 bpmn 连线问题
      * @param bpmnModel bpmnModel对象
      * @return xml
      */
+    @Deprecated
     public static byte[] getBpmnXml(BpmnModel bpmnModel) {
         return bpmnXMLConverter.convertToXML(bpmnModel);
     }

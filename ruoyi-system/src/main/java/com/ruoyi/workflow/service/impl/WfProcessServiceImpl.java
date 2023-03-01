@@ -7,6 +7,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.PageQuery;
@@ -626,8 +627,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             detailVo.setTaskFormData(currTaskFormData(historicProcIns.getDeploymentId(), taskIns));
         }
         // 获取Bpmn模型信息
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(historicProcIns.getProcessDefinitionId());
-        detailVo.setBpmnXml(ModelUtils.getBpmnXmlStr(bpmnModel));
+        InputStream inputStream = repositoryService.getProcessModel(historicProcIns.getProcessDefinitionId());
+        String bpmnXmlStr = StrUtil.utf8Str(IoUtil.readBytes(inputStream, false));
+        BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnXmlStr);
+        detailVo.setBpmnXml(bpmnXmlStr);
         detailVo.setHistoryProcNodeList(historyProcNodeList(historicProcIns));
         detailVo.setProcessFormList(processFormList(bpmnModel, historicProcIns));
         detailVo.setFlowViewer(getFlowViewer(bpmnModel, procInsId));
