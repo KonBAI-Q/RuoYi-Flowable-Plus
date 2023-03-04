@@ -321,7 +321,7 @@ export default {
     initData() {
       this.taskForm.procInsId = this.$route.params && this.$route.params.procInsId;
       this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
-      this.processed = this.$route.query && this.$route.query.processed;
+      this.processed = this.$route.query && Boolean(this.$route.query.processed);
       // 流程任务重获取变量表单
       this.getProcessDetails(this.taskForm.procInsId, this.taskForm.taskId);
       this.loadIndex = this.taskForm.procInsId;
