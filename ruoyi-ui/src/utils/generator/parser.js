@@ -161,10 +161,9 @@ export default {
             formData[cur.__vModel__] = fileList;
             if (res.code === 200 && fileList) {
               config.defaultValue = fileList;
-              config.defaultValue.forEach(val => {
-                val.url = file.response.data.url;
-                val.ossId = file.response.data.ossId;
-                val.response = null
+              fileList.forEach(val =>{
+                val.url = val.response.data.url;
+                val.ossId = val.response.data.ossId;
               })
             }
           };
