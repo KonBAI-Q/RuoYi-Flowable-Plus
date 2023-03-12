@@ -67,6 +67,11 @@ public class ProcessConstants {
      */
     public static final String PROCESS_FORM_LOCAL_SCOPE = "localScope";
 
+    /**
+     * 自定义属性 流程状态
+     */
+    public static final String PROCESS_STATUS_KEY = "processStatus";
+
 
     /**
      * 流程跳过

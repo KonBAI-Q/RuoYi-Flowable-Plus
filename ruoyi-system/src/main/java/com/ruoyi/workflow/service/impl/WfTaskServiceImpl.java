@@ -11,6 +11,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.common.enums.FlowComment;
+import com.ruoyi.flowable.common.enums.ProcessStatus;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
 import com.ruoyi.flowable.flow.FlowableUtils;
@@ -130,7 +131,8 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
 
         // 添加审批意见
         taskService.addComment(taskBo.getTaskId(), taskBo.getProcInsId(), FlowComment.REJECT.getType(), taskBo.getComment());
-
+        // 设置流程状态为已终结
+        runtimeService.setVariable(processInstance.getId(), ProcessConstants.PROCESS_STATUS_KEY, ProcessStatus.TERMINATED.getStatus());
         // 获取所有节点信息
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinition.getId());
         EndEvent endEvent = ModelUtils.getEndEvent(bpmnModel);

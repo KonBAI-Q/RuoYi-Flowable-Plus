@@ -21,6 +21,7 @@ import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.constant.TaskConstants;
+import com.ruoyi.flowable.common.enums.ProcessStatus;
 import com.ruoyi.flowable.core.FormConf;
 import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
@@ -648,6 +649,8 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         String userIdStr = TaskUtils.getUserId();
         identityService.setAuthenticatedUserId(userIdStr);
         variables.put(BpmnXMLConstants.ATTRIBUTE_EVENT_START_INITIATOR, userIdStr);
+        // 设置流程状态为进行中
+        variables.put(ProcessConstants.PROCESS_STATUS_KEY, ProcessStatus.RUNNING.getStatus());
         // 发起流程实例
         ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDef.getId(), variables);
         // 第一个用户任务为发起人，则自动完成任务
