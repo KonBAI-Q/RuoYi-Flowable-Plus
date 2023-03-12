@@ -85,8 +85,7 @@
       <el-table-column label="提交时间" align="center" prop="createTime" width="180"/>
       <el-table-column label="流程状态" align="center" width="100">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.finishTime == null" size="mini">进行中</el-tag>
-          <el-tag type="success" v-if="scope.row.finishTime != null" size="mini">已完成</el-tag>
+          <dict-tag :options="dict.type.wf_process_status" :value="scope.row.processStatus"/>
         </template>
       </el-table-column>
       <el-table-column label="耗时" align="center" prop="duration" width="180"/>
@@ -133,6 +132,7 @@ import { listOwnProcess, stopProcess, delProcess } from '@/api/workflow/process'
 import { listAllCategory } from '@/api/workflow/category';
 export default {
   name: "Own",
+  dicts: ['wf_process_status'],
   components: {
   },
   data() {

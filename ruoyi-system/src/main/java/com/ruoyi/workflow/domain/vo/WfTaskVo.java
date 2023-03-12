@@ -122,4 +122,9 @@ public class WfTaskVo implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date finishTime;
 
+    /**
+     * 流程状态
+     */
+    private String processStatus;
+
 }

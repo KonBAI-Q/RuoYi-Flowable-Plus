@@ -171,6 +171,20 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         List<WfTaskVo> taskVoList = new ArrayList<>();
         for (HistoricProcessInstance hisIns : historicProcessInstances) {
             WfTaskVo taskVo = new WfTaskVo();
+            // 获取流程状态
+            HistoricVariableInstance processStatusVariable = historyService.createHistoricVariableInstanceQuery()
+                .processInstanceId(hisIns.getId())
+                .variableName(ProcessConstants.PROCESS_STATUS_KEY)
+                .singleResult();
+            String processStatus = null;
+            if (ObjectUtil.isNotNull(processStatusVariable)) {
+                processStatus = Convert.toStr(processStatusVariable.getValue());
+            }
+            // 兼容旧流程
+            if (processStatus == null) {
+                processStatus = ObjectUtil.isNull(hisIns.getEndTime()) ? ProcessStatus.RUNNING.getStatus() : ProcessStatus.COMPLETED.getStatus();
+            }
+            taskVo.setProcessStatus(processStatus);
             taskVo.setCreateTime(hisIns.getStartTime());
             taskVo.setFinishTime(hisIns.getEndTime());
             taskVo.setProcInsId(hisIns.getId());
