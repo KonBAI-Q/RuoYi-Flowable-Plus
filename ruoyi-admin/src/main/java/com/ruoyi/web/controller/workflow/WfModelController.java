@@ -12,7 +12,7 @@ import com.ruoyi.common.core.validate.AddGroup;
 import com.ruoyi.common.core.validate.EditGroup;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.workflow.domain.bo.WfCategoryBo;
+import com.ruoyi.workflow.domain.WfCategory;
 import com.ruoyi.workflow.domain.bo.WfModelBo;
 import com.ruoyi.workflow.domain.vo.WfCategoryVo;
 import com.ruoyi.workflow.domain.vo.WfModelExportVo;
@@ -176,7 +176,7 @@ public class WfModelController extends BaseController {
     public void export(WfModelBo modelBo, HttpServletResponse response) {
         List<WfModelVo> list =  modelService.list(modelBo);
         List<WfModelExportVo> listVo = BeanUtil.copyToList(list, WfModelExportVo.class);
-        List<WfCategoryVo> categoryVos = categoryService.queryList(new WfCategoryBo());
+        List<WfCategoryVo> categoryVos = categoryService.queryList(new WfCategory());
         Map<String, String> categoryMap = categoryVos.stream()
             .collect(Collectors.toMap(WfCategoryVo::getCode, WfCategoryVo::getCategoryName));
         for (WfModelExportVo exportVo : listVo) {

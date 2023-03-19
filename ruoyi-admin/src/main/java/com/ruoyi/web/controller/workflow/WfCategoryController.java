@@ -8,12 +8,9 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.core.validate.AddGroup;
-import com.ruoyi.common.core.validate.EditGroup;
-import com.ruoyi.common.core.validate.QueryGroup;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.workflow.domain.bo.WfCategoryBo;
+import com.ruoyi.workflow.domain.WfCategory;
 import com.ruoyi.workflow.domain.vo.WfCategoryVo;
 import com.ruoyi.workflow.service.IWfCategoryService;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +42,8 @@ public class WfCategoryController extends BaseController {
      */
     @SaCheckPermission("workflow:category:list")
     @GetMapping("/list")
-    public TableDataInfo<WfCategoryVo> list(@Validated(QueryGroup.class) WfCategoryBo bo, PageQuery pageQuery) {
-        return categoryService.queryPageList(bo, pageQuery);
+    public TableDataInfo<WfCategoryVo> list(WfCategory category, PageQuery pageQuery) {
+        return categoryService.queryPageList(category, pageQuery);
     }
 
     /**
@@ -54,8 +51,8 @@ public class WfCategoryController extends BaseController {
      */
     @SaCheckLogin
     @GetMapping("/listAll")
-    public R<List<WfCategoryVo>> listAll(@Validated(QueryGroup.class) WfCategoryBo bo) {
-        return R.ok(categoryService.queryList(bo));
+    public R<List<WfCategoryVo>> listAll(WfCategory category) {
+        return R.ok(categoryService.queryList(category));
     }
 
     /**
@@ -64,8 +61,8 @@ public class WfCategoryController extends BaseController {
     @SaCheckPermission("workflow:category:export")
     @Log(title = "流程分类", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(@Validated WfCategoryBo bo, HttpServletResponse response) {
-        List<WfCategoryVo> list = categoryService.queryList(bo);
+    public void export(@Validated WfCategory category, HttpServletResponse response) {
+        List<WfCategoryVo> list = categoryService.queryList(category);
         ExcelUtil.exportExcel(list, "流程分类", WfCategoryVo.class, response);
     }
 
@@ -86,11 +83,11 @@ public class WfCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody WfCategoryBo categoryBo) {
-        if (!categoryService.checkCategoryCodeUnique(categoryBo.getCode())) {
-            return R.fail("新增流程分类'" + categoryBo.getCategoryName() + "'失败，流程编码已存在");
+    public R<Void> add(@Validated @RequestBody WfCategory category) {
+        if (!categoryService.checkCategoryCodeUnique(category)) {
+            return R.fail("新增流程分类'" + category.getCategoryName() + "'失败，流程编码已存在");
         }
-        return toAjax(categoryService.insertCategory(categoryBo));
+        return toAjax(categoryService.insertCategory(category));
     }
 
     /**
@@ -100,11 +97,11 @@ public class WfCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody WfCategoryBo categoryBo) {
-        if (!categoryService.checkCategoryCodeUnique(categoryBo.getCode())) {
-            return R.fail("修改流程分类'" + categoryBo.getCategoryName() + "'失败，流程编码已存在");
+    public R<Void> edit(@Validated @RequestBody WfCategory category) {
+        if (!categoryService.checkCategoryCodeUnique(category)) {
+            return R.fail("修改流程分类'" + category.getCategoryName() + "'失败，流程编码已存在");
         }
-        return toAjax(categoryService.updateCategory(categoryBo));
+        return toAjax(categoryService.updateCategory(category));
     }
 
     /**

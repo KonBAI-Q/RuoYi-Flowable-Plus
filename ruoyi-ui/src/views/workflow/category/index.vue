@@ -164,18 +164,12 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        categoryId: [
-          { required: true, message: "分类ID不能为空", trigger: "blur" }
-        ],
         categoryName: [
           { required: true, message: "分类名称不能为空", trigger: "blur" }
         ],
         code: [
           { required: true, message: "分类编码不能为空", trigger: "blur" }
-        ],
-        remark: [
-          { required: true, message: "备注不能为空", trigger: "blur" }
-        ],
+        ]
       }
     };
   },

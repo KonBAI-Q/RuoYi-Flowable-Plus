@@ -2,7 +2,7 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.workflow.domain.bo.WfCategoryBo;
+import com.ruoyi.workflow.domain.WfCategory;
 import com.ruoyi.workflow.domain.vo.WfCategoryVo;
 
 import java.util.Collection;
@@ -24,27 +24,27 @@ public interface IWfCategoryService {
     /**
      * 查询列表
      */
-    TableDataInfo<WfCategoryVo> queryPageList(WfCategoryBo bo, PageQuery pageQuery);
+    TableDataInfo<WfCategoryVo> queryPageList(WfCategory category, PageQuery pageQuery);
 
     /**
      * 查询列表
      */
-    List<WfCategoryVo> queryList(WfCategoryBo categoryBo);
+    List<WfCategoryVo> queryList(WfCategory category);
 
     /**
      * 新增流程分类
      *
-     * @param categoryBo 流程分类信息
+     * @param category 流程分类信息
      * @return 结果
      */
-    int insertCategory(WfCategoryBo categoryBo);
+    int insertCategory(WfCategory category);
 
     /**
      * 编辑流程分类
-     * @param categoryBo 流程分类信息
+     * @param category 流程分类信息
      * @return 结果
      */
-    int updateCategory(WfCategoryBo categoryBo);
+    int updateCategory(WfCategory category);
 
     /**
      * 校验并删除数据
@@ -57,8 +57,8 @@ public interface IWfCategoryService {
     /**
      * 校验分类编码是否唯一
      *
-     * @param code 分类编码
+     * @param category 流程分类
      * @return 结果
      */
-    boolean checkCategoryCodeUnique(String code);
+    boolean checkCategoryCodeUnique(WfCategory category);
 }
