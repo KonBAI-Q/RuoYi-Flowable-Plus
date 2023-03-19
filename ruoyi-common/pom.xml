@@ -146,12 +146,17 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-data-27</artifactId>
-            <version>${redisson.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>lock4j-redisson-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- 加密包引入 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15to18</artifactId>
         </dependency>
 
     </dependencies>

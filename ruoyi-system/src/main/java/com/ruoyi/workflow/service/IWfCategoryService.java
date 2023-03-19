@@ -60,5 +60,5 @@ public interface IWfCategoryService {
      * @param code 分类编码
      * @return 结果
      */
-    String checkCategoryCodeUnique(String code);
+    boolean checkCategoryCodeUnique(String code);
 }
