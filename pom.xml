@@ -6,14 +6,14 @@
 
     <groupId>com.ruoyi</groupId>
     <artifactId>ruoyi-flowable-plus</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.2</version>
 
     <name>RuoYi-Flowable-Plus</name>
     <url>https://gitee.com/KonBAI-Q/ruoyi-flowable-plus</url>
     <description>RuoYi-Flowable-Plus后台管理系统</description>
 
     <properties>
-        <ruoyi-flowable-plus.version>0.8.1</ruoyi-flowable-plus.version>
+        <ruoyi-flowable-plus.version>0.8.2</ruoyi-flowable-plus.version>
         <spring-boot.version>2.7.9</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
