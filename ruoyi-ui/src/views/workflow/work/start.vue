@@ -26,6 +26,7 @@ export default {
     return {
       definitionId: null,
       deployId: null,
+      procInsId: null,
       formOpen: false,
       formData: {},
     }
@@ -37,9 +38,11 @@ export default {
     initData() {
       this.deployId = this.$route.params && this.$route.params.deployId;
       this.definitionId = this.$route.query && this.$route.query.definitionId;
+      this.procInsId = this.$route.query && this.$route.query.procInsId;
       getProcessForm({
         definitionId: this.definitionId,
-        deployId: this.deployId
+        deployId: this.deployId,
+        procInsId: this.procInsId
       }).then(res => {
         if (res.data) {
           this.formData = res.data;

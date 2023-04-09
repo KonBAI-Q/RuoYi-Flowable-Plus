@@ -549,17 +549,30 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     @Override
-    public String selectFormContent(String definitionId, String deployId) {
+    public FormConf selectFormContent(String definitionId, String deployId, String procInsId) {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(definitionId);
         if (ObjectUtil.isNull(bpmnModel)) {
             throw new RuntimeException("获取流程设计失败！");
         }
         StartEvent startEvent = ModelUtils.getStartEvent(bpmnModel);
-        WfDeployFormVo deployFormVo = deployFormMapper.selectVoOne(new LambdaQueryWrapper<WfDeployForm>()
+        WfDeployForm deployForm = deployFormMapper.selectOne(new LambdaQueryWrapper<WfDeployForm>()
             .eq(WfDeployForm::getDeployId, deployId)
             .eq(WfDeployForm::getFormKey, startEvent.getFormKey())
             .eq(WfDeployForm::getNodeKey, startEvent.getId()));
-        return deployFormVo.getContent();
+        FormConf formConf = JsonUtils.parseObject(deployForm.getContent(), FormConf.class);
+        if (ObjectUtil.isNull(formConf)) {
+            throw new RuntimeException("获取流程表单失败！");
+        }
+        if (ObjectUtil.isNotEmpty(procInsId)) {
+            // 获取流程实例
+            HistoricProcessInstance historicProcIns = historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(procInsId)
+                .includeProcessVariables()
+                .singleResult();
+            // 填充表单信息
+            ProcessFormUtils.fillFormData(formConf, historicProcIns.getProcessVariables());
+        }
+        return formConf;
     }
 
     /**

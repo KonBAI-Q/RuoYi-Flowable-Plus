@@ -112,6 +112,13 @@
             @click="handleStop(scope.row)"
             v-hasPermi="['workflow:process:cancel']"
           >取消</el-button>
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-refresh-right"
+            v-hasPermi="['workflow:process:start']"
+            @click="handleAgain(scope.row)"
+          >重新发起</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -236,6 +243,16 @@ export default {
       this.ids = selection.map(item => item.id)
       this.single = selection.length!==1
       this.multiple = !selection.length
+    },
+    handleAgain(row) {
+      this.$router.push({
+        path: '/workflow/process/start/' + row.deployId,
+        query: {
+          definitionId: row.procDefId,
+          procInsId: row.procInsId
+        }
+      })
+      console.log(row);
     },
     /**  取消流程申请 */
     handleStop(row){

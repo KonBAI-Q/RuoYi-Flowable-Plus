@@ -9,7 +9,6 @@ import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.bo.WfCopyBo;
@@ -188,9 +187,9 @@ public class WfProcessController extends BaseController {
     @GetMapping("/getProcessForm")
     @SaCheckPermission("workflow:process:start")
     public R<?> getForm(@RequestParam(value = "definitionId") String definitionId,
-                        @RequestParam(value = "deployId") String deployId) {
-        String formContent = processService.selectFormContent(definitionId, deployId);
-        return R.ok(JsonUtils.parseObject(formContent, Map.class));
+                        @RequestParam(value = "deployId") String deployId,
+                        @RequestParam(value = "procInsId", required = false) String procInsId) {
+        return R.ok(processService.selectFormContent(definitionId, deployId, procInsId));
     }
 
     /**

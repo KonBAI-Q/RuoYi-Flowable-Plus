@@ -2,6 +2,7 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.flowable.core.FormConf;
 import com.ruoyi.flowable.core.domain.ProcessQuery;
 import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
 import com.ruoyi.workflow.domain.vo.WfDetailVo;
@@ -77,7 +78,7 @@ public interface IWfProcessService {
      * @param definitionId 流程定义ID
      * @param deployId 部署ID
      */
-    String selectFormContent(String definitionId, String deployId);
+    FormConf selectFormContent(String definitionId, String deployId, String procInsId);
 
     /**
      * 启动流程实例
