@@ -296,7 +296,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             flowTask.setStartDeptName(startUser.getDept().getDeptName());
 
             // 流程变量
-            flowTask.setProcVars(this.getProcessVariables(task.getId()));
+            flowTask.setProcVars(task.getProcessVariables());
 
             flowList.add(flowTask);
         }
@@ -342,7 +342,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             taskVo.setStartUserName(startUser.getNickName());
             taskVo.setStartDeptName(startUser.getDept().getDeptName());
             // 流程变量
-            taskVo.setProcVars(this.getProcessVariables(task.getId()));
+            taskVo.setProcVars(task.getProcessVariables());
 
             taskVoList.add(taskVo);
         }
@@ -485,7 +485,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             flowTask.setStartDeptName(startUser.getDept().getDeptName());
 
             // 流程变量
-            flowTask.setProcVars(this.getProcessVariables(histTask.getId()));
+            flowTask.setProcVars(histTask.getProcessVariables());
 
             hisTaskList.add(flowTask);
         }
@@ -541,7 +541,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             flowTask.setStartDeptName(startUser.getDept().getDeptName());
 
             // 流程变量
-            flowTask.setProcVars(this.getProcessVariables(histTask.getId()));
+            flowTask.setProcVars(histTask.getProcessVariables());
 
             hisTaskList.add(flowTask);
         }
