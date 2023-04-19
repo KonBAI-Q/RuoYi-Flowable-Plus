@@ -181,6 +181,10 @@ export default {
         this.bpmnElement = window.bpmnInstances.bpmnElement;
         this.$nextTick(() => this.resetTaskForm());
       }
+    },
+    // 根据名称筛选部门树
+    deptName(val) {
+      this.$refs.tree.filter(val);
     }
   },
   beforeDestroy() {
