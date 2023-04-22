@@ -310,4 +310,64 @@ public class ModelUtils {
         }
         return userTaskList;
     }
+
+    /**
+     * 迭代从后向前扫描，判断目标节点相对于当前节点是否是串行
+     * 不存在直接回退到子流程中的情况，但存在从子流程出去到父流程情况
+     * @param source 起始节点
+     * @param target 目标节点
+     * @param visitedElements 已经经过的连线的 ID，用于判断线路是否重复
+     * @return 结果
+     */
+    public static boolean isSequentialReachable(FlowElement source, FlowElement target, Set<String> visitedElements) {
+        visitedElements = visitedElements == null ? new HashSet<>() : visitedElements;
+        if (source instanceof StartEvent && isInEventSubprocess(source)) {
+            return false;
+        }
+
+        // 根据类型，获取入口连线
+        List<SequenceFlow> sequenceFlows = getElementIncomingFlows(source);
+        if (sequenceFlows != null && sequenceFlows.size() > 0) {
+            // 循环找到目标元素
+            for (SequenceFlow sequenceFlow: sequenceFlows) {
+                // 如果发现连线重复，说明循环了，跳过这个循环
+                if (visitedElements.contains(sequenceFlow.getId())) {
+                    continue;
+                }
+                // 添加已经走过的连线
+                visitedElements.add(sequenceFlow.getId());
+                FlowElement sourceFlowElement = sequenceFlow.getSourceFlowElement();
+                // 这条线路存在目标节点，这条线路完成，进入下个线路
+                if (target.getId().equals(sourceFlowElement.getId())) {
+                    continue;
+                }
+                // 如果目标节点为并行网关，则不继续
+                if (sourceFlowElement instanceof ParallelGateway) {
+                    return false;
+                }
+                // 否则就继续迭代
+                boolean isSequential = isSequentialReachable(sourceFlowElement, target, visitedElements);
+                if (!isSequential) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    protected static boolean isInEventSubprocess(FlowElement flowElement) {
+        FlowElementsContainer flowElementsContainer = flowElement.getParentContainer();
+        while (flowElementsContainer != null) {
+            if (flowElementsContainer instanceof EventSubProcess) {
+                return true;
+            }
+
+            if (flowElementsContainer instanceof FlowElement) {
+                flowElementsContainer = ((FlowElement) flowElementsContainer).getParentContainer();
+            } else {
+                flowElementsContainer = null;
+            }
+        }
+        return false;
+    }
 }

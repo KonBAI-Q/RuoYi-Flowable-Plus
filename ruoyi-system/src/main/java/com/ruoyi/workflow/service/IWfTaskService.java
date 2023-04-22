@@ -1,7 +1,7 @@
 package com.ruoyi.workflow.service;
 
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
-import org.flowable.bpmn.model.UserTask;
+import org.flowable.bpmn.model.FlowElement;
 import org.flowable.engine.runtime.ProcessInstance;
 
 import java.io.InputStream;
@@ -42,7 +42,7 @@ public interface IWfTaskService {
      * @param bo
      * @return
      */
-    List<UserTask> findReturnTaskList(WfTaskBo bo);
+    List<FlowElement> findReturnTaskList(WfTaskBo bo);
 
     /**
      * 删除任务

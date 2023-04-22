@@ -167,35 +167,17 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         }
         // 获取流程定义信息
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
-        // 获取所有节点信息
-        Process process = repositoryService.getBpmnModel(processDefinition.getId()).getProcesses().get(0);
-        // 获取全部节点列表，包含子节点
-        Collection<FlowElement> allElements = FlowableUtils.getAllElements(process.getFlowElements(), null);
+        // 获取流程模型信息
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinition.getId());
         // 获取当前任务节点元素
-        FlowElement source = null;
+        FlowElement source = ModelUtils.getFlowElementById(bpmnModel, task.getTaskDefinitionKey());
         // 获取跳转的节点元素
-        FlowElement target = null;
-        if (allElements != null) {
-            for (FlowElement flowElement : allElements) {
-                // 当前任务节点元素
-                if (flowElement.getId().equals(task.getTaskDefinitionKey())) {
-                    source = flowElement;
-                }
-                // 跳转的节点元素
-                if (flowElement.getId().equals(bo.getTargetKey())) {
-                    target = flowElement;
-                }
-            }
-        }
-
-        // 从当前节点向前扫描
-        // 如果存在路线上不存在目标节点，说明目标节点是在网关上或非同一路线上，不可跳转
-        // 否则目标节点相对于当前节点，属于串行
-        Boolean isSequential = FlowableUtils.iteratorCheckSequentialReferTarget(source, bo.getTargetKey(), null, null);
+        FlowElement target = ModelUtils.getFlowElementById(bpmnModel, bo.getTargetKey());
+        // 从当前节点向前扫描，判断当前节点与目标节点是否属于串行，若目标节点是在并行网关上或非同一路线上，不可跳转
+        boolean isSequential = ModelUtils.isSequentialReachable(source, target, new HashSet<>());
         if (!isSequential) {
             throw new RuntimeException("当前节点相对于目标节点，不属于串行关系，无法回退");
         }
-
 
         // 获取所有正常进行的任务节点 Key，这些任务不能直接使用，需要找出其中需要撤回的任务
         List<Task> runTaskList = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
@@ -245,38 +227,36 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      * @return
      */
     @Override
-    public List<UserTask> findReturnTaskList(WfTaskBo bo) {
+    public List<FlowElement> findReturnTaskList(WfTaskBo bo) {
         // 当前任务 task
         Task task = taskService.createTaskQuery().taskId(bo.getTaskId()).singleResult();
         // 获取流程定义信息
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
-        // 获取所有节点信息，暂不考虑子流程情况
-        Process process = repositoryService.getBpmnModel(processDefinition.getId()).getProcesses().get(0);
-        Collection<FlowElement> flowElements = process.getFlowElements();
+        // 获取流程模型信息
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinition.getId());
+        // 查询历史节点实例
+        List<HistoricActivityInstance> activityInstanceList = historyService.createHistoricActivityInstanceQuery()
+            .processInstanceId(task.getProcessInstanceId())
+            .activityType(BpmnXMLConstants.ELEMENT_TASK_USER)
+            .finished()
+            .orderByHistoricActivityInstanceEndTime().asc()
+            .list();
+        List<String> activityIdList = activityInstanceList.stream()
+            .map(HistoricActivityInstance::getActivityId)
+            .filter(activityId -> !StringUtils.equals(activityId, task.getTaskDefinitionKey()))
+            .distinct()
+            .collect(Collectors.toList());
         // 获取当前任务节点元素
-        UserTask source = null;
-        if (flowElements != null) {
-            for (FlowElement flowElement : flowElements) {
-                // 类型为用户节点
-                if (flowElement.getId().equals(task.getTaskDefinitionKey())) {
-                    source = (UserTask) flowElement;
-                }
+        FlowElement source = ModelUtils.getFlowElementById(bpmnModel, task.getTaskDefinitionKey());
+        List<FlowElement> elementList = new ArrayList<>();
+        for (String activityId : activityIdList) {
+            FlowElement target = ModelUtils.getFlowElementById(bpmnModel, activityId);
+            boolean isSequential = ModelUtils.isSequentialReachable(source, target, new HashSet<>());
+            if (isSequential) {
+                elementList.add(target);
             }
         }
-        // 获取节点的所有路线
-        List<List<UserTask>> roads = FlowableUtils.findRoad(source, null, null, null);
-        // 可回退的节点列表
-        List<UserTask> userTaskList = new ArrayList<>();
-        for (List<UserTask> road : roads) {
-            if (userTaskList.size() == 0) {
-                // 还没有可回退节点直接添加
-                userTaskList = road;
-            } else {
-                // 如果已有回退节点，则比对取交集部分
-                userTaskList.retainAll(road);
-            }
-        }
-        return userTaskList;
+        return elementList;
     }
 
     /**
