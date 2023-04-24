@@ -764,6 +764,11 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                 .eq(WfDeployForm::getDeployId, historicProcIns.getDeploymentId())
                 .eq(WfDeployForm::getFormKey, formKey)
                 .eq(localScope, WfDeployForm::getNodeKey, flowElement.getId()));
+            //@author Brath
+            //避免空集合导致的NULL空指针
+            if (formInfoList.size() == 0)
+                continue;
+
             WfDeployFormVo formInfo = formInfoList.iterator().next();
             if (ObjectUtil.isNotNull(formInfo)) {
                 // 旧数据 formInfo.getFormName() 为 null
