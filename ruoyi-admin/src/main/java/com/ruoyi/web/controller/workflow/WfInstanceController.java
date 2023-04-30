@@ -51,6 +51,7 @@ public class WfInstanceController {
      * @param instanceId 流程实例ID
      * @param deleteReason 删除原因
      */
+    @Deprecated
     @DeleteMapping(value = "/delete")
     public R delete(@RequestParam String instanceId, String deleteReason) {
         instanceService.delete(instanceId, deleteReason);

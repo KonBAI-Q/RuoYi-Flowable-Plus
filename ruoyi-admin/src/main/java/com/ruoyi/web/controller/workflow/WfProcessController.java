@@ -207,6 +207,17 @@ public class WfProcessController extends BaseController {
     }
 
     /**
+     * 删除流程实例
+     *
+     * @param instanceIds 流程实例ID串
+     */
+    @DeleteMapping("/instance/{instanceIds}")
+    public R<Void> delete(@PathVariable String[] instanceIds) {
+        processService.deleteProcessByIds(instanceIds);
+        return R.ok();
+    }
+
+    /**
      * 读取xml文件
      * @param processDefId 流程定义ID
      */

@@ -103,6 +103,7 @@
             size="mini"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
+            v-if="scope.row.finishTime"
             v-hasPermi="['workflow:process:remove']"
           >删除</el-button>
           <el-button
@@ -240,9 +241,9 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
+      this.ids = selection.map(item => item.procInsId);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
     },
     handleAgain(row) {
       this.$router.push({
@@ -275,7 +276,7 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ids = row.procInsId;
+      const ids = row.procInsId || this.ids;
       this.$confirm('是否确认删除流程定义编号为"' + ids + '"的数据项?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",

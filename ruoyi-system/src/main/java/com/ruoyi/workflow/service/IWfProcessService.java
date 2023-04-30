@@ -94,6 +94,11 @@ public interface IWfProcessService {
      */
     void startProcessByDefKey(String procDefKey, Map<String, Object> variables);
 
+    /**
+     * 删除流程实例
+     */
+    void deleteProcessByIds(String[] instanceIds);
+
 
     /**
      * 读取xml文件

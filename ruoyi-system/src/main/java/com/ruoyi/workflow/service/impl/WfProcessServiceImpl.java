@@ -613,6 +613,20 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         }
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteProcessByIds(String[] instanceIds) {
+        List<String> ids = Arrays.asList(instanceIds);
+        // 校验流程是否结束
+        long activeInsCount = runtimeService.createProcessInstanceQuery()
+            .processInstanceIds(new HashSet<>(ids)).active().count();
+        if (activeInsCount > 0) {
+            throw new ServiceException("不允许删除进行中的流程实例");
+        }
+        // 删除历史流程实例
+        historyService.bulkDeleteHistoricProcessInstances(ids);
+    }
+
     /**
      * 读取xml文件
      * @param processDefId 流程定义ID
@@ -764,7 +778,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                 .eq(WfDeployForm::getDeployId, historicProcIns.getDeploymentId())
                 .eq(WfDeployForm::getFormKey, formKey)
                 .eq(localScope, WfDeployForm::getNodeKey, flowElement.getId()));
-            
+
             //@update by Brath：避免空集合导致的NULL空指针
             WfDeployFormVo formInfo = formInfoList.stream().findFirst().orElse(null);
 

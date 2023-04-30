@@ -27,6 +27,14 @@ export function startProcess(processDefId, data) {
   })
 }
 
+// 删除流程实例
+export function delProcess(ids) {
+  return request({
+    url: '/workflow/process/instance/' + ids,
+    method: 'delete'
+  })
+}
+
 // 获取流程图
 export function getBpmnXml(processDefId) {
   return request({
@@ -94,13 +102,5 @@ export function stopProcess(data) {
     url: '/workflow/task/stopProcess',
     method: 'post',
     data: data
-  })
-}
-
-// 删除流程实例
-export function delProcess(id) {
-  return request({
-    url: '/workflow/instance/delete/?instanceId=' + id,
-    method: 'delete'
   })
 }
