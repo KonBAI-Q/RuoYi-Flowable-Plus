@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
-import '@/components/VForm/VFormDesigner.css'  //引入VForm样式
+import 'vform-builds/dist/VFormDesigner.css'  //引入VForm样式
 import '@/assets/styles/index.scss' // global css
 import '@/assets/styles/ruoyi.scss' // ruoyi css
 import App from './App'
@@ -38,7 +38,7 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 // VForm表单组件
-import VForm from '@/components/VForm/VFormDesigner.umd.min'
+import VForm from 'vform-builds'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
