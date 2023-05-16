@@ -118,9 +118,8 @@
     </el-dialog>
 
     <!-- 设计表单对话框 -->
-    <el-dialog :title="formTitle" :visible.sync="designerFormOpen" width="100%"
-               :destroy-on-close="true" append-to-body>
-      <v-form-designer ref="vfDesigner" :resetFormJson="true">
+    <el-dialog :visible.sync="designerFormOpen" custom-class="vf-designer" fullscreen append-to-body>
+      <v-form-designer ref="vfDesigner" :resetFormJson="true" :designer-config="{ externalLink: false, toolbarMaxWidth: 480 }">
         <!-- 自定义按钮插槽 -->
         <template #customToolButtons>
           <el-button type="text" @click="open=true"><i class="el-icon-finished"/>保存</el-button>
@@ -137,13 +136,10 @@
 
 <script>
 import { listForm, getForm, delForm, addForm, updateForm } from "@/api/workflow/form";
-import Editor from '@/components/Editor';
 
 export default {
   name: "Form",
-  components: {
-    Editor
-  },
+  components: {},
   data() {
     return {
       // 遮罩层
@@ -238,7 +234,6 @@ export default {
     /** 表单配置信息 */
     handleDetail(row) {
       this.renderFormOpen = true;
-      this.formTitle = "流程表单配置详细";
       this.$nextTick(() => {
         this.$refs.vFormRef.setFormJson(row.content || {formConfig: {}, widgetList: []})
       })
@@ -247,7 +242,6 @@ export default {
     handleAdd() {
       this.reset();
       this.designerFormOpen = true;
-      this.formTitle = "添加流程表单";
       //清理表单设计器
       this.clearDesigner()
     },
@@ -258,7 +252,6 @@ export default {
       getForm(formId).then(response => {
         this.form = response.data;
         this.designerFormOpen = true;
-        this.formTitle = "修改流程表单";
         //清理表单设计器
         this.clearDesigner()
         this.$nextTick(() => {
@@ -324,10 +317,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.test-form {
-  margin: 15px auto;
-  width: 800px;
-  padding: 15px;
+<style lang="scss">
+.vf-designer .el-dialog__body {
+  padding: 0;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 </style>

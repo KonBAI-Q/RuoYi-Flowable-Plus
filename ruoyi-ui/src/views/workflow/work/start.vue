@@ -5,7 +5,7 @@
         <span>发起流程</span>
       </div>
       <div class="form-conf" v-if="formOpen">
-        <v-form-render :form-json="formModel" :form-data="{}" ref="vFormRef"></v-form-render>
+        <v-form-render :form-json="formModel" :form-data="formData" ref="vFormRef"></v-form-render>
         <div class="cu-submit">
           <el-button type="primary" @click="submit">提交</el-button>
           <el-button @click="reset">重置</el-button>
@@ -27,6 +27,7 @@ export default {
       procInsId: null,
       formOpen: false,
       formModel: {},
+      formData: {}
     }
   },
   created() {
@@ -41,37 +42,15 @@ export default {
         definitionId: this.definitionId,
         deployId: this.deployId,
         procInsId: this.procInsId
-      }).then(res => {
-        if (res.data) {
-          this.formModel = res.data;
-          this.formOpen = true
-          this.$nextTick(() => {
-            this.$refs.vFormRef.setFormJson(res.data || {formConfig: {}, widgetList: []})
-          })
-        }
-      })
-    },
-    /** 接收子组件传的值 */
-    getData(data) {
-      if (data) {
-        const variables = [];
-        data.fields.forEach(item => {
-          let variableData = {};
-          variableData.label = item.__config__.label
-          // 表单值为多个选项时
-          if (item.__config__.defaultValue instanceof Array) {
-            const array = [];
-            item.__config__.defaultValue.forEach(val => {
-              array.push(val)
-            })
-            variableData.val = array;
-          } else {
-            variableData.val = item.__config__.defaultValue
-          }
-          variables.push(variableData)
+      }).then(response => {
+        const data = response.data;
+        this.formModel = data.formModel;
+        this.formData = data.formData || {};
+        this.formOpen = true
+        this.$nextTick(() => {
+          this.$refs.vFormRef.setFormJson(this.formModel || {formConfig: {}, widgetList: []})
         })
-        this.variables = variables;
-      }
+      })
     },
     submit() {
       this.$refs.vFormRef.getFormData().then(formData => {

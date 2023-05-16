@@ -33,22 +33,14 @@ import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.WfDeployForm;
-import com.ruoyi.workflow.domain.vo.WfDefinitionVo;
-import com.ruoyi.workflow.domain.vo.WfDeployFormVo;
-import com.ruoyi.workflow.domain.vo.WfDetailVo;
-import com.ruoyi.workflow.domain.vo.WfProcNodeVo;
-import com.ruoyi.workflow.domain.vo.WfTaskVo;
-import com.ruoyi.workflow.domain.vo.WfViewerVo;
+import com.ruoyi.workflow.domain.vo.*;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
 import org.flowable.bpmn.constants.BpmnXMLConstants;
-import org.flowable.bpmn.model.BpmnModel;
-import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.Process;
-import org.flowable.bpmn.model.StartEvent;
-import org.flowable.bpmn.model.UserTask;
+import org.flowable.bpmn.model.*;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -68,13 +60,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -572,18 +558,20 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             .eq(WfDeployForm::getDeployId, deployId)
             .eq(WfDeployForm::getFormKey, startEvent.getFormKey())
             .eq(WfDeployForm::getNodeKey, startEvent.getId()));
-        FormConf formConf = JsonUtils.parseObject(deployForm.getContent(), FormConf.class);
-        if (ObjectUtil.isNull(formConf)) {
+        Map<String, Object> formModel = JsonUtils.parseObject(deployForm.getContent(), Map.class);
+        if (null == formModel || formModel.isEmpty()) {
             throw new RuntimeException("获取流程表单失败！");
         }
+        FormConf formConf = new FormConf();
+        formConf.setFormBtns(false);
+        formConf.setFormModel(formModel);
         if (ObjectUtil.isNotEmpty(procInsId)) {
             // 获取流程实例
             HistoricProcessInstance historicProcIns = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(procInsId)
                 .includeProcessVariables()
                 .singleResult();
-            // 填充表单信息
-            ProcessFormUtils.fillFormData(formConf, historicProcIns.getProcessVariables());
+            formConf.setFormData(historicProcIns.getProcessVariables());
         }
         return formConf;
     }
