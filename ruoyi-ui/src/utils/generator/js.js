@@ -1,6 +1,6 @@
 import { isArray } from 'util'
 import { exportDefault, titleCase } from '@/utils/index'
-import { trigger } from './config'
+import trigger from './ruleTrigger'
 
 const units = {
   KB: '1024',
@@ -45,12 +45,18 @@ function buildAttributes(el, dataList, ruleList, optionsList, methodList, propsL
   buildData(el, dataList)
   buildRules(el, ruleList)
 
-  if (el.options && el.options.length) {
-    buildOptions(el, optionsList)
-    if (el.dataType === 'dynamic') {
-      const model = `${el.vModel}Options`
-      const options = titleCase(model)
-      buildOptionMethod(`get${options}`, model, methodList)
+  if (el.__slot__) {
+    if (el.__slot__.options && el.__slot__.options.length) {
+      buildOptions(el, optionsList)
+    }
+  } else {
+    if (el.options && el.options.length) {
+      buildOptions(el, optionsList)
+      if (el.__config__.dataType === 'dynamic') {
+        const model = `${el.__vModel__}Options`
+        const options = titleCase(model)
+        buildOptionMethod(`get${options}`, model, methodList)
+      }
     }
   }
 
@@ -58,10 +64,10 @@ function buildAttributes(el, dataList, ruleList, optionsList, methodList, propsL
     buildProps(el, propsList)
   }
 
-  if (el.action && el.tag === 'el-upload') {
+  if (el.action && el.__config__.tag === 'el-upload') {
     uploadVarList.push(
-      `${el.vModel}Action: '${el.action}',
-      ${el.vModel}fileList: [],`
+      `${el.__vModel__}Action: '${el.action}',
+      ${el.__vModel__}fileList: [],`
     )
     methodList.push(buildBeforeUpload(el))
     if (!el['auto-upload']) {
@@ -69,8 +75,8 @@ function buildAttributes(el, dataList, ruleList, optionsList, methodList, propsL
     }
   }
 
-  if (el.children) {
-    el.children.forEach(el2 => {
+  if (el.__config__.children) {
+    el.__config__.children.forEach(el2 => {
       buildAttributes(el2, dataList, ruleList, optionsList, methodList, propsList, uploadVarList)
     })
   }
@@ -118,61 +124,62 @@ function mixinMethod(type) {
 }
 
 function buildData(conf, dataList) {
-  if (conf.vModel === undefined) return
+  if (conf.__vModel__ === undefined) return
   let defaultValue
-  if (typeof (conf.defaultValue) === 'string' && !conf.multiple) {
-    defaultValue = `'${conf.defaultValue}'`
+  if (typeof (conf.__config__.defaultValue) === 'string' && !conf.multiple) {
+    defaultValue = `'${conf.__config__.defaultValue}'`
   } else {
-    defaultValue = `${JSON.stringify(conf.defaultValue)}`
+    defaultValue = `${JSON.stringify(conf.__config__.defaultValue)}`
   }
-  dataList.push(`${conf.vModel}: ${defaultValue},`)
+  dataList.push(`${conf.__vModel__}: ${defaultValue},`)
 }
 
 function buildRules(conf, ruleList) {
-  if (conf.vModel === undefined) return
+  if (conf.__vModel__ === undefined) return
   const rules = []
-  if (trigger[conf.tag]) {
-    if (conf.required) {
-      const type = isArray(conf.defaultValue) ? 'type: \'array\',' : ''
-      let message = isArray(conf.defaultValue) ? `请至少选择一个${conf.vModel}` : conf.placeholder
-      if (message === undefined) message = `${conf.label}不能为空`
-      rules.push(`{ required: true, ${type} message: '${message}', trigger: '${trigger[conf.tag]}' }`)
+  if (trigger[conf.__config__.tag]) {
+    if (conf.__config__.required) {
+      const type = isArray(conf.__config__.defaultValue) ? 'type: \'array\',' : ''
+      let message = isArray(conf.__config__.defaultValue) ? `请至少选择一个${conf.__vModel__}` : conf.placeholder
+      if (message === undefined) message = `${conf.__config__.label}不能为空`
+      rules.push(`{ required: true, ${type} message: '${message}', trigger: '${trigger[conf.__config__.tag]}' }`)
     }
-    if (conf.regList && isArray(conf.regList)) {
-      conf.regList.forEach(item => {
+    if (conf.__config__.regList && isArray(conf.__config__.regList)) {
+      conf.__config__.regList.forEach(item => {
         if (item.pattern) {
-          rules.push(`{ pattern: ${eval(item.pattern)}, message: '${item.message}', trigger: '${trigger[conf.tag]}' }`)
+          rules.push(`{ pattern: ${eval(item.pattern)}, message: '${item.message}', trigger: '${trigger[conf.__config__.tag]}' }`)
         }
       })
     }
-    ruleList.push(`${conf.vModel}: [${rules.join(',')}],`)
+    ruleList.push(`${conf.__vModel__}: [${rules.join(',')}],`)
   }
 }
 
 function buildOptions(conf, optionsList) {
-  if (conf.vModel === undefined) return
-  if (conf.dataType === 'dynamic') { conf.options = [] }
-  const str = `${conf.vModel}Options: ${JSON.stringify(conf.options)},`
+  if (conf.__vModel__ === undefined) return
+  if (conf.__config__.dataType === 'dynamic') { conf.options = [] }
+  const options = conf.__config__.tag ==='el-cascader'?conf.options:conf.__slot__.options;
+  const str = `${conf.__vModel__}Options: ${JSON.stringify(options)},`
   optionsList.push(str)
 }
 
 function buildProps(conf, propsList) {
-  if (conf.dataType === 'dynamic') {
+  if (conf.__config__.dataType === 'dynamic') {
     conf.valueKey !== 'value' && (conf.props.props.value = conf.valueKey)
     conf.labelKey !== 'label' && (conf.props.props.label = conf.labelKey)
     conf.childrenKey !== 'children' && (conf.props.props.children = conf.childrenKey)
   }
-  const str = `${conf.vModel}Props: ${JSON.stringify(conf.props.props)},`
+  const str = `${conf.__vModel__}Props: ${JSON.stringify(conf.props.props)},`
   propsList.push(str)
 }
 
 function buildBeforeUpload(conf) {
-  const unitNum = units[conf.sizeUnit]; let rightSizeCode = ''; let acceptCode = ''; const
+  const unitNum = units[conf.__config__.sizeUnit]; let rightSizeCode = ''; let acceptCode = ''; const
     returnList = []
-  if (conf.fileSize) {
-    rightSizeCode = `let isRightSize = file.size / ${unitNum} < ${conf.fileSize}
+  if (conf.__config__.fileSize) {
+    rightSizeCode = `let isRightSize = file.size / ${unitNum} < ${conf.__config__.fileSize}
     if(!isRightSize){
-      this.$message.error('文件大小超过 ${conf.fileSize}${conf.sizeUnit}')
+      this.$message.error('文件大小超过 ${conf.__config__.fileSize}${conf.__config__.sizeUnit}')
     }`
     returnList.push('isRightSize')
   }
@@ -183,7 +190,7 @@ function buildBeforeUpload(conf) {
     }`
     returnList.push('isAccept')
   }
-  const str = `${conf.vModel}BeforeUpload(file) {
+  const str = `${conf.__vModel__}BeforeUpload(file) {
     ${rightSizeCode}
     ${acceptCode}
     return ${returnList.join('&&')}
@@ -193,7 +200,7 @@ function buildBeforeUpload(conf) {
 
 function buildSubmitUpload(conf) {
   const str = `submitUpload() {
-    this.$refs['${conf.vModel}'].submit()
+    this.$refs['${conf.__vModel__}'].submit()
   },`
   return str
 }
