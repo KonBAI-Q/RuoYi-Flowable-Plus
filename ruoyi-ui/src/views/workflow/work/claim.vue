@@ -55,7 +55,7 @@
       </el-table-column>
       <el-table-column label="流程发起人" align="center">
         <template slot-scope="scope">
-          <label>{{scope.row.startUserName}} <el-tag type="info" size="mini">{{scope.row.startDeptName}}</el-tag></label>
+          <label>{{scope.row.startUserName}}</label>
         </template>
       </el-table-column>
       <el-table-column label="接收时间" align="center" prop="createTime" width="180"/>
