@@ -15,4 +15,12 @@ public interface UserService {
      */
     String selectUserNameById(Long userId);
 
+    /**
+     * 通过用户ID查询用户昵称
+     *
+     * @param userId 用户ID
+     * @return 用户昵称
+     */
+    String selectNickNameById(Long userId);
+
 }
