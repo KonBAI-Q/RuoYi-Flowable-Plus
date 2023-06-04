@@ -7,7 +7,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
-import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.service.UserService;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.JsonUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -15,7 +15,6 @@ import com.ruoyi.flowable.common.constant.TaskConstants;
 import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysRoleService;
-import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.domain.vo.WfFormVo;
 import com.ruoyi.workflow.domain.vo.WfTaskVo;
@@ -45,7 +44,7 @@ import java.util.*;
 public class WfInstanceServiceImpl extends FlowServiceFactory implements IWfInstanceService {
 
     private final IWfDeployFormService deployFormService;
-    private final ISysUserService userService;
+    private final UserService userService;
     private final ISysRoleService roleService;
     private final ISysDeptService deptService;
 
@@ -143,10 +142,10 @@ public class WfInstanceServiceImpl extends FlowServiceFactory implements IWfInst
                 taskVo.setCreateTime(taskInstance.getStartTime());
                 taskVo.setFinishTime(taskInstance.getEndTime());
                 if (StringUtils.isNotBlank(taskInstance.getAssignee())) {
-                    SysUser user = userService.selectUserById(Long.parseLong(taskInstance.getAssignee()));
-                    taskVo.setAssigneeId(user.getUserId());
-                    taskVo.setAssigneeName(user.getNickName());
-                    taskVo.setDeptName(user.getDept().getDeptName());
+                    Long userId = Long.parseLong(taskInstance.getAssignee());
+                    String nickName = userService.selectNickNameById(userId);
+                    taskVo.setAssigneeId(userId);
+                    taskVo.setAssigneeName(nickName);
                 }
                 // 展示审批人员
                 List<HistoricIdentityLink> linksForTask = historyService.getHistoricIdentityLinksForTask(taskInstance.getId());
@@ -154,8 +153,9 @@ public class WfInstanceServiceImpl extends FlowServiceFactory implements IWfInst
                 for (HistoricIdentityLink identityLink : linksForTask) {
                     if ("candidate".equals(identityLink.getType())) {
                         if (StringUtils.isNotBlank(identityLink.getUserId())) {
-                            SysUser user = userService.selectUserById(Long.parseLong(identityLink.getUserId()));
-                            stringBuilder.append(user.getNickName()).append(",");
+                            Long userId = Long.parseLong(identityLink.getUserId());
+                            String nickName = userService.selectNickNameById(userId);
+                            stringBuilder.append(nickName).append(",");
                         }
                         if (StringUtils.isNotBlank(identityLink.getGroupId())) {
                             if (identityLink.getGroupId().startsWith(TaskConstants.ROLE_GROUP_PREFIX)) {

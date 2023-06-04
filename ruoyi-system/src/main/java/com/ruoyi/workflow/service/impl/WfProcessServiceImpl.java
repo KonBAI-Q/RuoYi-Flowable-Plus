@@ -13,8 +13,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.service.UserService;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.JsonUtils;
@@ -32,7 +32,6 @@ import com.ruoyi.flowable.utils.ProcessUtils;
 import com.ruoyi.flowable.utils.TaskUtils;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysRoleService;
-import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.WfDeployForm;
 import com.ruoyi.workflow.domain.vo.*;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
@@ -73,7 +72,7 @@ import java.util.stream.Collectors;
 public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProcessService {
 
     private final IWfTaskService wfTaskService;
-    private final ISysUserService userService;
+    private final UserService userService;
     private final ISysRoleService roleService;
     private final ISysDeptService deptService;
     private final WfDeployFormMapper deployFormMapper;
@@ -290,10 +289,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(task.getProcessInstanceId())
                 .singleResult();
-            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
-            flowTask.setStartUserId(startUser.getNickName());
-            flowTask.setStartUserName(startUser.getNickName());
-            flowTask.setStartDeptName(startUser.getDept().getDeptName());
+            Long userId = Long.parseLong(historicProcessInstance.getStartUserId());
+            String nickName = userService.selectNickNameById(userId);
+            flowTask.setStartUserId(userId);
+            flowTask.setStartUserName(nickName);
 
             // 流程变量
             flowTask.setProcVars(task.getProcessVariables());
@@ -337,12 +336,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                     .processInstanceId(task.getProcessInstanceId())
                     .singleResult();
-            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
-            taskVo.setStartUserId(startUser.getNickName());
-            taskVo.setStartUserName(startUser.getNickName());
-            taskVo.setStartDeptName(startUser.getDept().getDeptName());
-            // 流程变量
-            taskVo.setProcVars(task.getProcessVariables());
+            Long userId = Long.parseLong(historicProcessInstance.getStartUserId());
+            String nickName = userService.selectNickNameById(userId);
+            taskVo.setStartUserId(userId);
+            taskVo.setStartUserName(nickName);
 
             taskVoList.add(taskVo);
         }
@@ -385,10 +382,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(task.getProcessInstanceId())
                 .singleResult();
-            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
-            flowTask.setStartUserId(startUser.getNickName());
-            flowTask.setStartUserName(startUser.getNickName());
-            flowTask.setStartDeptName(startUser.getDept().getDeptName());
+            Long userId = Long.parseLong(historicProcessInstance.getStartUserId());
+            String nickName = userService.selectNickNameById(userId);
+            flowTask.setStartUserId(userId);
+            flowTask.setStartUserName(nickName);
 
             flowList.add(flowTask);
         }
@@ -429,10 +426,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                     .processInstanceId(task.getProcessInstanceId())
                     .singleResult();
-            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
-            flowTask.setStartUserId(startUser.getNickName());
-            flowTask.setStartUserName(startUser.getNickName());
-            flowTask.setStartDeptName(startUser.getDept().getDeptName());
+            Long userId = Long.parseLong(historicProcessInstance.getStartUserId());
+            String nickName = userService.selectNickNameById(userId);
+            flowTask.setStartUserId(userId);
+            flowTask.setStartUserName(nickName);
 
             flowList.add(flowTask);
         }
@@ -479,10 +476,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(histTask.getProcessInstanceId())
                 .singleResult();
-            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
-            flowTask.setStartUserId(startUser.getNickName());
-            flowTask.setStartUserName(startUser.getNickName());
-            flowTask.setStartDeptName(startUser.getDept().getDeptName());
+            Long userId = Long.parseLong(historicProcessInstance.getStartUserId());
+            String nickName = userService.selectNickNameById(userId);
+            flowTask.setStartUserId(userId);
+            flowTask.setStartUserName(nickName);
 
             // 流程变量
             flowTask.setProcVars(histTask.getProcessVariables());
@@ -535,10 +532,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                     .processInstanceId(histTask.getProcessInstanceId())
                     .singleResult();
-            SysUser startUser = userService.selectUserById(Long.parseLong(historicProcessInstance.getStartUserId()));
-            flowTask.setStartUserId(startUser.getNickName());
-            flowTask.setStartUserName(startUser.getNickName());
-            flowTask.setStartDeptName(startUser.getDept().getDeptName());
+            Long userId = Long.parseLong(historicProcessInstance.getStartUserId());
+            String nickName = userService.selectNickNameById(userId);
+            flowTask.setStartUserId(userId);
+            flowTask.setStartUserName(nickName);
 
             // 流程变量
             flowTask.setProcVars(histTask.getProcessVariables());
@@ -891,17 +888,18 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             if (BpmnXMLConstants.ELEMENT_EVENT_START.equals(activityInstance.getActivityType())) {
                 if (ObjectUtil.isNotNull(historicProcIns)) {
                     Long userId = Long.parseLong(historicProcIns.getStartUserId());
-                    SysUser user = userService.selectUserById(userId);
-                    if (user != null) {
-                        elementVo.setAssigneeId(user.getUserId());
-                        elementVo.setAssigneeName(user.getNickName());
+                    String nickName = userService.selectNickNameById(userId);
+                    if (nickName != null) {
+                        elementVo.setAssigneeId(userId);
+                        elementVo.setAssigneeName(nickName);
                     }
                 }
             } else if (BpmnXMLConstants.ELEMENT_TASK_USER.equals(activityInstance.getActivityType())) {
                 if (StringUtils.isNotBlank(activityInstance.getAssignee())) {
-                    SysUser user = userService.selectUserById(Long.parseLong(activityInstance.getAssignee()));
-                    elementVo.setAssigneeId(user.getUserId());
-                    elementVo.setAssigneeName(user.getNickName());
+                    Long userId = Long.parseLong(activityInstance.getAssignee());
+                    String nickName = userService.selectNickNameById(userId);
+                    elementVo.setAssigneeId(userId);
+                    elementVo.setAssigneeName(nickName);
                 }
                 // 展示审批人员
                 List<HistoricIdentityLink> linksForTask = historyService.getHistoricIdentityLinksForTask(activityInstance.getTaskId());
@@ -909,8 +907,9 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                 for (HistoricIdentityLink identityLink : linksForTask) {
                     if ("candidate".equals(identityLink.getType())) {
                         if (StringUtils.isNotBlank(identityLink.getUserId())) {
-                            SysUser user = userService.selectUserById(Long.parseLong(identityLink.getUserId()));
-                            stringBuilder.append(user.getNickName()).append(",");
+                            Long userId = Long.parseLong(identityLink.getUserId());
+                            String nickName = userService.selectNickNameById(userId);
+                            stringBuilder.append(nickName).append(",");
                         }
                         if (StringUtils.isNotBlank(identityLink.getGroupId())) {
                             if (identityLink.getGroupId().startsWith(TaskConstants.ROLE_GROUP_PREFIX)) {

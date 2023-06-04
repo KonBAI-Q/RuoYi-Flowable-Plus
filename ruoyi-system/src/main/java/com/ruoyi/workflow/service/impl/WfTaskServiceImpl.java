@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.service.UserService;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.StringUtils;
@@ -17,7 +17,6 @@ import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
 import com.ruoyi.flowable.flow.FlowableUtils;
 import com.ruoyi.flowable.utils.ModelUtils;
 import com.ruoyi.flowable.utils.TaskUtils;
-import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.service.IWfCopyService;
 import com.ruoyi.workflow.service.IWfTaskService;
@@ -56,7 +55,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskService {
 
-    private final ISysUserService sysUserService;
+    private final UserService sysUserService;
 
     private final IWfCopyService copyService;
 
@@ -311,9 +310,9 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         }
         StringBuilder commentBuilder = new StringBuilder(LoginHelper.getNickName())
             .append("->");
-        SysUser user = sysUserService.selectUserById(Long.parseLong(bo.getUserId()));
-        if (ObjectUtil.isNotNull(user)) {
-            commentBuilder.append(user.getNickName());
+        String nickName = sysUserService.selectNickNameById(Long.parseLong(bo.getUserId()));
+        if (StringUtils.isNotBlank(nickName)) {
+            commentBuilder.append(nickName);
         } else {
             commentBuilder.append(bo.getUserId());
         }
@@ -350,9 +349,9 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         }
         StringBuilder commentBuilder = new StringBuilder(LoginHelper.getNickName())
             .append("->");
-        SysUser user = sysUserService.selectUserById(Long.parseLong(bo.getUserId()));
-        if (ObjectUtil.isNotNull(user)) {
-            commentBuilder.append(user.getNickName());
+        String nickName = sysUserService.selectNickNameById(Long.parseLong(bo.getUserId()));
+        if (StringUtils.isNotBlank(nickName)) {
+            commentBuilder.append(nickName);
         } else {
             commentBuilder.append(bo.getUserId());
         }
