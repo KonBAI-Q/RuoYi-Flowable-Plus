@@ -279,3 +279,5 @@ flowable:
   database-schema-update: true
   idm:
     enabled: false
+  # 关闭流程定义文件自动检查
+  check-process-definitions: false
