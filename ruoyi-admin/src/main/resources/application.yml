@@ -278,6 +278,10 @@ flowable:
   # 库与数据库表结构不一致时，会自动将数据库表结构升级至新版本。
   database-schema-update: true
   idm:
+    # 关闭idm引擎 数据库不会创建act_id_*表，流程流转不会使用act_id_*相关的表
     enabled: false
   # 关闭流程定义文件自动检查
   check-process-definitions: false
+  # 关闭历史任务定时任务job
+  async-history-executor-activate: false
+
