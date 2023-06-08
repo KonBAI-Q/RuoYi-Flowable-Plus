@@ -216,12 +216,11 @@ export default {
         }
         this.showMultiFlog = true;
       } else if (this.dataType === 'DEPTS') {
-        this.getDeptTreeData().then(() => {
-          let deptIdData = bpmnElementObj['candidateGroups'] || [];
-          if (deptIdData && deptIdData.length > 0) {
-            this.deptIds = deptIdData.split(',');
-          }
-        });
+        this.getDeptTreeData();
+        let deptIdData = bpmnElementObj['candidateGroups'] || [];
+        if (deptIdData && deptIdData.length > 0) {
+          this.deptIds = deptIdData.split(',');
+        }
         this.showMultiFlog = true;
       }
       this.getElementLoop(bpmnElementObj);
