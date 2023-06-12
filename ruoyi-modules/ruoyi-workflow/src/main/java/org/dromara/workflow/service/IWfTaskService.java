@@ -4,7 +4,6 @@ import org.dromara.workflow.domain.bo.WfTaskBo;
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.engine.runtime.ProcessInstance;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -93,13 +92,6 @@ public interface IWfTaskService {
      * @return
      */
     void revokeProcess(WfTaskBo bo);
-
-    /**
-     * 获取流程过程图
-     * @param processId
-     * @return
-     */
-    InputStream diagram(String processId);
 
     /**
      * 获取流程变量

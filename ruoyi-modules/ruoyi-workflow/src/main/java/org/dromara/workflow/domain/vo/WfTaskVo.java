@@ -38,10 +38,12 @@ public class WfTaskVo implements Serializable {
     /**
      * 部门名称
      */
+    @Deprecated
     private String deptName;
     /**
      * 流程发起人部门名称
      */
+    @Deprecated
     private String startDeptName;
     /**
      * 任务执行人名称
@@ -50,7 +52,7 @@ public class WfTaskVo implements Serializable {
     /**
      * 流程发起人Id
      */
-    private String startUserId;
+    private Long startUserId;
     /**
      * 流程发起人名称
      */

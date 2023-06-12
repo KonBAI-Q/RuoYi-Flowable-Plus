@@ -41,6 +41,21 @@ public interface CacheNames {
     String SYS_USER_NAME = "sys_user_name#30d";
 
     /**
+     * 用户昵称
+     */
+    String SYS_NICK_NAME = "sys_nick_name#30d";
+
+    /**
+     * 角色名称
+     */
+    String SYS_ROLE_NAME = "sys_role_name#30d";
+
+    /**
+     * 部门名称
+     */
+    String SYS_DEPT_NAME = "sys_dept_name#30d";
+
+    /**
      * 部门
      */
     String SYS_DEPT = "sys_dept#30d";

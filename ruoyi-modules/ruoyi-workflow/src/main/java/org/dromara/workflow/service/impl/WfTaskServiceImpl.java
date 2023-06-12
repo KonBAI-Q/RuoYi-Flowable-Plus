@@ -8,19 +8,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.dromara.common.core.exception.ServiceException;
+import org.dromara.common.core.service.UserService;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.flowable.common.constant.ProcessConstants;
 import org.dromara.common.flowable.common.constant.TaskConstants;
 import org.dromara.common.flowable.common.enums.FlowComment;
 import org.dromara.common.flowable.common.enums.ProcessStatus;
 import org.dromara.common.flowable.factory.FlowServiceFactory;
-import org.dromara.common.flowable.flow.CustomProcessDiagramGenerator;
 import org.dromara.common.flowable.flow.FlowableUtils;
 import org.dromara.common.flowable.utils.ModelUtils;
 import org.dromara.common.flowable.utils.TaskUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.domain.vo.SysUserVo;
-import org.dromara.system.service.ISysUserService;
 import org.dromara.workflow.domain.bo.WfTaskBo;
 import org.dromara.workflow.service.IWfCopyService;
 import org.dromara.workflow.service.IWfTaskService;
@@ -30,20 +28,16 @@ import org.flowable.bpmn.model.*;
 import org.flowable.common.engine.api.FlowableException;
 import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.common.engine.impl.identity.Authentication;
-import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.history.HistoricActivityInstance;
-import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,7 +50,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskService {
 
-    private final ISysUserService sysUserService;
+    private final UserService userService;
 
     private final IWfCopyService copyService;
 
@@ -311,9 +305,9 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         }
         StringBuilder commentBuilder = new StringBuilder(LoginHelper.getNickName())
             .append("->");
-        SysUserVo user = sysUserService.selectUserById(Long.parseLong(bo.getUserId()));
-        if (ObjectUtil.isNotNull(user)) {
-            commentBuilder.append(user.getNickName());
+        String nickName = userService.selectNickNameById(Long.parseLong(bo.getUserId()));
+        if (StringUtils.isNotBlank(nickName)) {
+            commentBuilder.append(nickName);
         } else {
             commentBuilder.append(bo.getUserId());
         }
@@ -350,9 +344,9 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         }
         StringBuilder commentBuilder = new StringBuilder(LoginHelper.getNickName())
             .append("->");
-        SysUserVo user = sysUserService.selectUserById(Long.parseLong(bo.getUserId()));
-        if (ObjectUtil.isNotNull(user)) {
-            commentBuilder.append(user.getNickName());
+        String nickName = userService.selectNickNameById(Long.parseLong(bo.getUserId()));
+        if (StringUtils.isNotBlank(nickName)) {
+            commentBuilder.append(nickName);
         } else {
             commentBuilder.append(bo.getUserId());
         }
@@ -475,55 +469,6 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         } catch (FlowableException e) {
             throw new RuntimeException("执行撤回操作失败");
         }
-    }
-
-    /**
-     * 获取流程过程图
-     *
-     * @param processId
-     * @return
-     */
-    @Override
-    public InputStream diagram(String processId) {
-        String processDefinitionId;
-        // 获取当前的流程实例
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processId).singleResult();
-        // 如果流程已经结束，则得到结束节点
-        if (Objects.isNull(processInstance)) {
-            HistoricProcessInstance pi = historyService.createHistoricProcessInstanceQuery().processInstanceId(processId).singleResult();
-
-            processDefinitionId = pi.getProcessDefinitionId();
-        } else {// 如果流程没有结束，则取当前活动节点
-            // 根据流程实例ID获得当前处于活动状态的ActivityId合集
-            ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(processId).singleResult();
-            processDefinitionId = pi.getProcessDefinitionId();
-        }
-
-        // 获得活动的节点
-        List<HistoricActivityInstance> highLightedFlowList = historyService.createHistoricActivityInstanceQuery()
-            .processInstanceId(processId).orderByHistoricActivityInstanceStartTime().asc().list();
-
-        List<String> highLightedFlows = new ArrayList<>();
-        List<String> highLightedNodes = new ArrayList<>();
-        //高亮线
-        for (HistoricActivityInstance tempActivity : highLightedFlowList) {
-            if ("sequenceFlow".equals(tempActivity.getActivityType())) {
-                //高亮线
-                highLightedFlows.add(tempActivity.getActivityId());
-            } else {
-                //高亮节点
-                highLightedNodes.add(tempActivity.getActivityId());
-            }
-        }
-
-        //获取流程图
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        ProcessEngineConfiguration configuration = processEngine.getProcessEngineConfiguration();
-        //获取自定义图片生成器
-        ProcessDiagramGenerator diagramGenerator = new CustomProcessDiagramGenerator();
-        return diagramGenerator.generateDiagram(bpmnModel, "png", highLightedNodes, highLightedFlows, configuration.getActivityFontName(),
-            configuration.getLabelFontName(), configuration.getAnnotationFontName(), configuration.getClassLoader(), 1.0, true);
-
     }
 
     /**

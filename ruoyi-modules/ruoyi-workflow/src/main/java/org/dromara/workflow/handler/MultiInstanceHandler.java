@@ -2,13 +2,10 @@ package org.dromara.workflow.handler;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import lombok.AllArgsConstructor;
+import org.dromara.common.core.service.UserService;
+import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.flowable.common.constant.ProcessConstants;
-import org.dromara.system.domain.SysUser;
-import org.dromara.system.domain.SysUserRole;
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -29,6 +26,8 @@ import java.util.stream.Collectors;
 @Component("multiInstanceHandler")
 public class MultiInstanceHandler {
 
+    private static final UserService userService = SpringUtils.getBean(UserService.class);
+
     public Set<String> getUserIds(DelegateExecution execution) {
         Set<String> candidateUserIds = new LinkedHashSet<>();
         FlowElement flowElement = execution.getCurrentFlowElement();
@@ -46,12 +45,10 @@ public class MultiInstanceHandler {
                 List<Long> userIds = new ArrayList<>();
                 if ("ROLES".equals(dataType)) {
                     // 通过角色id，获取所有用户id集合
-                    LambdaQueryWrapper<SysUserRole> lqw = Wrappers.lambdaQuery(SysUserRole.class).select(SysUserRole::getUserId).in(SysUserRole::getRoleId, groups);
-                    userIds = SimpleQuery.list(lqw, SysUserRole::getUserId);
+                    userIds = userService.selectUserIdsByRoleIds(groups);
                 } else if ("DEPTS".equals(dataType)) {
                     // 通过部门id，获取所有用户id集合
-                    LambdaQueryWrapper<SysUser> lqw = Wrappers.lambdaQuery(SysUser.class).select(SysUser::getUserId).in(SysUser::getDeptId, groups);
-                    userIds = SimpleQuery.list(lqw, SysUser::getUserId);
+                    userIds = userService.selectUserIdsByDeptIds(groups);
                 }
                 // 添加候选用户id
                 userIds.forEach(id -> candidateUserIds.add(String.valueOf(id)));

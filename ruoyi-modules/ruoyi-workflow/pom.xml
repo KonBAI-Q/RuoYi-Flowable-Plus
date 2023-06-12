@@ -73,11 +73,6 @@
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-flowable</artifactId>
         </dependency>
-        <!-- TODO: 临时引入处理 -->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-system</artifactId>
-        </dependency>
 
     </dependencies>
 

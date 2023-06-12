@@ -322,4 +322,11 @@ public class SysDeptServiceImpl implements ISysDeptService, DeptService {
         return baseMapper.deleteById(deptId);
     }
 
+    @Cacheable(cacheNames = CacheNames.SYS_DEPT_NAME, key = "#deptId")
+    @Override
+    public String selectDeptNameById(Long deptId) {
+        SysDept sysDept = baseMapper.selectOne(new LambdaQueryWrapper<SysDept>()
+            .select(SysDept::getDeptName).eq(SysDept::getDeptId, deptId));
+        return ObjectUtil.isNull(sysDept) ? null : sysDept.getDeptName();
+    }
 }

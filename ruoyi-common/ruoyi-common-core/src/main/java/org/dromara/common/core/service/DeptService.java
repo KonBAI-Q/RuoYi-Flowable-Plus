@@ -15,4 +15,12 @@ public interface DeptService {
      */
     String selectDeptNameByIds(String deptIds);
 
+    /**
+     * 通过部门ID查询部门名称
+     *
+     * @param deptId 部门ID
+     * @return 部门名称
+     */
+    String selectDeptNameById(Long deptId);
+
 }
