@@ -1,0 +1,3 @@
+org.dromara.common.security.handler.GlobalExceptionHandler
+org.dromara.common.security.handler.AllUrlHandler
+org.dromara.common.security.config.SecurityConfig

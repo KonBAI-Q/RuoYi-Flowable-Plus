@@ -5,15 +5,14 @@ ruoyi:
   # 版本
   version: ${ruoyi-flowable-plus.version}
   # 版权年份
-  copyrightYear: 2022
+  copyrightYear: 2023
   # 实例演示开关
   demoEnabled: true
   # 获取ip地址开关
   addressEnabled: true
-  # 缓存懒加载
-  cacheLazy: false
 
 captcha:
+  enable: true
   # 页面 <参数设置> 可开启关闭 验证码校验
   # 验证码类型 math 数组计算 char 字符验证
   type: MATH
@@ -49,9 +48,9 @@ server:
 # 日志配置
 logging:
   level:
-    com.ruoyi: @logging.level@
+    org.dromara: @logging.level@
     org.springframework: warn
-  config: classpath:logback.xml
+  config: classpath:logback-plus.xml
 
 # 用户配置
 user:
@@ -78,11 +77,6 @@ spring:
       max-file-size: 10MB
       # 设置总上传的文件大小
       max-request-size: 20MB
-  # 服务模块
-  devtools:
-    restart:
-      # 热部署开关
-      enabled: true
   mvc:
     format:
       date-time: yyyy-MM-dd HH:mm:ss
@@ -138,16 +132,30 @@ security:
     - /actuator
     - /actuator/**
 
+# 多租户配置
+tenant:
+  # 是否开启
+  enable: true
+  # 排除表
+  excludes:
+    - sys_menu
+    - sys_tenant
+    - sys_tenant_package
+    - sys_role_dept
+    - sys_role_menu
+    - sys_user_post
+    - sys_user_role
+
 # MyBatisPlus配置
 # https://baomidou.com/config/
 mybatis-plus:
   # 不支持多包, 如有需要可在注解配置 或 提升扫包等级
   # 例如 com.**.**.mapper
-  mapperPackage: com.ruoyi.**.mapper
+  mapperPackage: org.dromara.**.mapper
   # 对应的 XML 文件位置
   mapperLocations: classpath*:mapper/**/*Mapper.xml
   # 实体扫描，多个package用逗号或者分号分隔
-  typeAliasesPackage: com.ruoyi.**.domain
+  typeAliasesPackage: org.dromara.**.domain
   # 启动时是否检查 MyBatis XML 文件的存在，默认不检查
   checkConfigLocation: false
   configuration:
@@ -155,7 +163,7 @@ mybatis-plus:
     mapUnderscoreToCamelCase: true
     # MyBatis 自动映射策略
     # NONE：不启用 PARTIAL：只对非嵌套 resultMap 自动映射 FULL：对所有 resultMap 自动映射
-    autoMappingBehavior: PARTIAL
+    autoMappingBehavior: FULL
     # MyBatis 自动映射时未知列或未知属性处理策
     # NONE：不做处理 WARNING：打印相关警告 FAILING：抛出异常和详细信息
     autoMappingUnknownColumnBehavior: NONE
@@ -200,7 +208,7 @@ mybatis-encryptor:
 swagger:
   info:
     # 标题
-    title: '标题：${ruoyi.name}后台管理系统_接口文档'
+    title: '标题：${ruoyi.name}多租户管理系统_接口文档'
     # 描述
     description: '描述：用于管理集团旗下公司的人员信息,具体包括XXX,XXX模块...'
     # 版本
@@ -228,11 +236,13 @@ springdoc:
   #这里定义了两个分组，可定义多个，也可以不定义
   group-configs:
     - group: 1.演示模块
-      packages-to-scan: com.ruoyi.demo
-    - group: 2.系统模块
-      packages-to-scan: com.ruoyi.web
-    - group: 3.代码生成模块
-      packages-to-scan: com.ruoyi.generator
+      packages-to-scan: org.dromara.demo
+    - group: 2.通用模块
+      packages-to-scan: org.dromara.web
+    - group: 3.系统模块
+      packages-to-scan: org.dromara.system
+    - group: 4.代码生成模块
+      packages-to-scan: org.dromara.generator
 
 # 防止XSS攻击
 xss:
@@ -270,6 +280,14 @@ management:
       show-details: ALWAYS
     logfile:
       external-file: ./logs/sys-console.log
+
+--- # websocket
+websocket:
+  enabled: true
+  # 路径
+  path: /websocket
+  # 设置访问源地址
+  allowedOrigins: '*'
 
 --- # Flowable 配置
 flowable:

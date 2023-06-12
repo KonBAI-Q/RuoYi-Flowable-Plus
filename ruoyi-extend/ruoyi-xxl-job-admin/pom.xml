@@ -3,13 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>ruoyi-extend</artifactId>
-        <groupId>com.ruoyi</groupId>
-        <version>0.8.3</version>
+        <groupId>org.dromara</groupId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>ruoyi-xxl-job-admin</artifactId>
     <packaging>jar</packaging>
 
     <properties>
+        <spring-boot.version>2.7.12</spring-boot.version>
+        <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
+        <mybatis-spring-boot.version>2.2.2</mybatis-spring-boot.version>
     </properties>
 
     <dependencyManagement>
@@ -56,11 +60,16 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- mybatis-starter：mybatis + mybatis-spring + hikari（default） -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>${spring-boot.mybatis}</version>
+            <version>${mybatis-spring-boot.version}</version>
         </dependency>
         <!-- mysql -->
         <dependency>
@@ -71,6 +80,7 @@
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
+            <version>${spring-boot-admin.version}</version>
         </dependency>
 
         <!-- xxl-job-core -->
