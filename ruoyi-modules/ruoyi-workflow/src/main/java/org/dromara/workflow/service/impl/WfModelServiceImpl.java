@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.flowable.common.constant.ProcessConstants;
 import org.dromara.common.flowable.common.enums.FormType;
-import org.dromara.common.flowable.factory.FlowServiceFactory;
 import org.dromara.common.flowable.utils.ModelUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
@@ -23,6 +22,7 @@ import org.dromara.workflow.service.IWfFormService;
 import org.dromara.workflow.service.IWfModelService;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.StartEvent;
+import org.flowable.engine.RepositoryService;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.Model;
 import org.flowable.engine.repository.ModelQuery;
@@ -42,7 +42,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelService {
+public class WfModelServiceImpl implements IWfModelService {
+
+    private final RepositoryService repositoryService;
 
     private final IWfFormService formService;
     private final IWfDeployFormService deployFormService;

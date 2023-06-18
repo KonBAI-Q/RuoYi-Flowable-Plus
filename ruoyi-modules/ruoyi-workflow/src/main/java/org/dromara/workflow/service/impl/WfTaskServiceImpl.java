@@ -14,7 +14,6 @@ import org.dromara.common.flowable.common.constant.ProcessConstants;
 import org.dromara.common.flowable.common.constant.TaskConstants;
 import org.dromara.common.flowable.common.enums.FlowComment;
 import org.dromara.common.flowable.common.enums.ProcessStatus;
-import org.dromara.common.flowable.factory.FlowServiceFactory;
 import org.dromara.common.flowable.flow.FlowableUtils;
 import org.dromara.common.flowable.utils.ModelUtils;
 import org.dromara.common.flowable.utils.TaskUtils;
@@ -28,6 +27,10 @@ import org.flowable.bpmn.model.*;
 import org.flowable.common.engine.api.FlowableException;
 import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.common.engine.impl.identity.Authentication;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.RepositoryService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.TaskService;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.Execution;
@@ -48,10 +51,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskService {
+public class WfTaskServiceImpl implements IWfTaskService {
+
+    private final RepositoryService repositoryService;
+    private final RuntimeService runtimeService;
+    private final TaskService taskService;
+    private final HistoryService historyService;
 
     private final UserService userService;
-
     private final IWfCopyService copyService;
 
     /**

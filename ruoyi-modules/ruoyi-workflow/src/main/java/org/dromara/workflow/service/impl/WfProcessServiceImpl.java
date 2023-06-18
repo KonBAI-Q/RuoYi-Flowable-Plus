@@ -22,7 +22,6 @@ import org.dromara.common.flowable.common.constant.TaskConstants;
 import org.dromara.common.flowable.common.enums.ProcessStatus;
 import org.dromara.common.flowable.core.FormConf;
 import org.dromara.common.flowable.core.domain.ProcessQuery;
-import org.dromara.common.flowable.factory.FlowServiceFactory;
 import org.dromara.common.flowable.flow.FlowableUtils;
 import org.dromara.common.flowable.utils.ModelUtils;
 import org.dromara.common.flowable.utils.ProcessUtils;
@@ -39,6 +38,7 @@ import org.flowable.bpmn.constants.BpmnXMLConstants;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.StartEvent;
+import org.flowable.engine.*;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -67,7 +67,13 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Service
-public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProcessService {
+public class WfProcessServiceImpl implements IWfProcessService {
+
+    private final RepositoryService repositoryService;
+    private final RuntimeService runtimeService;
+    private final IdentityService identityService;
+    private final TaskService taskService;
+    private final HistoryService historyService;
 
     private final IWfTaskService wfTaskService;
     private final UserService userService;
