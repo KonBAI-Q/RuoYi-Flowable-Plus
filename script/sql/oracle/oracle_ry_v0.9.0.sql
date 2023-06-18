@@ -1234,9 +1234,10 @@ create table wf_form (
     form_id     number(20)    not null,
     form_name   varchar(64)   default '',
     content     nclob,
-    create_by   varchar(64)   default '',
+    create_dept number(20)    default null,
+    create_by   number(20)    default null,
     create_time date,
-    update_by   varchar(64)   default '',
+    update_by   number(20)    default null,
     update_time date,
     remark      varchar(255)  default '',
     del_flag    char(1)       default '0'
@@ -1248,6 +1249,7 @@ comment on table wf_form is '流程表单信息表';
 comment on column wf_form.form_id is '表单主键';
 comment on column wf_form.form_name is '表单名称';
 comment on column wf_form.content is '表单内容';
+comment on column wf_form.create_dept is '创建部门';
 comment on column wf_form.create_by is '创建者';
 comment on column wf_form.create_time is '创建时间';
 comment on column wf_form.update_by is '更新者';
@@ -1285,9 +1287,10 @@ create table wf_category (
     category_name  varchar(64)   default '',
     code           varchar(64)   default '',
     remark         varchar(500)  default '',
-    create_by      varchar(64)   default '',
+    create_dept    number(20)    default null,
+    create_by      number(20)    default null,
     create_time    date,
-    update_by      varchar(64)   default '',
+    update_by      number(20)    default null,
     update_time    date,
     del_flag       char(1)       default '0'
 );
@@ -1299,6 +1302,7 @@ comment on column wf_category.category_id is '流程分类id';
 comment on column wf_category.category_name is '流程分类名称';
 comment on column wf_category.code is '分类编码';
 comment on column wf_category.remark is '备注';
+comment on column wf_category.create_dept is '创建部门';
 comment on column wf_category.create_by is '创建者';
 comment on column wf_category.create_time is '创建时间';
 comment on column wf_category.update_by is '更新者';
@@ -1320,9 +1324,10 @@ create table wf_copy (
     user_id         number(20)     not null,
     originator_id   number(20)     not null,
     originator_name varchar(64)    default '',
-    create_by       varchar(64)    default '',
+    create_dept     number(20)     default null,
+    create_by       number(20)     default null,
     create_time     date,
-    update_by       varchar(64)    default '',
+    update_by       number(20)     default null,
     update_time     date,
     del_flag        nchar(1)       default '0'
 );
@@ -1341,6 +1346,7 @@ comment on column wf_copy.task_id is '任务主键';
 comment on column wf_copy.user_id is '用户主键';
 comment on column wf_copy.originator_id is '发起人主键';
 comment on column wf_copy.originator_name is '发起人名称';
+comment on column wf_copy.create_dept is '创建部门';
 comment on column wf_copy.create_by is '创建者';
 comment on column wf_copy.create_time is '创建时间';
 comment on column wf_copy.update_by is '更新者';

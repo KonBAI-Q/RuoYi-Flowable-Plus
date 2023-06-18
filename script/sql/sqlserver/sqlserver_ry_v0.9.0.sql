@@ -3033,15 +3033,16 @@ GO
 
 CREATE TABLE wf_category
 (
-    [category_id]      bigint                        NOT NULL,
-    [category_name]    nvarchar(64)   DEFAULT ''     NULL,
-    [code]             nvarchar(64)   DEFAULT ''     NULL,
-    [remark]           nvarchar(500)                 NULL,
-    [create_by]        nvarchar(64)   DEFAULT ''     NULL,
-    [create_time]      datetime2(7)                  NULL,
-    [update_by]        nvarchar(64)   DEFAULT ''     NULL,
-    [update_time]      datetime2(7)                  NULL,
-    [del_flag]         nchar(1)       DEFAULT ('0')  NULL,
+    category_id      bigint                        NOT NULL,
+    category_name    nvarchar(64)   DEFAULT ''     NULL,
+    code             nvarchar(64)   DEFAULT ''     NULL,
+    remark           nvarchar(500)                 NULL,
+    create_dept      bigint                        NULL,
+    create_by        bigint                        NULL,
+    create_time      datetime2(7)                  NULL,
+    update_by        bigint                        NULL,
+    update_time      datetime2(7)                  NULL,
+    del_flag         nchar(1)       DEFAULT ('0')  NULL,
     CONSTRAINT [PK__wf_category] PRIMARY KEY CLUSTERED ([category_id])
     WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
     ON [PRIMARY]
@@ -3071,6 +3072,12 @@ EXEC sp_addextendedproperty
     'SCHEMA', N'dbo',
     'TABLE', N'wf_category',
     'COLUMN', N'remark'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'创建部门' ,
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_category',
+    'COLUMN', N'create_dept'
 GO
 EXEC sp_addextendedproperty
     'MS_Description', N'创建者',
@@ -3110,15 +3117,16 @@ GO
 
 CREATE TABLE wf_form
 (
-    [form_id]        bigint                          NOT NULL,
-    [form_name]      nvarchar(64)    DEFAULT ''      NULL,
-    [content]        nvarchar(max)                   NULL,
-    [create_by]      nvarchar(64)    DEFAULT ''      NULL,
-    [create_time]    datetime2(7)                    NULL,
-    [update_by]      nvarchar(64)    DEFAULT ''      NULL,
-    [update_time]    datetime2(7)                    NULL,
-    [remark]         nvarchar(255)                   NULL,
-    [del_flag]       nchar(1)        DEFAULT ('0')   NULL,
+    form_id        bigint                          NOT NULL,
+    form_name      nvarchar(64)    DEFAULT ''      NULL,
+    content        nvarchar(max)                   NULL,
+    create_dept    bigint                          NULL,
+    create_by      nvarchar(64)    DEFAULT ''      NULL,
+    create_time    datetime2(7)                    NULL,
+    update_by      nvarchar(64)    DEFAULT ''      NULL,
+    update_time    datetime2(7)                    NULL,
+    remark         nvarchar(255)                   NULL,
+    del_flag       nchar(1)        DEFAULT ('0')   NULL,
     CONSTRAINT [PK__wf_form] PRIMARY KEY CLUSTERED ([form_id])
     WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
     ON [PRIMARY]
@@ -3142,6 +3150,12 @@ EXEC sp_addextendedproperty
     'SCHEMA', N'dbo',
     'TABLE', N'wf_form',
     'COLUMN', N'content'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'创建部门' ,
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_form',
+    'COLUMN', N'create_dept'
 GO
 EXEC sp_addextendedproperty
     'MS_Description', N'创建者',
@@ -3187,12 +3201,12 @@ GO
 
 CREATE TABLE wf_deploy_form
 (
-    [deploy_id]  nvarchar(64)              NOT NULL,
-    [form_key]   nvarchar(64)              NOT NULL,
-    [node_key]   nvarchar(64)              NOT NULL,
-    [form_name]  nvarchar(64)   DEFAULT '' NULL,
-    [node_name]  nvarchar(64)   DEFAULT '' NULL,
-    [content]    nvarchar(max)             NULL,
+    deploy_id  nvarchar(64)              NOT NULL,
+    form_key   nvarchar(64)              NOT NULL,
+    node_key   nvarchar(64)              NOT NULL,
+    form_name  nvarchar(64)   DEFAULT '' NULL,
+    node_name  nvarchar(64)   DEFAULT '' NULL,
+    content    nvarchar(max)             NULL,
     CONSTRAINT [PK__wf_deploy_form] PRIMARY KEY CLUSTERED ([deploy_id], [form_key], [node_key])
     WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
     ON [PRIMARY]
@@ -3243,22 +3257,23 @@ GO
 
 CREATE TABLE wf_copy
 (
-    [copy_id]          bigint                        NOT NULL,
-    [title]            nvarchar(255)  DEFAULT ''     NULL,
-    [process_id]       nvarchar(64)   DEFAULT ''     NULL,
-    [process_name]     nvarchar(255)  DEFAULT ''     NULL,
-    [category_id]      nvarchar(255)  DEFAULT ''     NULL,
-    [deployment_id]    nvarchar(64)   DEFAULT ''     NULL,
-    [instance_id]      nvarchar(64)   DEFAULT ''     NULL,
-    [task_id]          nvarchar(64)   DEFAULT ''     NULL,
-    [user_id]          bigint                        NULL,
-    [originator_id]    bigint                        NULL,
-    [originator_name]  nvarchar(64)   DEFAULT ''     NULL,
-    [create_by]        nvarchar(64)   DEFAULT ''     NULL,
-    [create_time]      datetime2(7)                  NULL,
-    [update_by]        nvarchar(64)   DEFAULT ''     NULL,
-    [update_time]      datetime2(7)                  NULL,
-    [del_flag]         nchar(1)       DEFAULT ('0')  NULL,
+    copy_id          bigint                        NOT NULL,
+    title            nvarchar(255)  DEFAULT ''     NULL,
+    process_id       nvarchar(64)   DEFAULT ''     NULL,
+    process_name     nvarchar(255)  DEFAULT ''     NULL,
+    category_id      nvarchar(255)  DEFAULT ''     NULL,
+    deployment_id    nvarchar(64)   DEFAULT ''     NULL,
+    instance_id      nvarchar(64)   DEFAULT ''     NULL,
+    task_id          nvarchar(64)   DEFAULT ''     NULL,
+    user_id          bigint                        NULL,
+    originator_id    bigint                        NULL,
+    originator_name  nvarchar(64)   DEFAULT ''     NULL,
+    create_dept      bigint                        NULL,
+    create_by        bigint                        NULL,
+    create_time      datetime2(7)                  NULL,
+    update_by        bigint                        NULL,
+    update_time      datetime2(7)                  NULL,
+    del_flag         nchar(1)       DEFAULT ('0')  NULL,
     CONSTRAINT [PK__wf_copy] PRIMARY KEY CLUSTERED ([copy_id])
     WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
     ON [PRIMARY]
@@ -3330,6 +3345,12 @@ EXEC sp_addextendedproperty
     'SCHEMA', N'dbo',
     'TABLE', N'wf_copy',
     'COLUMN', N'originator_name'
+GO
+EXEC sp_addextendedproperty
+    'MS_Description', N'创建部门' ,
+    'SCHEMA', N'dbo',
+    'TABLE', N'wf_copy',
+    'COLUMN', N'create_dept'
 GO
 EXEC sp_addextendedproperty
     'MS_Description', N'创建者',

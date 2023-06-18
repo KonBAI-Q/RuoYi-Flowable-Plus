@@ -1258,9 +1258,10 @@ create table if not exists wf_form
     form_id       int8 not null,
     form_name     varchar(64)   default ''::varchar,
     content       text,
-    create_by     varchar(64)   default ''::varchar,
+    create_dept   int8,
+    create_by     int8,
     create_time   timestamp,
-    update_by     varchar(64)   default ''::varchar,
+    update_by     int8,
     update_time   timestamp,
     remark        varchar(255),
     del_flag      char(1)       default '0'::bpchar,
@@ -1271,6 +1272,7 @@ comment on table wf_form is '流程表单信息表';
 comment on column wf_form.form_id     is '表单主键';
 comment on column wf_form.form_name   is '表单名称';
 comment on column wf_form.content     is '表单内容';
+comment on column wf_form.create_dept is '创建部门';
 comment on column wf_form.create_by   is '创建者';
 comment on column wf_form.create_time is '创建时间';
 comment on column wf_form.update_by   is '更新者';
@@ -1311,9 +1313,10 @@ create table if not exists wf_category
     category_name  varchar(64)   default ''::varchar,
     code           varchar(64)   default ''::varchar,
     remark         varchar(500)  default ''::varchar,
-    create_by      varchar(64)   default ''::varchar,
+    create_dept    int8,
+    create_by      int8,
     create_time    timestamp,
-    update_by      varchar(64)   default ''::varchar,
+    update_by      int8,
     update_time    timestamp,
     del_flag       char(1)       default '0'::bpchar,
     constraint wf_category_pk primary key (category_id)
@@ -1324,6 +1327,7 @@ comment on column wf_category.category_id   is '流程分类id';
 comment on column wf_category.category_name is '流程分类名称';
 comment on column wf_category.code          is '分类编码';
 comment on column wf_category.remark        is '备注';
+comment on column wf_category.create_dept   is '创建部门';
 comment on column wf_category.create_by     is '创建者';
 comment on column wf_category.create_time   is '创建时间';
 comment on column wf_category.update_by     is '更新者';
@@ -1347,9 +1351,10 @@ create table if not exists wf_copy
     user_id          int8,
     originator_id    int8,
     originator_name  varchar(64)   default ''::varchar,
-    create_by        varchar(64)   default ''::varchar,
+    create_dept      int8,
+    create_by        int8,
     create_time      timestamp,
-    update_by        varchar(64)   default ''::varchar,
+    update_by        int8,
     update_time      timestamp,
     del_flag         char(1)       default '0'::bpchar,
     constraint wf_copy_pk primary key (copy_id)
@@ -1367,6 +1372,7 @@ comment on column wf_copy.task_id         is '任务主键';
 comment on column wf_copy.user_id         is '用户主键';
 comment on column wf_copy.originator_id   is '发起人主键';
 comment on column wf_copy.originator_name is '发起人名称';
+comment on column wf_copy.create_dept     is '创建部门';
 comment on column wf_copy.create_by       is '创建者';
 comment on column wf_copy.create_time     is '创建时间';
 comment on column wf_copy.update_by       is '更新者';
