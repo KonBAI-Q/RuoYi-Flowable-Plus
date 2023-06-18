@@ -145,6 +145,10 @@ tenant:
     - sys_role_menu
     - sys_user_post
     - sys_user_role
+    - wf_category
+    - wf_form
+    - wf_deploy_form
+    - wf_copy
 
 # MyBatisPlus配置
 # https://baomidou.com/config/
