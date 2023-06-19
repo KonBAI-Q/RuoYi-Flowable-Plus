@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.validate.QueryGroup;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.common.log.annotation.Log;
@@ -15,6 +16,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.workflow.domain.WfDeployForm;
 import org.dromara.workflow.domain.bo.WfFormBo;
+import org.dromara.workflow.domain.vo.WfFormExportVo;
 import org.dromara.workflow.domain.vo.WfFormVo;
 import org.dromara.workflow.service.IWfDeployFormService;
 import org.dromara.workflow.service.IWfFormService;
@@ -56,7 +58,8 @@ public class WfFormController extends BaseController {
     @PostMapping("/export")
     public void export(@Validated WfFormBo bo, HttpServletResponse response) {
         List<WfFormVo> list = formService.queryList(bo);
-        ExcelUtil.exportExcel(list, "流程表单", WfFormVo.class, response);
+        List<WfFormExportVo> listVo = MapstructUtils.convert(list, WfFormExportVo.class);
+        ExcelUtil.exportExcel(listVo, "流程表单", WfFormExportVo.class, response);
     }
 
     /**

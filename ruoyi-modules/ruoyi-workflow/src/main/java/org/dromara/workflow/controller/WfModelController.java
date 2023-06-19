@@ -17,7 +17,7 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
-import org.dromara.workflow.domain.WfCategory;
+import org.dromara.workflow.domain.bo.WfCategoryBo;
 import org.dromara.workflow.domain.bo.WfModelBo;
 import org.dromara.workflow.domain.vo.WfCategoryVo;
 import org.dromara.workflow.domain.vo.WfModelExportVo;
@@ -176,7 +176,7 @@ public class WfModelController extends BaseController {
     public void export(WfModelBo modelBo, HttpServletResponse response) {
         List<WfModelVo> list =  modelService.list(modelBo);
         List<WfModelExportVo> listVo = BeanUtil.copyToList(list, WfModelExportVo.class);
-        List<WfCategoryVo> categoryVos = categoryService.queryList(new WfCategory());
+        List<WfCategoryVo> categoryVos = categoryService.queryList(new WfCategoryBo());
         Map<String, String> categoryMap = categoryVos.stream()
             .collect(Collectors.toMap(WfCategoryVo::getCode, WfCategoryVo::getCategoryName));
         for (WfModelExportVo exportVo : listVo) {

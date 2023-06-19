@@ -1,6 +1,10 @@
 package org.dromara.workflow.domain.vo;
 
+import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.workflow.domain.WfDeployForm;
+
+import java.io.Serial;
 
 /**
  * 部署实例和表单关联视图对象
@@ -9,8 +13,10 @@ import lombok.Data;
  * @createTime 2022/7/17 18:29
  */
 @Data
+@AutoMapper(target = WfDeployForm.class, reverseConvertGenerate = false)
 public class WfDeployFormVo {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

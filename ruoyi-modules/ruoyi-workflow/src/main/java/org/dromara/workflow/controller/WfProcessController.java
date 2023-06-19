@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.common.flowable.core.domain.ProcessQuery;
 import org.dromara.common.log.annotation.Log;
@@ -113,7 +114,8 @@ public class WfProcessController extends BaseController {
     @PostMapping("/startExport")
     public void startExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
         List<WfDefinitionVo> list = processService.selectStartProcessList(processQuery);
-        ExcelUtil.exportExcel(list, "可发起流程", WfDefinitionVo.class, response);
+        List<WfDefinitionExportVo> listVo = MapstructUtils.convert(list, WfDefinitionExportVo.class);
+        ExcelUtil.exportExcel(listVo, "可发起流程", WfDefinitionExportVo.class, response);
     }
 
     /**
@@ -176,7 +178,8 @@ public class WfProcessController extends BaseController {
     public void copyExport(WfCopyBo copyBo, HttpServletResponse response) {
         copyBo.setUserId(LoginHelper.getUserId());
         List<WfCopyVo> list = copyService.selectList(copyBo);
-        ExcelUtil.exportExcel(list, "抄送流程", WfCopyVo.class, response);
+        List<WfCopyExportVo> listVo = BeanUtil.copyToList(list, WfCopyExportVo.class);
+        ExcelUtil.exportExcel(listVo, "抄送流程", WfCopyExportVo.class, response);
     }
 
     /**
