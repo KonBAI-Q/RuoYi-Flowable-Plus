@@ -2,7 +2,7 @@ package org.dromara.workflow.service;
 
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.workflow.domain.WfCategory;
+import org.dromara.workflow.domain.bo.WfCategoryBo;
 import org.dromara.workflow.domain.vo.WfCategoryVo;
 
 import java.util.Collection;
@@ -24,27 +24,27 @@ public interface IWfCategoryService {
     /**
      * 查询列表
      */
-    TableDataInfo<WfCategoryVo> queryPageList(WfCategory category, PageQuery pageQuery);
+    TableDataInfo<WfCategoryVo> queryPageList(WfCategoryBo categoryBo, PageQuery pageQuery);
 
     /**
      * 查询列表
      */
-    List<WfCategoryVo> queryList(WfCategory category);
+    List<WfCategoryVo> queryList(WfCategoryBo categoryBo);
 
     /**
      * 新增流程分类
      *
-     * @param category 流程分类信息
+     * @param categoryBo 流程分类信息
      * @return 结果
      */
-    int insertCategory(WfCategory category);
+    int insertCategory(WfCategoryBo categoryBo);
 
     /**
      * 编辑流程分类
-     * @param category 流程分类信息
+     * @param categoryBo 流程分类信息
      * @return 结果
      */
-    int updateCategory(WfCategory category);
+    int updateCategory(WfCategoryBo categoryBo);
 
     /**
      * 校验并删除数据
@@ -57,8 +57,8 @@ public interface IWfCategoryService {
     /**
      * 校验分类编码是否唯一
      *
-     * @param category 流程分类
+     * @param categoryBo 流程分类
      * @return 结果
      */
-    boolean checkCategoryCodeUnique(WfCategory category);
+    boolean checkCategoryCodeUnique(WfCategoryBo categoryBo);
 }

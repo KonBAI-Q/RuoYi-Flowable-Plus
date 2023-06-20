@@ -1,9 +1,11 @@
 package org.dromara.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,7 +16,10 @@ import java.util.Date;
  */
 @Data
 @NoArgsConstructor
+@AutoMapper(target = WfModelVo.class, convertGenerate = false)
 public class WfModelExportVo implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 1L;
     /**
      * 模型ID

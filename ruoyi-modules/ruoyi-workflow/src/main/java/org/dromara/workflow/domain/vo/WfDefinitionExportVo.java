@@ -2,21 +2,26 @@ package org.dromara.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.common.excel.annotation.ExcelDictFormat;
+import org.dromara.common.excel.convert.ExcelDictConvert;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 
 
 /**
- * 流程部署视图对象
+ * 流程定义视图对象导出VO
  *
- * @author KonBAI
- * @date 2022-06-30
+ * @author Baymax
+ * @date 2023/6/19 22:42
  */
 @Data
 @ExcelIgnoreUnannotated
-public class WfDeployVo {
+@AutoMapper(target = WfDefinitionVo.class, convertGenerate = false)
+public class WfDefinitionExportVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -48,6 +53,7 @@ public class WfDeployVo {
     /**
      * 版本
      */
+    @ExcelProperty(value = "版本")
     private Integer version;
 
     /**
@@ -69,9 +75,10 @@ public class WfDeployVo {
     private String deploymentId;
 
     /**
-     * 流程定义状态: 1:激活 , 2:中止
+     * 流程是否暂停（true:挂起 false:激活 ）
      */
-    @ExcelProperty(value = "流程定义状态: 1:激活 , 2:中止")
+    @ExcelProperty(value = "流程是否挂起", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(readConverterExp = "true=挂起,false=激活")
     private Boolean suspended;
 
     /**

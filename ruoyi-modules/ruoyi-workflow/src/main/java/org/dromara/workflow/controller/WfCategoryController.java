@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
@@ -14,7 +17,8 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
-import org.dromara.workflow.domain.WfCategory;
+import org.dromara.workflow.domain.bo.WfCategoryBo;
+import org.dromara.workflow.domain.vo.WfCategoryExportVo;
 import org.dromara.workflow.domain.vo.WfCategoryVo;
 import org.dromara.workflow.service.IWfCategoryService;
 import org.springframework.validation.annotation.Validated;
@@ -42,8 +46,8 @@ public class WfCategoryController extends BaseController {
      */
     @SaCheckPermission("workflow:category:list")
     @GetMapping("/list")
-    public TableDataInfo<WfCategoryVo> list(WfCategory category, PageQuery pageQuery) {
-        return categoryService.queryPageList(category, pageQuery);
+    public TableDataInfo<WfCategoryVo> list(WfCategoryBo categoryBo, PageQuery pageQuery) {
+        return categoryService.queryPageList(categoryBo, pageQuery);
     }
 
     /**
@@ -51,8 +55,8 @@ public class WfCategoryController extends BaseController {
      */
     @SaCheckLogin
     @GetMapping("/listAll")
-    public R<List<WfCategoryVo>> listAll(WfCategory category) {
-        return R.ok(categoryService.queryList(category));
+    public R<List<WfCategoryVo>> listAll(WfCategoryBo categoryBo) {
+        return R.ok(categoryService.queryList(categoryBo));
     }
 
     /**
@@ -61,9 +65,10 @@ public class WfCategoryController extends BaseController {
     @SaCheckPermission("workflow:category:export")
     @Log(title = "流程分类", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(@Validated WfCategory category, HttpServletResponse response) {
-        List<WfCategoryVo> list = categoryService.queryList(category);
-        ExcelUtil.exportExcel(list, "流程分类", WfCategoryVo.class, response);
+    public void export(WfCategoryBo categoryBo, HttpServletResponse response) {
+        List<WfCategoryVo> list = categoryService.queryList(categoryBo);
+        List<WfCategoryExportVo> listVo = MapstructUtils.convert(list, WfCategoryExportVo.class);
+        ExcelUtil.exportExcel(listVo, "流程分类", WfCategoryExportVo.class, response);
     }
 
     /**
@@ -83,11 +88,11 @@ public class WfCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated @RequestBody WfCategory category) {
-        if (!categoryService.checkCategoryCodeUnique(category)) {
-            return R.fail("新增流程分类'" + category.getCategoryName() + "'失败，流程编码已存在");
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody WfCategoryBo categoryBo) {
+        if (!categoryService.checkCategoryCodeUnique(categoryBo)) {
+            return R.fail("新增流程分类'" + categoryBo.getCategoryName() + "'失败，流程编码已存在");
         }
-        return toAjax(categoryService.insertCategory(category));
+        return toAjax(categoryService.insertCategory(categoryBo));
     }
 
     /**
@@ -97,11 +102,11 @@ public class WfCategoryController extends BaseController {
     @Log(title = "流程分类", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated @RequestBody WfCategory category) {
-        if (!categoryService.checkCategoryCodeUnique(category)) {
-            return R.fail("修改流程分类'" + category.getCategoryName() + "'失败，流程编码已存在");
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody WfCategoryBo categoryBo) {
+        if (!categoryService.checkCategoryCodeUnique(categoryBo)) {
+            return R.fail("修改流程分类'" + categoryBo.getCategoryName() + "'失败，流程编码已存在");
         }
-        return toAjax(categoryService.updateCategory(category));
+        return toAjax(categoryService.updateCategory(categoryBo));
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.dromara.workflow.domain.bo;
 
+import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -7,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
+import org.dromara.workflow.domain.WfForm;
+import java.io.Serial;
 
 /**
  * 流程表单业务对象
@@ -16,7 +19,10 @@ import org.dromara.common.mybatis.core.domain.BaseEntity;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@AutoMapper(target = WfForm.class, reverseConvertGenerate = false)
 public class WfFormBo extends BaseEntity {
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
