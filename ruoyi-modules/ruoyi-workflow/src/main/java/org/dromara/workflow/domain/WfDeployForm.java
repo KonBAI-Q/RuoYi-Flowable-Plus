@@ -3,15 +3,19 @@ package org.dromara.workflow.domain;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
- * 流程实例关联表单对象 sys_instance_form
+ * 流程实例关联表单对象 wf_deploy_form
  *
  * @author KonBAI
- * @createTime 2022/3/7 22:07
  */
 @Data
 @TableName("wf_deploy_form")
-public class WfDeployForm {
+public class WfDeployForm implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

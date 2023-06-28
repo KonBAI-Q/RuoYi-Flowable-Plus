@@ -7,18 +7,20 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 
+import java.io.Serial;
+
 /**
  * 流程抄送对象 wf_copy
  *
  * @author KonBAI
- * @date 2022-05-19
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("wf_copy")
 public class WfCopy extends BaseEntity {
 
-    private static final long serialVersionUID=1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * 抄送主键

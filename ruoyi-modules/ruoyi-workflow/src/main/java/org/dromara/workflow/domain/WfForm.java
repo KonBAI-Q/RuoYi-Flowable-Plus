@@ -6,16 +6,19 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 
+import java.io.Serial;
+
 /**
  * 流程表单对象 wf_form
  *
  * @author KonBAI
- * @createTime 2022/3/7 22:07
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("wf_form")
 public class WfForm extends BaseEntity {
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

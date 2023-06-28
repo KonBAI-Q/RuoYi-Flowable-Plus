@@ -8,18 +8,20 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 
+import java.io.Serial;
+
 /**
  * 流程分类对象 wf_category
  *
  * @author KonBAI
- * @date 2022-01-15
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("wf_category")
 public class WfCategory extends BaseEntity {
 
-    private static final long serialVersionUID=1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * 分类ID
