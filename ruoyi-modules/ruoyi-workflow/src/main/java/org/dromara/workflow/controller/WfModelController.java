@@ -1,13 +1,13 @@
 package org.dromara.workflow.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.hutool.core.bean.BeanUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.excel.utils.ExcelUtil;
@@ -175,7 +175,7 @@ public class WfModelController extends BaseController {
     @PostMapping("/export")
     public void export(WfModelBo modelBo, HttpServletResponse response) {
         List<WfModelVo> list =  modelService.list(modelBo);
-        List<WfModelExportVo> listVo = BeanUtil.copyToList(list, WfModelExportVo.class);
+        List<WfModelExportVo> listVo = MapstructUtils.convert(list, WfModelExportVo.class);
         List<WfCategoryVo> categoryVos = categoryService.queryList(new WfCategoryBo());
         Map<String, String> categoryMap = categoryVos.stream()
             .collect(Collectors.toMap(WfCategoryVo::getCode, WfCategoryVo::getCategoryName));

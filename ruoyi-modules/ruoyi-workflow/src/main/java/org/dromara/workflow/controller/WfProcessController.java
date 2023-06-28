@@ -1,7 +1,6 @@
 package org.dromara.workflow.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -126,7 +125,7 @@ public class WfProcessController extends BaseController {
     @PostMapping("/ownExport")
     public void ownExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
         List<WfTaskVo> list = processService.selectOwnProcessList(processQuery);
-        List<WfOwnTaskExportVo> listVo = BeanUtil.copyToList(list, WfOwnTaskExportVo.class);
+        List<WfOwnTaskExportVo> listVo = MapstructUtils.convert(list, WfOwnTaskExportVo.class);
         for (WfOwnTaskExportVo exportVo : listVo) {
             exportVo.setStatus(ObjectUtil.isNull(exportVo.getFinishTime()) ? "进行中" : "已完成");
         }
@@ -141,7 +140,7 @@ public class WfProcessController extends BaseController {
     @PostMapping("/todoExport")
     public void todoExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
         List<WfTaskVo> list = processService.selectTodoProcessList(processQuery);
-        List<WfTodoTaskExportVo> listVo = BeanUtil.copyToList(list, WfTodoTaskExportVo.class);
+        List<WfTodoTaskExportVo> listVo = MapstructUtils.convert(list, WfTodoTaskExportVo.class);
         ExcelUtil.exportExcel(listVo, "待办流程", WfTodoTaskExportVo.class, response);
     }
 
@@ -153,7 +152,7 @@ public class WfProcessController extends BaseController {
     @PostMapping("/claimExport")
     public void claimExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
         List<WfTaskVo> list = processService.selectClaimProcessList(processQuery);
-        List<WfClaimTaskExportVo> listVo = BeanUtil.copyToList(list, WfClaimTaskExportVo.class);
+        List<WfClaimTaskExportVo> listVo = MapstructUtils.convert(list, WfClaimTaskExportVo.class);
         ExcelUtil.exportExcel(listVo, "待签流程", WfClaimTaskExportVo.class, response);
     }
 
@@ -165,7 +164,7 @@ public class WfProcessController extends BaseController {
     @PostMapping("/finishedExport")
     public void finishedExport(@Validated ProcessQuery processQuery, HttpServletResponse response) {
         List<WfTaskVo> list = processService.selectFinishedProcessList(processQuery);
-        List<WfFinishedTaskExportVo> listVo = BeanUtil.copyToList(list, WfFinishedTaskExportVo.class);
+        List<WfFinishedTaskExportVo> listVo = MapstructUtils.convert(list, WfFinishedTaskExportVo.class);
         ExcelUtil.exportExcel(listVo, "已办流程", WfFinishedTaskExportVo.class, response);
     }
 
@@ -178,7 +177,7 @@ public class WfProcessController extends BaseController {
     public void copyExport(WfCopyBo copyBo, HttpServletResponse response) {
         copyBo.setUserId(LoginHelper.getUserId());
         List<WfCopyVo> list = copyService.selectList(copyBo);
-        List<WfCopyExportVo> listVo = BeanUtil.copyToList(list, WfCopyExportVo.class);
+        List<WfCopyExportVo> listVo = MapstructUtils.convert(list, WfCopyExportVo.class);
         ExcelUtil.exportExcel(listVo, "抄送流程", WfCopyExportVo.class, response);
     }
 
