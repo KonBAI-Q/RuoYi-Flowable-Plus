@@ -1,5 +1,6 @@
 package com.ruoyi.workflow.service.impl;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -319,6 +320,9 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         }
         // 获取流程图
         byte[] bpmnBytes = repositoryService.getModelEditorSource(modelId);
+        if (ArrayUtil.isEmpty(bpmnBytes)) {
+            throw new RuntimeException("请先设计流程图！");
+        }
         String bpmnXml = StringUtils.toEncodedString(bpmnBytes, StandardCharsets.UTF_8);
         BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnXml);
         String processName = model.getName() + ProcessConstants.SUFFIX;
