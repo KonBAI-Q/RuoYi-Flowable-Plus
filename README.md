@@ -17,8 +17,10 @@
 - 脚手架文档：[RuoYi-Vue-Plus文档](https://gitee.com/dromara/RuoYi-Vue-Plus/wikis/pages)
 
 ## 项目地址
-- Gitee：<https://gitee.com/KonBAI-Q/ruoyi-flowable-plus>
-- GitHub：<https://github.com/KonBAI-Q/RuoYi-Flowable-Plus>
+- 后端Gitee地址：<https://gitee.com/KonBAI-Q/ruoyi-flowable-plus>
+- 后端GitHub地址：<https://github.com/KonBAI-Q/RuoYi-Flowable-Plus>
+- 前端Gitee地址(Vue3)：<https://gitee.com/KonBAI-Q/ruoyi-flowable-vue3>
+- 前端GitHub地址(Vue3)：<https://github.com/KonBAI-Q/RuoYi-Flowable-Vue3>
 
 ## 在线演示
 演示服务不限制CURD操作，希望大家按需使用，不要恶意添加脏数据或对服务器进行攻击等操作。（将不定期清理数据）
@@ -30,7 +32,6 @@
 | 超管账户         | admin | admin123 |
 | 监控中心（未运行） | ruoyi | 123456   |
 | 任务调度中心      | admin | 123456   |
-| 数据监控中心      | ruoyi | 123456   |
 
 ## 技术交流群
 
