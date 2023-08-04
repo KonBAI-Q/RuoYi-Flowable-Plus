@@ -5,17 +5,17 @@ import lombok.Data;
 import org.dromara.workflow.domain.WfCopy;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * 流程抄送视图对象 wf_copy
  *
- * @author ruoyi
- * @date 2022-05-19
+ * @author KonBAI
  */
 @Data
-@AutoMapper(target = WfCopy.class, reverseConvertGenerate = false)
-public class WfCopyVo {
+@AutoMapper(target = WfCopy.class)
+public class WfCopyVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

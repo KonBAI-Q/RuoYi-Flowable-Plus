@@ -5,6 +5,7 @@ import lombok.Data;
 import org.dromara.workflow.domain.WfCategory;
 
 import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * 流程分类视图对象 flow_category
@@ -13,8 +14,8 @@ import java.io.Serial;
  * @date 2022-01-15
  */
 @Data
-@AutoMapper(target = WfCategory.class, convertGenerate = false)
-public class WfCategoryVo {
+@AutoMapper(target = WfCategory.class)
+public class WfCategoryVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

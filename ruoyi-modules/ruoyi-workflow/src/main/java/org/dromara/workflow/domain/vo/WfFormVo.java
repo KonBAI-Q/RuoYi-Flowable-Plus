@@ -5,6 +5,7 @@ import lombok.Data;
 import org.dromara.workflow.domain.WfForm;
 
 import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * 流程分类视图对象
@@ -13,8 +14,8 @@ import java.io.Serial;
  * @createTime 2022/3/7 22:07
  */
 @Data
-@AutoMapper(target = WfForm.class, convertGenerate = false)
-public class WfFormVo {
+@AutoMapper(target = WfForm.class)
+public class WfFormVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
