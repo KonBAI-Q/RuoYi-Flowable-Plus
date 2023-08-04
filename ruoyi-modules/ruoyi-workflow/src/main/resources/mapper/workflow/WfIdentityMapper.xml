@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.workflow.mapper.WfIdentityMapper">
+
+    <select id="selectPageUserList" resultType="java.util.Map">
+        select user_id as userId, user_name as userName, nick_name as nickName, phonenumber as phonenumber
+        from sys_user
+        <where>
+            <if test="deptId != null">
+                and dept_id = #{deptId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectDeptList" resultType="java.util.Map">
+        select dept_id as deptId, parent_id as parentId, dept_name as deptName, order_num as orderNum
+        from sys_dept
+    </select>
+</mapper>
