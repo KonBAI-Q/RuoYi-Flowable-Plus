@@ -1,6 +1,6 @@
 import { isArray } from 'util'
 import { exportDefault, titleCase } from '@/utils/index'
-import trigger from './ruleTrigger'
+import { trigger } from './config'
 
 const units = {
   KB: '1024',
