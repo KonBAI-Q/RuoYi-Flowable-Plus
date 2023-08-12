@@ -154,6 +154,7 @@ import CodeTypeDialog from './CodeTypeDialog'
 import DraggableItem from './DraggableItem'
 import { getDrawingList, saveDrawingList, getIdGlobal, saveIdGlobal, getFormConf } from '@/utils/db'
 import loadBeautifier from '@/utils/loadBeautifier'
+import Tinymce from '@/components/tinymce/index.vue'
 import { getForm, addForm, updateForm } from '@/api/workflow/form'
 import axios from 'axios'
 import Vue from 'vue';
@@ -165,6 +166,7 @@ let tempActiveData
 const drawingListInDB = getDrawingList()
 const formConfInDB = getFormConf()
 const idGlobal = getIdGlobal()
+Vue.component('tinymce', Tinymce)
 Vue.prototype.$axios = axios
 
 export default {
