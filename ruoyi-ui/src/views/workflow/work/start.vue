@@ -14,8 +14,11 @@
 </template>
 
 <script>
+import Tinymce from '@/components/tinymce/index.vue'
 import { getProcessForm, startProcess } from '@/api/workflow/process'
 import Parser from '@/utils/generator/parser'
+
+VTTCue.components('tinymce',Tinymce)
 
 export default {
   name: 'WorkStart',
