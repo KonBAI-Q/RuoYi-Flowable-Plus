@@ -17,8 +17,9 @@
 import Tinymce from '@/components/tinymce/index.vue'
 import { getProcessForm, startProcess } from '@/api/workflow/process'
 import Parser from '@/utils/generator/parser'
+import Vue from  'vue'
 
-VTTCue.components('tinymce',Tinymce)
+Vue.components('tinymce',Tinymce)
 
 export default {
   name: 'WorkStart',
