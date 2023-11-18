@@ -73,6 +73,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         }
         // 获取 bpmn 模型
         BpmnModel bpmnModel = repositoryService.getBpmnModel(task.getProcessDefinitionId());
+        identityService.setAuthenticatedUserId(TaskUtils.getUserId());
         if (DelegationState.PENDING.equals(task.getDelegationState())) {
             taskService.addComment(taskBo.getTaskId(), taskBo.getProcInsId(), FlowComment.DELEGATE.getType(), taskBo.getComment());
             taskService.resolveTask(taskBo.getTaskId());
@@ -128,6 +129,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             .processDefinitionId(task.getProcessDefinitionId())
             .singleResult();
 
+        identityService.setAuthenticatedUserId(TaskUtils.getUserId());
         // 添加审批意见
         taskService.addComment(taskBo.getTaskId(), taskBo.getProcInsId(), FlowComment.REJECT.getType(), taskBo.getComment());
         // 设置流程状态为已终结
@@ -195,6 +197,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
                 currentTaskIds.add(runTask.getId());
             }
         }));
+        identityService.setAuthenticatedUserId(TaskUtils.getUserId());
         // 设置回退意见
         for (String currentTaskId : currentTaskIds) {
             taskService.addComment(currentTaskId, task.getProcessInstanceId(), FlowComment.REBACK.getType(), bo.getComment());
@@ -266,6 +269,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
     @Override
     public void deleteTask(WfTaskBo bo) {
         // todo 待确认删除任务是物理删除任务 还是逻辑删除，让这个任务直接通过？
+        identityService.setAuthenticatedUserId(TaskUtils.getUserId());
         taskService.deleteTask(bo.getTaskId(), bo.getComment());
     }
 
@@ -319,6 +323,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         if (StringUtils.isNotBlank(bo.getComment())) {
             commentBuilder.append(": ").append(bo.getComment());
         }
+        identityService.setAuthenticatedUserId(TaskUtils.getUserId());
         // 添加审批意见
         taskService.addComment(bo.getTaskId(), task.getProcessInstanceId(), FlowComment.DELEGATE.getType(), commentBuilder.toString());
         // 设置办理人为当前登录人
@@ -358,6 +363,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         if (StringUtils.isNotBlank(bo.getComment())) {
             commentBuilder.append(": ").append(bo.getComment());
         }
+        identityService.setAuthenticatedUserId(TaskUtils.getUserId());
         // 添加审批意见
         taskService.addComment(bo.getTaskId(), task.getProcessInstanceId(), FlowComment.TRANSFER.getType(), commentBuilder.toString());
         // 设置拥有者为当前登录人
@@ -456,6 +462,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         // 获取所有激活的任务节点，找到需要撤回的任务
         List<Task> activateTaskList = taskService.createTaskQuery().processInstanceId(procInsId).list();
         List<String> revokeExecutionIds = new ArrayList<>();
+        identityService.setAuthenticatedUserId(TaskUtils.getUserId());
         for (Task task : activateTaskList) {
             // 检查激活的任务节点是否存在下一级中，如果存在，则加入到需要撤回的节点
             if (CollUtil.contains(nextUserTaskKeys, task.getTaskDefinitionKey())) {
@@ -555,6 +562,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).list();
         if (CollUtil.isNotEmpty(tasks)) {
             String userIdStr = (String) variables.get(TaskConstants.PROCESS_INITIATOR);
+            identityService.setAuthenticatedUserId(TaskUtils.getUserId());
             for (Task task : tasks) {
                 if (StrUtil.equals(task.getAssignee(), userIdStr)) {
                     taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), LoginHelper.getNickName() + "发起流程申请");
