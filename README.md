@@ -35,8 +35,9 @@
 ## 技术交流群
 
 交流1群 🈵️ [![加入QQ群](https://img.shields.io/badge/QQ群-1007207992-blue.svg?style=flat)](https://jq.qq.com/?_wv=1027\&k=PYDZa1tA) </br>
-交流2群 [![加入QQ群](https://img.shields.io/badge/QQ群-725502135-blue.svg?style=flat)](https://jq.qq.com/?_wv=1027&k=J4zeZaKo) </br>
-交流3群 [![加入QQ群](https://img.shields.io/badge/QQ群-860980043-blue.svg?style=flat)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NfqIsFMASOvIC6yHYwY6bnaSfdgcD1La&authKey=SeFDA4oFkb%2FkdvnI%2FJ3aJTJZkyzDaz8v8gybpzUATAilnKSCmyKhCE6R2jkXc5e2&noverify=0&group_code=860980043) </br>
+交流2群 🈵️ [![加入QQ群](https://img.shields.io/badge/QQ群-725502135-blue.svg?style=flat)](https://jq.qq.com/?_wv=1027&k=J4zeZaKo) </br>
+交流3群 🈵️ [![加入QQ群](https://img.shields.io/badge/QQ群-860980043-blue.svg?style=flat)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NfqIsFMASOvIC6yHYwY6bnaSfdgcD1La&authKey=SeFDA4oFkb%2FkdvnI%2FJ3aJTJZkyzDaz8v8gybpzUATAilnKSCmyKhCE6R2jkXc5e2&noverify=0&group_code=860980043) </br>
+交流4群 [![加入QQ群](https://img.shields.io/badge/QQ群-683510042-blue.svg?style=flat)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=RBXhJKfZT0GSjEPa0CcViGmP_mnVE82j&authKey=J9shEDSoCujDRJO9wcpqzsbvCQskcEvo0idGd54I0uk735K90HhA0v5ywEkUdxK3&noverify=0&group_code=683510042) </br>
 
 ## 参与开源
 - 如遇到问题，欢迎提交到 [issues](https://gitee.com/KonBAI-Q/ruoyi-flowable-plus/issues)（请按模版进行填写信息）。
